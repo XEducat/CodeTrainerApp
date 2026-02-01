@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CodeTrainerAPI/CodeTrainerAPI.csproj" Id="0a657ae0-834b-408d-845a-4511530848e4" />
+  <Project Path="WinFormsApp1/CodeTrainerApp.csproj" />
+</Solution>
