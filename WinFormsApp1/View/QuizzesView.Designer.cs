@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using CodeTrainerApp.Model;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CodeTrainerApp.View
@@ -7,10 +8,11 @@ namespace CodeTrainerApp.View
 	{
 		private System.ComponentModel.IContainer components = null;
 		private ListBox QuizListBox;
-		private Button StartQuizButton;
 		private Button LoginButton;
 		private Panel MainPanel;
 		private Label TitleLabel;
+		private TableLayoutPanel HeaderPanel;
+		private FlowLayoutPanel ButtonPanel;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -19,45 +21,99 @@ namespace CodeTrainerApp.View
 			base.Dispose(disposing);
 		}
 
+		private void QuizListBox_DrawItem(object sender, DrawItemEventArgs e)
+		{
+			if (e.Index < 0) return;
+
+			var quiz = (Quiz)QuizListBox.Items[e.Index];
+
+			e.DrawBackground();
+
+			bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+
+			Color bgColor = isSelected
+				? Color.FromArgb(233, 236, 239)
+				: Color.White;
+
+			using (var bgBrush = new SolidBrush(bgColor))
+			{
+				e.Graphics.FillRectangle(bgBrush, e.Bounds);
+			}
+
+			// Назва
+			using (var titleFont = new Font("Segoe UI", 12, FontStyle.Bold))
+			using (var titleBrush = new SolidBrush(Color.FromArgb(33, 37, 41)))
+			{
+				e.Graphics.DrawString(
+					quiz.Title,
+					titleFont,
+					titleBrush,
+					e.Bounds.Left + 15,
+					e.Bounds.Top + 10);
+			}
+
+			// Опис
+			using (var descFont = new Font("Segoe UI", 9))
+			using (var descBrush = new SolidBrush(Color.FromArgb(108, 117, 125)))
+			{
+				e.Graphics.DrawString(
+					quiz.Description,
+					descFont,
+					descBrush,
+					e.Bounds.Left + 15,
+					e.Bounds.Top + 40);
+			}
+
+			// Кількість запитань справа
+			string questionsText = $"Питань: {quiz.Tasks.Count}";
+
+			using (var countFont = new Font("Segoe UI", 11, FontStyle.Bold))
+			using (var countBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
+			{
+				SizeF textSize = e.Graphics.MeasureString(questionsText, countFont);
+
+				float x = e.Bounds.Right - textSize.Width - 20;
+				float y = e.Bounds.Top + (e.Bounds.Height - textSize.Height) / 2;
+
+				e.Graphics.DrawString(
+					questionsText,
+					countFont,
+					countBrush,
+					x,
+					y);
+			}
+
+			e.DrawFocusRectangle();
+		}
+
 		private void InitializeComponent()
 		{
 			QuizListBox = new ListBox();
-			StartQuizButton = new Button();
 			LoginButton = new Button();
 			MainPanel = new Panel();
+			HeaderPanel = new TableLayoutPanel();
+			ButtonPanel = new FlowLayoutPanel();
 			TitleLabel = new Label();
-			button1 = new Button();
 			MainPanel.SuspendLayout();
+			HeaderPanel.SuspendLayout();
+			ButtonPanel.SuspendLayout();
 			SuspendLayout();
 			// 
 			// QuizListBox
 			// 
 			QuizListBox.BackColor = Color.FromArgb(248, 249, 250);
+			QuizListBox.Dock = DockStyle.Fill;
 			QuizListBox.DrawMode = DrawMode.OwnerDrawFixed;
 			QuizListBox.Font = new Font("Segoe UI", 11F);
 			QuizListBox.ForeColor = Color.FromArgb(33, 37, 41);
 			QuizListBox.ItemHeight = 80;
-			QuizListBox.Location = new Point(24, 80);
+			QuizListBox.Location = new Point(20, 88);
+			QuizListBox.Margin = new Padding(0, 10, 0, 10);
 			QuizListBox.Name = "QuizListBox";
-			QuizListBox.Size = new Size(740, 164);
-			QuizListBox.TabIndex = 2;
+			QuizListBox.Size = new Size(1240, 612);
+			QuizListBox.TabIndex = 0;
 			QuizListBox.DrawItem += QuizListBox_DrawItem;
 			QuizListBox.DoubleClick += QuizListBox_DoubleClick;
-			// 
-			// StartQuizButton
-			// 
-			StartQuizButton.BackColor = Color.FromArgb(40, 167, 69);
-			StartQuizButton.FlatAppearance.BorderSize = 0;
-			StartQuizButton.FlatStyle = FlatStyle.Flat;
-			StartQuizButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-			StartQuizButton.ForeColor = Color.White;
-			StartQuizButton.Location = new Point(24, 340);
-			StartQuizButton.Name = "StartQuizButton";
-			StartQuizButton.Size = new Size(200, 45);
-			StartQuizButton.TabIndex = 3;
-			StartQuizButton.Text = "🚀 Почати тест";
-			StartQuizButton.UseVisualStyleBackColor = false;
-			StartQuizButton.Click += StartQuizButton_Click;
 			// 
 			// LoginButton
 			// 
@@ -67,10 +123,12 @@ namespace CodeTrainerApp.View
 			LoginButton.FlatStyle = FlatStyle.Flat;
 			LoginButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
 			LoginButton.ForeColor = Color.White;
-			LoginButton.Location = new Point(1210, 25);
+			LoginButton.Location = new Point(0, 0);
+			LoginButton.Margin = new Padding(0);
 			LoginButton.Name = "LoginButton";
-			LoginButton.Size = new Size(160, 36);
-			LoginButton.TabIndex = 1;
+			LoginButton.RightToLeft = RightToLeft.No;
+			LoginButton.Size = new Size(120, 40);
+			LoginButton.TabIndex = 0;
 			LoginButton.Text = "👤 Увійти";
 			LoginButton.UseVisualStyleBackColor = false;
 			LoginButton.Click += LoginButton_Click;
@@ -78,60 +136,74 @@ namespace CodeTrainerApp.View
 			// MainPanel
 			// 
 			MainPanel.BackColor = Color.White;
-			MainPanel.Controls.Add(button1);
-			MainPanel.Controls.Add(TitleLabel);
-			MainPanel.Controls.Add(LoginButton);
 			MainPanel.Controls.Add(QuizListBox);
-			MainPanel.Controls.Add(StartQuizButton);
+			MainPanel.Controls.Add(HeaderPanel);
 			MainPanel.Dock = DockStyle.Fill;
 			MainPanel.Location = new Point(0, 0);
 			MainPanel.Name = "MainPanel";
-			MainPanel.Padding = new Padding(24);
-			MainPanel.Size = new Size(800, 420);
+			MainPanel.Padding = new Padding(20);
+			MainPanel.Size = new Size(1280, 720);
 			MainPanel.TabIndex = 0;
+			// 
+			// HeaderPanel
+			// 
+			HeaderPanel.BackColor = Color.FromArgb(245, 246, 250);
+			HeaderPanel.ColumnCount = 2;
+			HeaderPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+			HeaderPanel.ColumnStyles.Add(new ColumnStyle());
+			HeaderPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
+			HeaderPanel.Controls.Add(ButtonPanel, 1, 0);
+			HeaderPanel.Controls.Add(TitleLabel, 0, 0);
+			HeaderPanel.Dock = DockStyle.Top;
+			HeaderPanel.Location = new Point(20, 20);
+			HeaderPanel.Margin = new Padding(0);
+			HeaderPanel.Name = "HeaderPanel";
+			HeaderPanel.Padding = new Padding(0, 10, 0, 10);
+			HeaderPanel.RowCount = 1;
+			HeaderPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+			HeaderPanel.Size = new Size(1240, 68);
+			HeaderPanel.TabIndex = 1;
+			// 
+			// ButtonPanel
+			// 
+			ButtonPanel.AutoSize = true;
+			ButtonPanel.Controls.Add(LoginButton);
+			ButtonPanel.Dock = DockStyle.Fill;
+			ButtonPanel.FlowDirection = FlowDirection.RightToLeft;
+			ButtonPanel.Location = new Point(1117, 13);
+			ButtonPanel.Name = "ButtonPanel";
+			ButtonPanel.Size = new Size(120, 42);
+			ButtonPanel.TabIndex = 1;
 			// 
 			// TitleLabel
 			// 
+			TitleLabel.Anchor = AnchorStyles.Left;
 			TitleLabel.AutoSize = true;
-			TitleLabel.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+			TitleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
 			TitleLabel.ForeColor = Color.FromArgb(33, 37, 41);
-			TitleLabel.Location = new Point(24, 20);
+			TitleLabel.Location = new Point(3, 19);
 			TitleLabel.Name = "TitleLabel";
-			TitleLabel.Size = new Size(213, 37);
+			TitleLabel.Size = new Size(223, 30);
 			TitleLabel.TabIndex = 0;
-			TitleLabel.Text = "Доступні квізи";
-			// 
-			// button1
-			// 
-			button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			button1.BackColor = Color.FromArgb(108, 117, 125);
-			button1.FlatAppearance.BorderSize = 0;
-			button1.FlatStyle = FlatStyle.Flat;
-			button1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-			button1.ForeColor = Color.White;
-			button1.Location = new Point(644, 21);
-			button1.Name = "button1";
-			button1.Size = new Size(120, 36);
-			button1.TabIndex = 2;
-			button1.Text = "👤 Увійти";
-			button1.UseVisualStyleBackColor = false;
-			button1.Click += LoginButton_Click;
+			TitleLabel.Text = "Code Trainer - Квізи";
 			// 
 			// QuizzesView
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = Color.FromArgb(245, 246, 250);
-			ClientSize = new Size(800, 420);
+			ClientSize = new Size(1280, 720);
 			Controls.Add(MainPanel);
 			Name = "QuizzesView";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Code Trainer - Квізи";
+			WindowState = FormWindowState.Maximized;
+			Load += QuizzesView_Load;
 			MainPanel.ResumeLayout(false);
-			MainPanel.PerformLayout();
+			HeaderPanel.ResumeLayout(false);
+			HeaderPanel.PerformLayout();
+			ButtonPanel.ResumeLayout(false);
 			ResumeLayout(false);
 		}
-
-		private Button button1;
 	}
 }

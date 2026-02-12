@@ -6,8 +6,9 @@ namespace CodeTrainerApp.Services
 	public class QuizService
 	{
 		private readonly HttpClient _httpClient;
+		private readonly string baseUrl = "http://localhost:5181/";
 
-		public QuizService(string baseUrl, bool ignoreSslErrors = true)
+		public QuizService(bool ignoreSslErrors = true)
 		{
 			if (ignoreSslErrors)
 			{

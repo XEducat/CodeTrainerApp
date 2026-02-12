@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using CodeTrainerApp.Model;
+﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Services;
 
 namespace CodeTrainerApp.View
 {
 	public partial class QuizzesView : Form
 	{
+		private readonly QuizService _quizService = new QuizService();
 		private List<Quiz> _quizzes = new List<Quiz>();
 		private bool _isLoggedIn = false;
 		private string _userEmail = "";
@@ -16,100 +14,47 @@ namespace CodeTrainerApp.View
 		public QuizzesView()
 		{
 			InitializeComponent();
-			LoadQuizzes();
 		}
 
-		private void LoadQuizzes()
+		private async void QuizzesView_Load(object? sender, EventArgs e)
 		{
-			_quizzes = new List<Quiz>
+			await LoadQuizzesAsync();
+		}
+
+		private async Task LoadQuizzesAsync()
+		{
+			try
 			{
-				new Quiz
+				LoginButton.Enabled = false;
+				QuizListBox.Enabled = false;
+				TitleLabel.Text = "Завантаження квізів...";
+
+				_quizzes = await _quizService.GetAllQuizzesAsync(5);
+
+				QuizListBox.Items.Clear();
+
+				foreach (var quiz in _quizzes)
 				{
-					Id = 1,
-					Title = "Базовий C#",
-					Description = "Прості задачі для початківців",
-					Tasks = ProgrammingTask.GetTasks()
-				},
-				new Quiz
-				{
-					Id = 2,
-					Title = "Алгоритми",
-					Description = "Задачі на логіку",
-					Tasks = ProgrammingTask.GetTasks().GetRange(0, 3)
+					QuizListBox.Items.Add(quiz);
 				}
-			};
 
-			QuizListBox.Items.Clear();
-
-			foreach (var quiz in _quizzes)
-			{
-				QuizListBox.Items.Add(quiz);
+				TitleLabel.Text = "Доступні квізи";
 			}
-		}
-
-		private void QuizListBox_DrawItem(object sender, DrawItemEventArgs e)
-		{
-			if (e.Index < 0) return;
-
-			var quiz = (Quiz)QuizListBox.Items[e.Index];
-
-			e.DrawBackground();
-
-			bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-
-			Color bgColor = isSelected
-				? Color.FromArgb(233, 236, 239)
-				: Color.White;
-
-			using (var bgBrush = new SolidBrush(bgColor))
+			catch (Exception ex)
 			{
-				e.Graphics.FillRectangle(bgBrush, e.Bounds);
-			}
+				MessageBox.Show(
+					ex.Message,
+					"Помилка",
+					MessageBoxButtons.OK,
+					MessageBoxIcon.Error);
 
-			// Назва
-			using (var titleFont = new Font("Segoe UI", 12, FontStyle.Bold))
-			using (var titleBrush = new SolidBrush(Color.FromArgb(33, 37, 41)))
+				TitleLabel.Text = "Помилка завантаження";
+			}
+			finally
 			{
-				e.Graphics.DrawString(
-					quiz.Title,
-					titleFont,
-					titleBrush,
-					e.Bounds.Left + 15,
-					e.Bounds.Top + 10);
+				LoginButton.Enabled = true;
+				QuizListBox.Enabled = true;
 			}
-
-			// Опис
-			using (var descFont = new Font("Segoe UI", 9))
-			using (var descBrush = new SolidBrush(Color.FromArgb(108, 117, 125)))
-			{
-				e.Graphics.DrawString(
-					quiz.Description,
-					descFont,
-					descBrush,
-					e.Bounds.Left + 15,
-					e.Bounds.Top + 40);
-			}
-
-			// Кількість запитань справа
-			string questionsText = $"Питань: {quiz.Tasks.Count}";
-
-			using (var countFont = new Font("Segoe UI", 11, FontStyle.Bold))
-			using (var countBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
-			{
-				SizeF textSize = e.Graphics.MeasureString(questionsText, countFont);
-
-				float x = e.Bounds.Right - textSize.Width - 20;
-				float y = e.Bounds.Top + (e.Bounds.Height - textSize.Height) / 2;
-
-				e.Graphics.DrawString(
-					questionsText,
-					countFont,
-					countBrush,
-					x,
-					y);
-			}
-
-			e.DrawFocusRectangle();
 		}
 
 		private void StartQuizButton_Click(object sender, EventArgs e)
