@@ -161,10 +161,16 @@ namespace CodeTrainerApp.View
 			}
 
 			var selectedQuiz = (Quiz)QuizListBox.SelectedItem;
-
 			var quizView = new QuizView(selectedQuiz);
-			quizView.ShowDialog();
-		}
 
+			// Підписуємось на подію закриття
+			quizView.FormClosed += (s, args) =>
+			{
+				this.Show();
+			};
+
+			this.Hide();
+			quizView.Show();
+		}
 	}
 }

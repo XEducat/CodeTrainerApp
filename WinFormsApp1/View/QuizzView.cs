@@ -160,5 +160,18 @@ namespace CodeTrainerApp
 				LoginButton.Visible = false;
 			}
 		}
+
+		private void QuizView_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			// Виклик кастомної форми підтвердження
+			using (var confirmForm = new ConfirmCloseView())
+			{
+				var result = confirmForm.ShowDialog();
+				if (result != DialogResult.Yes)
+				{
+					e.Cancel = true; // Скасовуємо закриття
+				}
+			}
+		}
 	}
 }

@@ -26,6 +26,7 @@ namespace CodeTrainerApp.View
 			LoginButton = new Button();
 			MainPanel = new Panel();
 			TitleLabel = new Label();
+			button1 = new Button();
 			MainPanel.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -77,6 +78,7 @@ namespace CodeTrainerApp.View
 			// MainPanel
 			// 
 			MainPanel.BackColor = Color.White;
+			MainPanel.Controls.Add(button1);
 			MainPanel.Controls.Add(TitleLabel);
 			MainPanel.Controls.Add(LoginButton);
 			MainPanel.Controls.Add(QuizListBox);
@@ -99,6 +101,22 @@ namespace CodeTrainerApp.View
 			TitleLabel.TabIndex = 0;
 			TitleLabel.Text = "Доступні квізи";
 			// 
+			// button1
+			// 
+			button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+			button1.BackColor = Color.FromArgb(108, 117, 125);
+			button1.FlatAppearance.BorderSize = 0;
+			button1.FlatStyle = FlatStyle.Flat;
+			button1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			button1.ForeColor = Color.White;
+			button1.Location = new Point(644, 21);
+			button1.Name = "button1";
+			button1.Size = new Size(120, 36);
+			button1.TabIndex = 2;
+			button1.Text = "👤 Увійти";
+			button1.UseVisualStyleBackColor = false;
+			button1.Click += LoginButton_Click;
+			// 
 			// QuizzesView
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -113,5 +131,7 @@ namespace CodeTrainerApp.View
 			MainPanel.PerformLayout();
 			ResumeLayout(false);
 		}
+
+		private Button button1;
 	}
 }

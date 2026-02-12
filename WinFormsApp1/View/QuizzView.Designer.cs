@@ -189,16 +189,17 @@
 			ButtonsPanel.Size = new Size(420, 50);
 			ButtonsPanel.TabIndex = 5;
 			// 
-			// MainView
+			// QuizView
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = Color.FromArgb(245, 246, 250);
 			ClientSize = new Size(811, 590);
 			Controls.Add(MainPanel);
-			Name = "MainView";
+			Name = "QuizView";
 			Text = "Code Trainer App (C#)";
 			WindowState = FormWindowState.Maximized;
+			FormClosing += this.QuizView_FormClosing;
 			MainPanel.ResumeLayout(false);
 			MainPanel.PerformLayout();
 			ButtonsPanel.ResumeLayout(false);
