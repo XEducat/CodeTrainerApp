@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
-using WinFormsApp1.Model;
+using CodeTrainerApp.Model;
 
-namespace WinFormsApp1.Services
+namespace CodeTrainerApp.Services
 {
 	public class QuizService
 	{
@@ -42,6 +42,49 @@ namespace WinFormsApp1.Services
 			{
 				throw new Exception("Помилка при отриманні квізів: " + ex.Message);
 			}
+		}
+
+		// ================= GET: всі квізи з таймаутом і повторними спробами =================
+		public async Task<List<Quiz>> GetAllQuizzesAsync(int timeoutSeconds)
+		{
+			int delayBetweenRetriesMs = 500;
+			int retryCount = 5;
+
+			for (int attempt = 1; attempt <= retryCount; attempt++)
+			{
+				using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+
+				try
+				{
+					var response = await _httpClient.GetAsync("api/quiz", cts.Token);
+					response.EnsureSuccessStatusCode();
+
+					var quizzes = await response.Content
+						.ReadFromJsonAsync<List<Quiz>>(cancellationToken: cts.Token);
+
+					return quizzes ?? new List<Quiz>();
+				}
+				catch (TaskCanceledException)
+				{
+					if (attempt == retryCount)
+						throw new Exception($"Сервер не відповідає. Таймаут {timeoutSeconds} сек.");
+
+					await Task.Delay(delayBetweenRetriesMs);
+				}
+				catch (HttpRequestException)
+				{
+					if (attempt == retryCount)
+						throw new Exception("Неможливо підключитися до сервера.");
+
+					await Task.Delay(delayBetweenRetriesMs);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("Помилка при отриманні квізів: " + ex.Message);
+				}
+			}
+
+			return new List<Quiz>();
 		}
 
 		// ================= GET: один квіз =================

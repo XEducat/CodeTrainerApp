@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1.Model
+﻿namespace CodeTrainerApp.Model
 {
 	// клас для розбору відповіді API при логіні
 	public class LoginResult

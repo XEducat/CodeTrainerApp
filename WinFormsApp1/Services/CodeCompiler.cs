@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using WinFormsApp1.Model;
+using CodeTrainerApp.Model;
 
-namespace WinFormsApp1.Services
+namespace CodeTrainerApp.Services
 {
 	public static class CodeCompiler
 	{

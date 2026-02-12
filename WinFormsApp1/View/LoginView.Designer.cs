@@ -1,143 +1,151 @@
-﻿namespace WinFormsApp1.View
+﻿namespace CodeTrainerApp.View
 {
 	partial class LoginView
 	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
 		private System.ComponentModel.IContainer components = null;
+
+		private System.Windows.Forms.Label LoginLabel;
+		private System.Windows.Forms.TextBox LoginTextBox;
+
 		private System.Windows.Forms.Label EmailLabel;
 		private System.Windows.Forms.TextBox EmailTextBox;
+
 		private System.Windows.Forms.Label PasswordLabel;
 		private System.Windows.Forms.TextBox PasswordTextBox;
-		private System.Windows.Forms.Button LoginButton;
-		private System.Windows.Forms.Button RegisterButton;
-		private System.Windows.Forms.Label RoleLabel;
-		private System.Windows.Forms.ComboBox RoleComboBox;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		private System.Windows.Forms.Label ConfirmPasswordLabel;
+		private System.Windows.Forms.TextBox ConfirmPasswordTextBox;
+
+		private System.Windows.Forms.Label BirthDateLabel;
+		private System.Windows.Forms.DateTimePicker BirthDatePicker;
+
+		private System.Windows.Forms.CheckBox MentorCheckBox;
+		private System.Windows.Forms.Label MentorCodeLabel;
+		private System.Windows.Forms.TextBox MentorCodeTextBox;
+
+		private System.Windows.Forms.Button MainButton;
+		private System.Windows.Forms.Button SwitchModeButton;
+
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
-			{
+			if (disposing && components != null)
 				components.Dispose();
-			}
+
 			base.Dispose(disposing);
 		}
 
-		#region Windows Form Designer generated code
-
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
 		private void InitializeComponent()
 		{
-			this.EmailLabel = new System.Windows.Forms.Label();
-			this.EmailTextBox = new System.Windows.Forms.TextBox();
-			this.PasswordLabel = new System.Windows.Forms.Label();
-			this.PasswordTextBox = new System.Windows.Forms.TextBox();
-			this.LoginButton = new System.Windows.Forms.Button();
-			this.RegisterButton = new System.Windows.Forms.Button();
-			this.RoleLabel = new System.Windows.Forms.Label();
-			this.RoleComboBox = new System.Windows.Forms.ComboBox();
-			this.SuspendLayout();
-			// 
-			// EmailLabel
-			// 
-			this.EmailLabel.AutoSize = true;
-			this.EmailLabel.Location = new System.Drawing.Point(25, 20);
-			this.EmailLabel.Name = "EmailLabel";
-			this.EmailLabel.Size = new System.Drawing.Size(39, 17);
-			this.EmailLabel.TabIndex = 0;
-			this.EmailLabel.Text = "Email";
-			// 
-			// EmailTextBox
-			// 
-			this.EmailTextBox.Location = new System.Drawing.Point(25, 40);
-			this.EmailTextBox.Name = "EmailTextBox";
-			this.EmailTextBox.Size = new System.Drawing.Size(250, 22);
-			this.EmailTextBox.TabIndex = 1;
-			// 
-			// PasswordLabel
-			// 
-			this.PasswordLabel.AutoSize = true;
-			this.PasswordLabel.Location = new System.Drawing.Point(25, 75);
-			this.PasswordLabel.Name = "PasswordLabel";
-			this.PasswordLabel.Size = new System.Drawing.Size(69, 17);
-			this.PasswordLabel.TabIndex = 2;
-			this.PasswordLabel.Text = "Password";
-			// 
-			// PasswordTextBox
-			// 
-			this.PasswordTextBox.Location = new System.Drawing.Point(25, 95);
-			this.PasswordTextBox.Name = "PasswordTextBox";
-			this.PasswordTextBox.PasswordChar = '*';
-			this.PasswordTextBox.Size = new System.Drawing.Size(250, 22);
-			this.PasswordTextBox.TabIndex = 3;
-			// 
-			// RoleLabel
-			// 
-			this.RoleLabel.AutoSize = true;
-			this.RoleLabel.Location = new System.Drawing.Point(25, 130);
-			this.RoleLabel.Name = "RoleLabel";
-			this.RoleLabel.Size = new System.Drawing.Size(37, 17);
-			this.RoleLabel.TabIndex = 4;
-			this.RoleLabel.Text = "Role";
-			// 
-			// RoleComboBox
-			// 
-			this.RoleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.RoleComboBox.FormattingEnabled = true;
-			this.RoleComboBox.Items.AddRange(new object[] {
-			"Student",
-			"Mentor"});
-			this.RoleComboBox.Location = new System.Drawing.Point(25, 150);
-			this.RoleComboBox.Name = "RoleComboBox";
-			this.RoleComboBox.Size = new System.Drawing.Size(250, 24);
-			this.RoleComboBox.TabIndex = 5;
-			// 
-			// LoginButton
-			// 
-			this.LoginButton.Location = new System.Drawing.Point(25, 190);
-			this.LoginButton.Name = "LoginButton";
-			this.LoginButton.Size = new System.Drawing.Size(120, 30);
-			this.LoginButton.TabIndex = 6;
-			this.LoginButton.Text = "Login";
-			this.LoginButton.UseVisualStyleBackColor = true;
-			// 
-			// RegisterButton
-			// 
-			this.RegisterButton.Location = new System.Drawing.Point(155, 190);
-			this.RegisterButton.Name = "RegisterButton";
-			this.RegisterButton.Size = new System.Drawing.Size(120, 30);
-			this.RegisterButton.TabIndex = 7;
-			this.RegisterButton.Text = "Register";
-			this.RegisterButton.UseVisualStyleBackColor = true;
-			// 
-			// LoginForm
-			// 
-			this.ClientSize = new System.Drawing.Size(300, 240);
-			this.Controls.Add(this.RegisterButton);
-			this.Controls.Add(this.LoginButton);
-			this.Controls.Add(this.RoleComboBox);
-			this.Controls.Add(this.RoleLabel);
-			this.Controls.Add(this.PasswordTextBox);
-			this.Controls.Add(this.PasswordLabel);
-			this.Controls.Add(this.EmailTextBox);
-			this.Controls.Add(this.EmailLabel);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.MaximizeBox = false;
-			this.Name = "LoginForm";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Login / Register";
-			this.ResumeLayout(false);
-			this.PerformLayout();
-		}
+			LoginLabel = new Label();
+			LoginTextBox = new TextBox();
+			EmailLabel = new Label();
+			EmailTextBox = new TextBox();
+			PasswordLabel = new Label();
+			PasswordTextBox = new TextBox();
+			ConfirmPasswordLabel = new Label();
+			ConfirmPasswordTextBox = new TextBox();
+			BirthDateLabel = new Label();
+			BirthDatePicker = new DateTimePicker();
+			MentorCheckBox = new CheckBox();
+			MentorCodeLabel = new Label();
+			MentorCodeTextBox = new TextBox();
+			MainButton = new Button();
+			SwitchModeButton = new Button();
 
-		#endregion
+			SuspendLayout();
+
+			// ===== LOGIN =====
+			LoginLabel.Text = "Логін";
+			LoginLabel.Location = new Point(30, 20);
+			LoginLabel.Size = new Size(270, 20);
+
+			LoginTextBox.Location = new Point(30, 40);
+			LoginTextBox.Size = new Size(270, 23);
+			LoginTextBox.TabIndex = 0;
+
+			// ===== EMAIL =====
+			EmailLabel.Text = "Email";
+			EmailLabel.Location = new Point(30, 75);
+			EmailLabel.Size = new Size(270, 20);
+
+			EmailTextBox.Location = new Point(30, 95);
+			EmailTextBox.Size = new Size(270, 23);
+			EmailTextBox.TabIndex = 1;
+
+			// ===== PASSWORD =====
+			PasswordLabel.Text = "Пароль";
+			PasswordLabel.Location = new Point(30, 130);
+			PasswordLabel.Size = new Size(270, 20);
+
+			PasswordTextBox.Location = new Point(30, 150);
+			PasswordTextBox.Size = new Size(270, 23);
+			PasswordTextBox.PasswordChar = '*';
+			PasswordTextBox.TabIndex = 2;
+
+			// ===== CONFIRM PASSWORD =====
+			ConfirmPasswordLabel.Text = "Повторіть пароль";
+			ConfirmPasswordLabel.Location = new Point(30, 185);
+			ConfirmPasswordLabel.Size = new Size(270, 20);
+
+			ConfirmPasswordTextBox.Location = new Point(30, 205);
+			ConfirmPasswordTextBox.Size = new Size(270, 23);
+			ConfirmPasswordTextBox.PasswordChar = '*';
+			ConfirmPasswordTextBox.TabIndex = 3;
+
+			// ===== BIRTH DATE =====
+			BirthDateLabel.Text = "Дата народження";
+			BirthDateLabel.Location = new Point(30, 240);
+			BirthDateLabel.Size = new Size(270, 20);
+
+			BirthDatePicker.Location = new Point(30, 260);
+			BirthDatePicker.Size = new Size(270, 23);
+			BirthDatePicker.TabIndex = 4;
+
+			// ===== MENTOR =====
+			MentorCheckBox.Text = "Я Mentor";
+			MentorCheckBox.Location = new Point(30, 295);
+			MentorCheckBox.Size = new Size(120, 24);
+			MentorCheckBox.TabIndex = 5;
+
+			MentorCodeLabel.Text = "Код ментора";
+			MentorCodeLabel.Location = new Point(30, 320);
+			MentorCodeLabel.Size = new Size(270, 20);
+
+			MentorCodeTextBox.Location = new Point(30, 340);
+			MentorCodeTextBox.Size = new Size(270, 23);
+			MentorCodeTextBox.TabIndex = 6;
+
+			// ===== BUTTONS =====
+			MainButton.Location = new Point(30, 380);
+			MainButton.Size = new Size(270, 40);
+			MainButton.TabIndex = 7;
+			MainButton.Text = "Увійти";
+
+			SwitchModeButton.Location = new Point(30, 430);
+			SwitchModeButton.Size = new Size(270, 30);
+			SwitchModeButton.TabIndex = 8;
+			SwitchModeButton.Text = "Зареєструватися";
+
+			// ===== FORM =====
+			ClientSize = new Size(340, 480);
+			Controls.AddRange(new Control[]
+			{
+				LoginLabel, LoginTextBox,
+				EmailLabel, EmailTextBox,
+				PasswordLabel, PasswordTextBox,
+				ConfirmPasswordLabel, ConfirmPasswordTextBox,
+				BirthDateLabel, BirthDatePicker,
+				MentorCheckBox,
+				MentorCodeLabel, MentorCodeTextBox,
+				MainButton, SwitchModeButton
+			});
+
+			FormBorderStyle = FormBorderStyle.FixedDialog;
+			StartPosition = FormStartPosition.CenterScreen;
+			Text = "Вхід";
+
+			ResumeLayout(false);
+			PerformLayout();
+		}
 	}
 }

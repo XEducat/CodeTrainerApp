@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1.Model
+﻿namespace CodeTrainerApp.Model
 {
 	public class CodeRunResult
 	{

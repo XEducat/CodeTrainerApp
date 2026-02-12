@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WinFormsApp1.Model
+namespace CodeTrainerApp.Model
 {
 	public class ProgrammingTask
 	{

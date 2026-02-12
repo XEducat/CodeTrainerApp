@@ -3,7 +3,6 @@ using CodeTrainerAPI.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace CodeTrainerAPI.Controllers
 {
 	[ApiController]
@@ -12,6 +11,8 @@ namespace CodeTrainerAPI.Controllers
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
+
+		private const string MentorSecretCode = "MENTOR-2024";
 
 		public AuthController(
 			UserManager<ApplicationUser> userManager,
@@ -26,31 +27,76 @@ namespace CodeTrainerAPI.Controllers
 		public async Task<IActionResult> Register(
 			string email,
 			string password,
-			UserRole role)
+			string name,
+			DateTime birthDate,
+			string? mentorCode)
 		{
+			if (string.IsNullOrWhiteSpace(email) ||
+				string.IsNullOrWhiteSpace(password) ||
+				string.IsNullOrWhiteSpace(name))
+			{
+				return BadRequest("Некоректні реєстраційні дані");
+			}
+
 			var user = new ApplicationUser
 			{
 				UserName = email,
-				Email = email
+				Email = email,
+				Login = name,
+				BirthDate = birthDate
 			};
 
-			var result = await _userManager.CreateAsync(user, password);
-			if (!result.Succeeded)
-				return BadRequest(result.Errors);
+			var createResult = await _userManager.CreateAsync(user, password);
+			if (!createResult.Succeeded)
+				return BadRequest(createResult.Errors);
 
-			await _userManager.AddToRoleAsync(user, role.ToString());
+			// ===== ВИЗНАЧЕННЯ РОЛІ =====
+			string role = "Student";
 
-			return Ok("User registered");
+			if (!string.IsNullOrWhiteSpace(mentorCode))
+			{
+				if (mentorCode != MentorSecretCode)
+				{
+					await _userManager.DeleteAsync(user);
+					return BadRequest("Невірний код ментора");
+				}
+
+				role = "Mentor";
+			}
+
+			await _userManager.AddToRoleAsync(user, role);
+
+			return Ok(new
+			{
+				message = "User registered",
+				role = role
+			});
 		}
 
 		// ================= LOGIN =================
 		[HttpPost("login")]
-		public async Task<IActionResult> Login(string email, string password)
+		public async Task<IActionResult> Login(string loginOrEmail, string password)
 		{
-			var user = await _userManager.FindByEmailAsync(email);
-			if (user == null)
-				return Unauthorized();
+			if (string.IsNullOrWhiteSpace(loginOrEmail) ||
+				string.IsNullOrWhiteSpace(password))
+			{
+				return BadRequest("Некоректні дані для входу");
+			}
 
+			// Пошук по email
+			var user = await _userManager.FindByEmailAsync(loginOrEmail);
+
+			// Якщо не знайдено — шукаємо по Login
+			if (user == null)
+			{
+				user = _userManager.Users
+					.FirstOrDefault(u => u.Login == loginOrEmail);
+			}
+
+			if (user == null)
+				return Unauthorized("Користувача не знайдено");
+
+			// Перевірка пароля
 			var result = await _signInManager.PasswordSignInAsync(
 				user,
 				password,
@@ -58,9 +104,18 @@ namespace CodeTrainerAPI.Controllers
 				lockoutOnFailure: false);
 
 			if (!result.Succeeded)
-				return Unauthorized();
+				return Unauthorized("Невірний пароль");
 
-			return Ok("Logged in");
+			var roles = await _userManager.GetRolesAsync(user);
+
+			return Ok(new LoginResponse
+			{
+				Id = user.Id,
+				Email = user.Email,
+				Login = user.Login,
+				BirthDate = user.BirthDate,
+				Role = roles.FirstOrDefault() ?? "Student"
+			});
 		}
 
 		// ================= LOGOUT =================
@@ -71,6 +126,7 @@ namespace CodeTrainerAPI.Controllers
 			return Ok("Logged out");
 		}
 
+		// ================= DELETE =================
 		[HttpDelete("delete")]
 		public async Task<IActionResult> DeleteUser(string email)
 		{
@@ -84,6 +140,5 @@ namespace CodeTrainerAPI.Controllers
 
 			return Ok("User deleted");
 		}
-
 	}
 }

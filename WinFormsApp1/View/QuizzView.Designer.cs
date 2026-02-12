@@ -1,6 +1,6 @@
 ﻿namespace CodeTrainerApp
 {
-	partial class MainView
+	partial class QuizView
 	{
 		private System.ComponentModel.IContainer components = null;
 
@@ -199,7 +199,6 @@
 			Name = "MainView";
 			Text = "Code Trainer App (C#)";
 			WindowState = FormWindowState.Maximized;
-			Load += MainView_Load;
 			MainPanel.ResumeLayout(false);
 			MainPanel.PerformLayout();
 			ButtonsPanel.ResumeLayout(false);
