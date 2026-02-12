@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using CodeTrainerApp.Model;
+using CodeTrainerApp.View;
 
 namespace CodeTrainerApp.View
 {
@@ -43,73 +44,13 @@ namespace CodeTrainerApp.View
 
 			foreach (var quiz in _quizzes)
 			{
-				QuizListBox.Items.Add(quiz);
+				QuizListBox.Items.Add(quiz.Title);
 			}
 		}
 
-		private void QuizListBox_DrawItem(object sender, DrawItemEventArgs e)
+		private void QuizListBox_DoubleClick(object sender, EventArgs e)
 		{
-			if (e.Index < 0) return;
-
-			var quiz = (Quiz)QuizListBox.Items[e.Index];
-
-			e.DrawBackground();
-
-			bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-
-			Color bgColor = isSelected
-				? Color.FromArgb(233, 236, 239)
-				: Color.White;
-
-			using (var bgBrush = new SolidBrush(bgColor))
-			{
-				e.Graphics.FillRectangle(bgBrush, e.Bounds);
-			}
-
-			// Назва
-			using (var titleFont = new Font("Segoe UI", 12, FontStyle.Bold))
-			using (var titleBrush = new SolidBrush(Color.FromArgb(33, 37, 41)))
-			{
-				e.Graphics.DrawString(
-					quiz.Title,
-					titleFont,
-					titleBrush,
-					e.Bounds.Left + 15,
-					e.Bounds.Top + 10);
-			}
-
-			// Опис
-			using (var descFont = new Font("Segoe UI", 9))
-			using (var descBrush = new SolidBrush(Color.FromArgb(108, 117, 125)))
-			{
-				e.Graphics.DrawString(
-					quiz.Description,
-					descFont,
-					descBrush,
-					e.Bounds.Left + 15,
-					e.Bounds.Top + 40);
-			}
-
-			// Кількість запитань справа
-			string questionsText = $"Питань: {quiz.Tasks.Count}";
-
-			using (var countFont = new Font("Segoe UI", 11, FontStyle.Bold))
-			using (var countBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
-			{
-				SizeF textSize = e.Graphics.MeasureString(questionsText, countFont);
-
-				float x = e.Bounds.Right - textSize.Width - 20;
-				float y = e.Bounds.Top + (e.Bounds.Height - textSize.Height) / 2;
-
-				e.Graphics.DrawString(
-					questionsText,
-					countFont,
-					countBrush,
-					x,
-					y);
-			}
-
-			e.DrawFocusRectangle();
+			StartQuiz();
 		}
 
 		private void StartQuizButton_Click(object sender, EventArgs e)
@@ -117,9 +58,26 @@ namespace CodeTrainerApp.View
 			StartQuiz();
 		}
 
-		private void QuizListBox_DoubleClick(object sender, EventArgs e)
+		private void StartQuiz()
 		{
-			StartQuiz();
+			if (QuizListBox.SelectedIndex == -1)
+			{
+				MessageBox.Show("Оберіть тест зі списку.",
+					"Помилка",
+					MessageBoxButtons.OK,
+					MessageBoxIcon.Warning);
+				return;
+			}
+
+			var selectedQuiz = _quizzes[QuizListBox.SelectedIndex];
+
+			MessageBox.Show($"Запуск тесту: {selectedQuiz.Title}",
+				"Інформація",
+				MessageBoxButtons.OK,
+				MessageBoxIcon.Information);
+
+			var mainView = new QuizView(selectedQuiz);
+			mainView.ShowDialog();
 		}
 
 		private void LoginButton_Click(object sender, EventArgs e)
@@ -134,7 +92,8 @@ namespace CodeTrainerApp.View
 						_userEmail = loginForm.LoggedEmail;
 						_userRole = loginForm.UserRole;
 
-						LoginButton.Text = "🚪 Вийти";
+						UserInfoLabel.Text = $"{_userEmail} ({_userRole})";
+						LoginButton.Text = "Вийти";
 					}
 				}
 			}
@@ -143,28 +102,15 @@ namespace CodeTrainerApp.View
 				_isLoggedIn = false;
 				_userEmail = "";
 				_userRole = "";
-				LoginButton.Text = "👤 Увійти";
+
+				UserInfoLabel.Text = "Гість";
+				LoginButton.Text = "Увійти";
 			}
 		}
 
-		private void StartQuiz()
+		private void BackButton_Click(object sender, EventArgs e)
 		{
-			if (QuizListBox.SelectedIndex == -1)
-			{
-				MessageBox.Show(
-					"Оберіть тест зі списку.",
-					"Помилка",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Warning);
-
-				return;
-			}
-
-			var selectedQuiz = (Quiz)QuizListBox.SelectedItem;
-
-			var quizView = new QuizView(selectedQuiz);
-			quizView.ShowDialog();
+			this.Close();
 		}
-
 	}
 }
