@@ -1,70 +1,123 @@
-﻿namespace CodeTrainerApp.View
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+using CodeTrainerApp.Model;
+
+namespace CodeTrainerApp.View
 {
-	partial class CabinetView
+	public partial class CabinetView : Form
 	{
-		private System.ComponentModel.IContainer components = null;
-
-		private DataGridView dgvHistory;
-		private Button btnProfile;
-		private Button btnLogout;
+		private Panel mainPanel;
 		private Label lblTitle;
-		private TableLayoutPanel tableLayout;
-
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-				components.Dispose();
-
-			base.Dispose(disposing);
-		}
+		private Label lblEmail;
+		private Label lblRole;
+		private DataGridView dgvHistory;
+		private Button btnLogout;
 
 		private void InitializeComponent()
 		{
-			this.tableLayout = new TableLayoutPanel();
-			this.lblTitle = new Label();
-			this.dgvHistory = new DataGridView();
-			this.btnProfile = new Button();
-			this.btnLogout = new Button();
+			mainPanel = new Panel();
+			lblTitle = new Label();
+			lblEmail = new Label();
+			lblRole = new Label();
+			dgvHistory = new DataGridView();
+			btnLogout = new Button();
+			mainPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)dgvHistory).BeginInit();
+			SuspendLayout();
+			// 
+			// mainPanel
+			// 
+			mainPanel.BackColor = Color.White;
+			mainPanel.Controls.Add(lblTitle);
+			mainPanel.Controls.Add(lblEmail);
+			mainPanel.Controls.Add(lblRole);
+			mainPanel.Controls.Add(dgvHistory);
+			mainPanel.Controls.Add(btnLogout);
+			mainPanel.Dock = DockStyle.Fill;
+			mainPanel.Location = new Point(0, 0);
+			mainPanel.Name = "mainPanel";
+			mainPanel.Padding = new Padding(20);
+			mainPanel.Size = new Size(284, 261);
+			mainPanel.TabIndex = 0;
+			// 
+			// lblTitle
+			// 
+			lblTitle.AutoSize = true;
+			lblTitle.Dock = DockStyle.Top;
+			lblTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+			lblTitle.ForeColor = Color.FromArgb(33, 37, 41);
+			lblTitle.Location = new Point(20, 20);
+			lblTitle.Name = "lblTitle";
+			lblTitle.Size = new Size(259, 32);
+			lblTitle.TabIndex = 0;
+			lblTitle.Text = "Кабінет користувача";
+			// 
+			// lblEmail
+			// 
+			lblEmail.AutoSize = true;
+			lblEmail.Font = new Font("Segoe UI", 12F);
+			lblEmail.ForeColor = Color.FromArgb(33, 37, 41);
+			lblEmail.Location = new Point(20, 50);
+			lblEmail.Name = "lblEmail";
+			lblEmail.Size = new Size(0, 21);
+			lblEmail.TabIndex = 1;
+			// 
+			// lblRole
+			// 
+			lblRole.AutoSize = true;
+			lblRole.Font = new Font("Segoe UI", 12F);
+			lblRole.ForeColor = Color.FromArgb(33, 37, 41);
+			lblRole.Location = new Point(20, 80);
+			lblRole.Name = "lblRole";
+			lblRole.Size = new Size(0, 21);
+			lblRole.TabIndex = 2;
+			// 
+			// dgvHistory
+			// 
+			dgvHistory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+			dgvHistory.BackgroundColor = Color.FromArgb(248, 249, 250);
+			dgvHistory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			dgvHistory.Location = new Point(20, 120);
+			dgvHistory.Name = "dgvHistory";
+			dgvHistory.Size = new Size(1084, 561);
+			dgvHistory.TabIndex = 3;
+			// 
+			// btnLogout
+			// 
+			btnLogout.BackColor = Color.FromArgb(220, 53, 69);
+			btnLogout.FlatAppearance.BorderSize = 0;
+			btnLogout.FlatStyle = FlatStyle.Flat;
+			btnLogout.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+			btnLogout.ForeColor = Color.White;
+			btnLogout.Location = new Point(20, 550);
+			btnLogout.Name = "btnLogout";
+			btnLogout.Size = new Size(120, 40);
+			btnLogout.TabIndex = 4;
+			btnLogout.Text = "Вийти";
+			btnLogout.UseVisualStyleBackColor = false;
+			btnLogout.Click += BtnLogout_Click;
+			// 
+			// CabinetView
+			// 
+			BackColor = Color.FromArgb(245, 246, 250);
+			ClientSize = new Size(284, 261);
+			Controls.Add(mainPanel);
+			Name = "CabinetView";
+			StartPosition = FormStartPosition.CenterScreen;
+			Text = "Кабінет користувача";
+			WindowState = FormWindowState.Maximized;
+			mainPanel.ResumeLayout(false);
+			mainPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)dgvHistory).EndInit();
+			ResumeLayout(false);
+		}
 
-			this.SuspendLayout();
-
-			this.Text = "Cabinet";
-			this.BackColor = System.Drawing.Color.White;
-
-			// Layout
-			this.tableLayout.Dock = DockStyle.Fill;
-			this.tableLayout.RowCount = 4;
-			this.tableLayout.ColumnCount = 2;
-			this.tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-			this.tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-			// Title
-			this.lblTitle.Text = "User Cabinet";
-			this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Bold);
-			this.lblTitle.Dock = DockStyle.Fill;
-			this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.tableLayout.Controls.Add(this.lblTitle, 0, 0);
-			this.tableLayout.SetColumnSpan(this.lblTitle, 2);
-
-			// DataGrid
-			this.dgvHistory.Dock = DockStyle.Fill;
-			this.dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-			this.dgvHistory.ReadOnly = true;
-			this.dgvHistory.AllowUserToAddRows = false;
-			this.tableLayout.Controls.Add(this.dgvHistory, 0, 1);
-			this.tableLayout.SetColumnSpan(this.dgvHistory, 2);
-
-			this.btnLogout.Text = "Logout";
-			this.btnLogout.Dock = DockStyle.Fill;
-			this.btnLogout.Height = 40;
-			this.btnLogout.Click += new EventHandler(this.btnLogout_Click);
-
-			this.tableLayout.Controls.Add(this.btnProfile, 0, 2);
-			this.tableLayout.Controls.Add(this.btnLogout, 1, 2);
-
-			this.Controls.Add(this.tableLayout);
-
-			this.ResumeLayout(false);
+		private void BtnLogout_Click(object sender, EventArgs e)
+		{
+			// Можна тут робити UserService.Instance.Logout();
+			this.Close();
 		}
 	}
 }

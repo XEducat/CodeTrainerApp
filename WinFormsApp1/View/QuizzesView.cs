@@ -85,7 +85,20 @@ namespace CodeTrainerApp.View
 
 		private void UpdateAuthUI()
 		{
-			ProfileButton.Text = UserService.Instance.IsLoggedIn ? "👤 Профіль" : "🔐 Увійти";
+			bool loggedIn = UserService.Instance.IsLoggedIn;
+			ProfileButton.Text = loggedIn ? "👤 Профіль" : "🔐 Увійти";
+			CabinetButton.Visible = loggedIn; // ← додаємо показ кнопки
+		}
+
+		// ================= CABINET BUTTON =================
+		private void CabinetButton_Click(object sender, EventArgs e)
+		{
+			if (UserService.Instance.CurrentUser != null)
+			{
+				using var cabinet = new CabinetView(UserService.Instance.CurrentUser);
+				cabinet.ShowDialog();
+				UpdateAuthUI(); // оновлюємо кнопки після можливого логауту
+			}
 		}
 
 		// ================= QUIZ START =================

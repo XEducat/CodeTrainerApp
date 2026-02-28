@@ -12,18 +12,23 @@ namespace CodeTrainerApp.View
 		private readonly string _role;
 		//private readonly UserHistoryService _historyService;
 
-		public CabinetView(string email, string role)
+		public CabinetView(User user)
 		{
 			InitializeComponent();
 
-			_email = email;
-			_role = role;
+			_email = user.Email;
+			_role = user.Role;
 
-			//_historyService = new UserHistoryService();
+			LoadUserInfo();
+		}
 
-			this.WindowState = FormWindowState.Maximized;
+		private void LoadUserInfo()
+		{
+			lblEmail.Text = $"Email: {_email}";
+			lblRole.Text = $"Роль: {_role}";
 
-			//LoadHistory();
+			// Тут пізніше можна підвантажити історію користувача
+			// dgvHistory.DataSource = await _historyService.GetUserHistoryAsync(user.Id);
 		}
 
 		//private async void LoadHistory()
