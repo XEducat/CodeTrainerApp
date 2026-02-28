@@ -10,7 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 		builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// ================= Identity (COOKIE AUTH) =================
+// ================= Identity =================
 builder.Services
 	.AddIdentity<ApplicationUser, IdentityRole>(options =>
 	{
@@ -23,7 +23,33 @@ builder.Services
 	.AddEntityFrameworkStores<AppDbContext>()
 	.AddDefaultTokenProviders();
 
-// ================= MVC =================
+// ================= COOKIE CONFIG =================
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.Cookie.HttpOnly = true;
+	options.Cookie.Name = "CodeTrainerAuth";
+
+	options.ExpireTimeSpan = TimeSpan.FromDays(30);
+	options.SlidingExpiration = true;
+
+	options.LoginPath = "/api/user/login";
+	options.AccessDeniedPath = "/api/user/login";
+
+	// ÂÀÆËÈÂÎ äëÿ API
+	options.Events.OnRedirectToLogin = context =>
+	{
+		context.Response.StatusCode = 401;
+		return Task.CompletedTask;
+	};
+
+	options.Events.OnRedirectToAccessDenied = context =>
+	{
+		context.Response.StatusCode = 403;
+		return Task.CompletedTask;
+	};
+});
+
+// ================= Controllers =================
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
@@ -48,19 +74,20 @@ using (var scope = app.Services.CreateScope())
 	}
 }
 
-
-// ================= MIDDLEWARE =================
+// ================= Middleware =================
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ðåä³ðåêò ç / íà swagger
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.MapControllers();
+
 app.Run();

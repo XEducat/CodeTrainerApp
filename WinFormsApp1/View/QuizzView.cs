@@ -8,13 +8,15 @@ namespace CodeTrainerApp
 	public partial class QuizView : Form
 	{
 		private int currentTaskIndex = 0;
-		private Quiz quiz;
+		private readonly Quiz _quiz;
+		private User _currentUser;
 
-		public QuizView(Quiz selectedQuiz)
+		public QuizView(Quiz selectedQuiz, User user = null)
 		{
 			InitializeComponent();
 
-			quiz = selectedQuiz;
+			_quiz = selectedQuiz;
+			_currentUser = user;
 
 			CheckButton.Click += CheckButton_Click;
 			NextButton.Click += NextButton_Click;
@@ -24,13 +26,33 @@ namespace CodeTrainerApp
 			CheckButton.Enabled = false;
 			NextButton.Enabled = false;
 
-			currentTaskIndex = 0;
+			InitializeAccess();
+
 			LoadCurrentTask();
 		}
 
+		// ================= ACCESS CONTROL =================
+
+		private void InitializeAccess()
+		{
+			if (_currentUser == null)
+			{
+				LoginButton.Visible = true;
+				CheckButton.Enabled = false;
+				NextButton.Enabled = false;
+			}
+			else
+			{
+				LoginButton.Visible = false;
+				CheckButton.Enabled = true;
+			}
+		}
+
+		// ================= LOAD TASK =================
+
 		private void LoadCurrentTask()
 		{
-			if (quiz == null || quiz.Tasks == null || quiz.Tasks.Count == 0)
+			if (_quiz?.Tasks == null || _quiz.Tasks.Count == 0)
 			{
 				CurrentTaskLabel.Text = "У квізі відсутні завдання.";
 				TaskDescriptionLabel.Text = "";
@@ -40,26 +62,7 @@ namespace CodeTrainerApp
 				return;
 			}
 
-			if (currentTaskIndex < quiz.Tasks.Count)
-			{
-				var task = quiz.Tasks[currentTaskIndex];
-
-				CurrentTaskLabel.Text =
-					$"Завдання {currentTaskIndex + 1} з {quiz.Tasks.Count}: {task.Title}";
-
-				TaskDescriptionLabel.Text = task.Description;
-				CodeTextBox.Text = task.CodeTemplate.Replace("\n", "\r\n");
-
-				ResultTextBox.Clear();
-				CodeTextBox.Enabled = true;
-				CheckButton.Enabled = true;
-				NextButton.Enabled = false;
-				ResultTextBox.BackColor = SystemColors.Window;
-
-				NextButton.Text =
-					currentTaskIndex == quiz.Tasks.Count - 1 ? "Завершити" : "Далі >>";
-			}
-			else
+			if (currentTaskIndex >= _quiz.Tasks.Count)
 			{
 				CurrentTaskLabel.Text = "Вітаємо! Усі завдання виконано!";
 				TaskDescriptionLabel.Text = "Ви успішно пройшли цей квіз.";
@@ -67,11 +70,39 @@ namespace CodeTrainerApp
 				CodeTextBox.Enabled = false;
 				CheckButton.Enabled = false;
 				NextButton.Enabled = false;
+				return;
 			}
+
+			var task = _quiz.Tasks[currentTaskIndex];
+
+			CurrentTaskLabel.Text =
+				$"Завдання {currentTaskIndex + 1} з {_quiz.Tasks.Count}: {task.Title}";
+
+			TaskDescriptionLabel.Text = task.Description;
+			CodeTextBox.Text = task.CodeTemplate.Replace("\n", "\r\n");
+
+			ResultTextBox.Clear();
+			ResultTextBox.BackColor = SystemColors.Window;
+
+			CodeTextBox.Enabled = true;
+			CheckButton.Enabled = _currentUser != null;
+			NextButton.Enabled = false;
+			SkipButton.Enabled = true;
+
+			NextButton.Text =
+				currentTaskIndex == _quiz.Tasks.Count - 1 ? "Завершити" : "Далі >>";
 		}
+
+		// ================= CHECK =================
 
 		private async void CheckButton_Click(object sender, EventArgs e)
 		{
+			if (_currentUser == null)
+			{
+				MessageBox.Show("Спочатку необхідно увійти.");
+				return;
+			}
+
 			if (string.IsNullOrWhiteSpace(CodeTextBox.Text))
 			{
 				ResultTextBox.Text = "Поле для коду не може бути порожнім!";
@@ -79,36 +110,35 @@ namespace CodeTrainerApp
 				return;
 			}
 
+			var task = _quiz.Tasks[currentTaskIndex];
 			string userCode = CodeTextBox.Text;
-			var currentTask = quiz.Tasks[currentTaskIndex];
 
-			ResultTextBox.Clear();
-
-			if (currentTask.CodeTemplate == userCode)
+			if (task.CodeTemplate == userCode)
 			{
-				ResultTextBox.Text =
-					"Помилка: ви не змінили шаблонний код.";
+				ResultTextBox.Text = "Ви не змінили шаблонний код.";
 				ResultTextBox.BackColor = Color.Yellow;
 				return;
 			}
 
-			var result = await CodeCompiler.RunCode(currentTask, userCode);
+			ResultTextBox.Clear();
+
+			var result = await CodeCompiler.RunCode(task, userCode);
 
 			if (!string.IsNullOrEmpty(result.errorMessage))
 			{
 				ResultTextBox.Text = result.errorMessage;
 				ResultTextBox.BackColor = Color.LightCoral;
+				return;
 			}
-			else if (result.success)
+
+			if (result.success)
 			{
 				ResultTextBox.Text = result.output;
 				ResultTextBox.BackColor = Color.LightGreen;
 
 				NextButton.Enabled = true;
-				NextButton.BackColor = Color.FromArgb(13, 110, 253);
-
-				SkipButton.Enabled = false;
 				CheckButton.Enabled = false;
+				SkipButton.Enabled = false;
 				CodeTextBox.Enabled = false;
 			}
 			else
@@ -117,6 +147,8 @@ namespace CodeTrainerApp
 				ResultTextBox.BackColor = Color.Yellow;
 			}
 		}
+
+		// ================= SKIP =================
 
 		private void SkipButton_Click(object sender, EventArgs e)
 		{
@@ -125,17 +157,19 @@ namespace CodeTrainerApp
 			ResultTextBox.BackColor = Color.LightYellow;
 
 			NextButton.Enabled = true;
-			NextButton.BackColor = Color.FromArgb(13, 110, 253);
-
 			CheckButton.Enabled = false;
 			CodeTextBox.Enabled = false;
 		}
+
+		// ================= NEXT =================
 
 		private void NextButton_Click(object sender, EventArgs e)
 		{
 			currentTaskIndex++;
 			LoadCurrentTask();
 		}
+
+		// ================= LOGIN =================
 
 		private void LoginButton_Click(object sender, EventArgs e)
 		{
@@ -147,30 +181,27 @@ namespace CodeTrainerApp
 				if (!loginView.IsLoggedIn)
 					return;
 
+				_currentUser = loginView.LoggedUser;
+
 				MessageBox.Show(
-					$"Ви увійшли як {loginView.LoggedEmail}\nРоль: {loginView.UserRole}",
+					$"Вхід виконано як {_currentUser.Email}\nРоль: {_currentUser.Role}",
 					"Успіх",
 					MessageBoxButtons.OK,
 					MessageBoxIcon.Information
 				);
 
-				CheckButton.Enabled = true;
-				NextButton.Enabled = true;
-
-				LoginButton.Visible = false;
+				InitializeAccess();
 			}
 		}
 
+		// ================= CLOSE CONFIRM =================
+
 		private void QuizView_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			// Виклик кастомної форми підтвердження
 			using (var confirmForm = new ConfirmCloseView())
 			{
-				var result = confirmForm.ShowDialog();
-				if (result != DialogResult.Yes)
-				{
-					e.Cancel = true; // Скасовуємо закриття
-				}
+				if (confirmForm.ShowDialog() != DialogResult.Yes)
+					e.Cancel = true;
 			}
 		}
 	}

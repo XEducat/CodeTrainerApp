@@ -2,25 +2,31 @@
 using System.Drawing;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.View
 {
 	public partial class LoginView : Form
 	{
 		private readonly HttpClient _httpClient;
+
 		private bool _isRegisterMode = false;
+		private bool _passwordVisible = false;
+		private bool _confirmPasswordVisible = false;
 
 		public bool IsLoggedIn { get; private set; }
-		public string LoggedEmail { get; private set; }
-		public string UserRole { get; private set; }
+		public User LoggedUser { get; private set; }
 
 		public LoginView()
 		{
 			InitializeComponent();
 			InitializeDesign();
+
+			TogglePasswordButton.Click += TogglePasswordButton_Click;
+			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
 
 			var handler = new HttpClientHandler
 			{
@@ -40,6 +46,8 @@ namespace CodeTrainerApp.View
 			SetMode(false);
 		}
 
+		// ================= UI DESIGN =================
+
 		private void InitializeDesign()
 		{
 			BackColor = Color.FromArgb(245, 247, 250);
@@ -55,6 +63,24 @@ namespace CodeTrainerApp.View
 			SwitchModeButton.BackColor = Color.Transparent;
 		}
 
+		// ================= PASSWORD TOGGLE =================
+
+		private void TogglePasswordButton_Click(object sender, EventArgs e)
+		{
+			_passwordVisible = !_passwordVisible;
+			PasswordTextBox.UseSystemPasswordChar = !_passwordVisible;
+			TogglePasswordButton.Text = _passwordVisible ? "🙈" : "👁";
+		}
+
+		private void ToggleConfirmPasswordButton_Click(object sender, EventArgs e)
+		{
+			_confirmPasswordVisible = !_confirmPasswordVisible;
+			ConfirmPasswordTextBox.UseSystemPasswordChar = !_confirmPasswordVisible;
+			ToggleConfirmPasswordButton.Text = _confirmPasswordVisible ? "🙈" : "👁";
+		}
+
+		// ================= MODE SWITCH =================
+
 		private void SetMode(bool register)
 		{
 			_isRegisterMode = register;
@@ -64,6 +90,7 @@ namespace CodeTrainerApp.View
 
 			ConfirmPasswordLabel.Visible = register;
 			ConfirmPasswordTextBox.Visible = register;
+			ToggleConfirmPasswordButton.Visible = register;
 
 			BirthDateLabel.Visible = register;
 			BirthDatePicker.Visible = register;
@@ -72,12 +99,15 @@ namespace CodeTrainerApp.View
 			MentorCodeLabel.Visible = register && MentorCheckBox.Checked;
 			MentorCodeTextBox.Visible = register && MentorCheckBox.Checked;
 
+			TogglePasswordButton.Visible = true;
+			PasswordTextBox.Visible = true;
+			PasswordLabel.Visible = true;
+
 			if (register)
 			{
 				Text = "Реєстрація";
 				MainButton.Text = "Зареєструватися";
 				SwitchModeButton.Text = "Назад до входу";
-
 				EmailLabel.Text = "Email";
 
 				ClientSize = new Size(340, 480);
@@ -89,7 +119,6 @@ namespace CodeTrainerApp.View
 				Text = "Вхід";
 				MainButton.Text = "Увійти";
 				SwitchModeButton.Text = "Зареєструватися";
-
 				EmailLabel.Text = "Логін або Email";
 
 				ClientSize = new Size(340, 340);
@@ -110,6 +139,8 @@ namespace CodeTrainerApp.View
 			MentorCodeTextBox.Visible = visible;
 		}
 
+		// ================= MAIN ACTION =================
+
 		private async void MainAction_Click(object sender, EventArgs e)
 		{
 			string login = LoginTextBox.Text.Trim();
@@ -119,123 +150,105 @@ namespace CodeTrainerApp.View
 
 			if (_isRegisterMode)
 			{
-				// ----- Реєстрація (без змін) -----
-
-				if (string.IsNullOrWhiteSpace(login))
-				{
-					MessageBox.Show("Введіть логін");
-					return;
-				}
-
-				if (string.IsNullOrWhiteSpace(identifier))
-				{
-					MessageBox.Show("Введіть email");
-					return;
-				}
-
-				if (!IsValidEmail(identifier))
-				{
-					MessageBox.Show("Некоректний формат email");
-					return;
-				}
-
-				if (password.Length < 6)
-				{
-					MessageBox.Show("Пароль має містити мінімум 6 символів");
-					return;
-				}
-
-				if (password != repeatPassword)
-				{
-					MessageBox.Show("Паролі не співпадають");
-					return;
-				}
-
-				DateTime birthDate = BirthDatePicker.Value.Date;
-				string mentorCode = MentorCheckBox.Checked
-					? MentorCodeTextBox.Text.Trim()
-					: "";
-
-				string registerUrl =
-					$"api/auth/register?" +
-					$"email={Uri.EscapeDataString(identifier)}" +
-					$"&password={Uri.EscapeDataString(password)}" +
-					$"&login={Uri.EscapeDataString(login)}" +
-					$"&birthDate={birthDate:yyyy-MM-dd}" +
-					$"&mentorCode={Uri.EscapeDataString(mentorCode)}";
-
-				try
-				{
-					var response = await _httpClient.PostAsync(registerUrl, null);
-
-					if (response.IsSuccessStatusCode)
-					{
-						MessageBox.Show("Реєстрація успішна");
-						SetMode(false);
-					}
-					else
-					{
-						MessageBox.Show(await response.Content.ReadAsStringAsync());
-					}
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Помилка підключення до API: " + ex.Message);
-				}
+				await RegisterAsync(login, identifier, password, repeatPassword);
 			}
 			else
 			{
-				// ===== НОВА ЛОГІКА ВАЛІДАЦІЇ =====
-
-				if (string.IsNullOrWhiteSpace(identifier) &&
-					string.IsNullOrWhiteSpace(password))
-				{
-					MessageBox.Show("Введіть логін/email і пароль");
-					return;
-				}
-
-				if (!string.IsNullOrWhiteSpace(identifier) &&
-					string.IsNullOrWhiteSpace(password))
-				{
-					MessageBox.Show("Введіть пароль");
-					return;
-				}
-
-				if (string.IsNullOrWhiteSpace(identifier) &&
-					!string.IsNullOrWhiteSpace(password))
-				{
-					MessageBox.Show("Введіть логін або email");
-					return;
-				}
-
-				try
-				{
-					var response = await _httpClient.PostAsync(
-						$"api/auth/login?identifier={Uri.EscapeDataString(identifier)}&password={Uri.EscapeDataString(password)}",
-						null);
-
-					if (response.IsSuccessStatusCode)
-					{
-						var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-						LoggedEmail = json.GetProperty("email").GetString();
-						UserRole = json.GetProperty("role").GetString();
-
-						IsLoggedIn = true;
-						DialogResult = DialogResult.OK;
-						Close();
-					}
-					else
-					{
-						MessageBox.Show("Невірний логін/email або пароль");
-					}
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Помилка підключення до API: " + ex.Message);
-				}
+				await LoginAsync(identifier, password);
 			}
 		}
+
+		// ================= REGISTER =================
+
+		private async Task RegisterAsync(string login, string email, string password, string repeatPassword)
+		{
+			if (string.IsNullOrWhiteSpace(login))
+			{
+				MessageBox.Show("Введіть логін");
+				return;
+			}
+
+			if (!IsValidEmail(email))
+			{
+				MessageBox.Show("Некоректний email");
+				return;
+			}
+
+			if (password.Length < 6)
+			{
+				MessageBox.Show("Пароль мінімум 6 символів");
+				return;
+			}
+
+			if (password != repeatPassword)
+			{
+				MessageBox.Show("Паролі не співпадають");
+				return;
+			}
+
+			DateTime birthDate = BirthDatePicker.Value.Date;
+			string mentorCode = MentorCheckBox.Checked
+				? MentorCodeTextBox.Text.Trim()
+				: "";
+
+			string registerUrl =
+				$"api/auth/register?" +
+				$"email={Uri.EscapeDataString(email)}" +
+				$"&password={Uri.EscapeDataString(password)}" +
+				$"&login={Uri.EscapeDataString(login)}" +
+				$"&birthDate={birthDate:yyyy-MM-dd}" +
+				$"&mentorCode={Uri.EscapeDataString(mentorCode)}";
+
+			var response = await _httpClient.PostAsync(registerUrl, null);
+
+			if (response.IsSuccessStatusCode)
+			{
+				MessageBox.Show("Реєстрація успішна");
+				SetMode(false);
+			}
+			else
+			{
+				MessageBox.Show(await response.Content.ReadAsStringAsync());
+			}
+		}
+
+		// ================= LOGIN =================
+
+		private async Task LoginAsync(string identifier, string password)
+		{
+			if (string.IsNullOrWhiteSpace(identifier) || string.IsNullOrWhiteSpace(password))
+			{
+				MessageBox.Show("Введіть логін/email і пароль");
+				return;
+			}
+
+			var response = await _httpClient.PostAsync(
+				$"api/auth/login?loginOrEmail={Uri.EscapeDataString(identifier)}&password={Uri.EscapeDataString(password)}",
+				null);
+
+			if (!response.IsSuccessStatusCode)
+			{
+				MessageBox.Show("Невірний логін/email або пароль");
+				return;
+			}
+
+			var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+			// Створюємо User через конструктор
+			string id = json.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
+			string email = json.TryGetProperty("email", out var emailProp) ? emailProp.GetString() ?? "" : "";
+			string login = json.TryGetProperty("login", out var loginProp) ? loginProp.GetString() ?? "" : "";
+			DateTime birthDate = json.TryGetProperty("birthDate", out var bdProp) && bdProp.TryGetDateTime(out var dt) ? dt : DateTime.MinValue;
+			string role = json.TryGetProperty("role", out var roleProp) ? roleProp.GetString() ?? "" : "";
+
+			LoggedUser = new User(id, email, login, birthDate, role);
+
+			IsLoggedIn = true;
+			DialogResult = DialogResult.OK;
+			Close();
+		}
+
+		// ================= HELPERS =================
 
 		private bool IsValidEmail(string email)
 		{

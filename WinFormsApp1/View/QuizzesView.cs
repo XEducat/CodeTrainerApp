@@ -7,9 +7,9 @@ namespace CodeTrainerApp.View
 	{
 		private readonly QuizService _quizService = new QuizService();
 		private List<Quiz> _quizzes = new List<Quiz>();
+
+		private User _currentUser;   // ← тепер тільки один об'єкт
 		private bool _isLoggedIn = false;
-		private string _userEmail = "";
-		private string _userRole = "";
 
 		public QuizzesView()
 		{
@@ -18,14 +18,16 @@ namespace CodeTrainerApp.View
 
 		private async void QuizzesView_Load(object? sender, EventArgs e)
 		{
+			UpdateAuthUI();
 			await LoadQuizzesAsync();
 		}
 
+		// ================= LOAD QUIZZES =================
 		private async Task LoadQuizzesAsync()
 		{
 			try
 			{
-				LoginButton.Enabled = false;
+				ProfileButton.Enabled = false;
 				QuizListBox.Enabled = false;
 				TitleLabel.Text = "Завантаження квізів...";
 
@@ -52,44 +54,55 @@ namespace CodeTrainerApp.View
 			}
 			finally
 			{
-				LoginButton.Enabled = true;
+				ProfileButton.Enabled = true;
 				QuizListBox.Enabled = true;
 			}
 		}
 
-		private void StartQuizButton_Click(object sender, EventArgs e)
-		{
-			StartQuiz();
-		}
-
-		private void QuizListBox_DoubleClick(object sender, EventArgs e)
-		{
-			StartQuiz();
-		}
-
-		private void LoginButton_Click(object sender, EventArgs e)
+		// ================= PROFILE BUTTON =================
+		private void ProfileButton_Click(object sender, EventArgs e)
 		{
 			if (!_isLoggedIn)
 			{
-				using (var loginForm = new LoginView())
+				using (var login = new LoginView())
 				{
-					if (loginForm.ShowDialog() == DialogResult.OK)
+					if (login.ShowDialog() == DialogResult.OK && login.LoggedUser != null)
 					{
-						_isLoggedIn = true;
-						_userEmail = loginForm.LoggedEmail;
-						_userRole = loginForm.UserRole;
+						var lr = login.LoggedUser; // LoginResponse
+						_currentUser = new User(
+							lr.Id,
+							lr.Email,
+							lr.Login,
+							lr.BirthDate,
+							lr.Role
+						);
 
-						LoginButton.Text = "🚪 Вийти";
+						_isLoggedIn = true;
+						UpdateAuthUI();
 					}
 				}
 			}
 			else
 			{
-				_isLoggedIn = false;
-				_userEmail = "";
-				_userRole = "";
-				LoginButton.Text = "👤 Увійти";
+				using (var profile = new ProfileView(_currentUser))
+				{
+					profile.ShowDialog();
+				}
 			}
+		}
+
+		// ================= UPDATE UI =================
+		private void UpdateAuthUI()
+		{
+			ProfileButton.Text = _isLoggedIn
+				? $"👤 Профіль"
+				: "🔐 Увійти";
+		}
+
+		// ================= QUIZ START =================
+		private void QuizListBox_DoubleClick(object sender, EventArgs e)
+		{
+			StartQuiz();
 		}
 
 		private void StartQuiz()
@@ -101,18 +114,13 @@ namespace CodeTrainerApp.View
 					"Помилка",
 					MessageBoxButtons.OK,
 					MessageBoxIcon.Warning);
-
 				return;
 			}
 
 			var selectedQuiz = (Quiz)QuizListBox.SelectedItem;
 			var quizView = new QuizView(selectedQuiz);
 
-			// Підписуємось на подію закриття
-			quizView.FormClosed += (s, args) =>
-			{
-				this.Show();
-			};
+			quizView.FormClosed += (s, args) => this.Show();
 
 			this.Hide();
 			quizView.Show();

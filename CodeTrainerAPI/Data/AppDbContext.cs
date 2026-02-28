@@ -12,5 +12,6 @@ namespace CodeTrainerAPI.Data
 		public DbSet<Quiz> Quizzes { get; set; }
 		public DbSet<ProgrammingTask> ProgrammingTasks { get; set; }
 		public DbSet<TestCase> TestCases { get; set; }
+		public DbSet<QuizAttempt> QuizAttempts { get; set; }
 	}
 }
