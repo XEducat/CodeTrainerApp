@@ -1,17 +1,16 @@
-﻿using System;
-using System.Drawing;
-using System.Net.Http;
+﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Services;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.View
 {
 	public partial class LoginView : Form
 	{
 		private readonly HttpClient _httpClient;
+		private readonly UserService _userService;
 
 		private bool _isRegisterMode = false;
 		private bool _passwordVisible = false;
@@ -26,28 +25,13 @@ namespace CodeTrainerApp.View
 			InitializeDesign();
 
 			TogglePasswordButton.Click += TogglePasswordButton_Click;
-			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
-
-			var handler = new HttpClientHandler
-			{
-				ServerCertificateCustomValidationCallback =
-					HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-			};
-
-			_httpClient = new HttpClient(handler)
-			{
-				BaseAddress = new Uri("http://localhost:5181/")
-			};
-
 			MainButton.Click += MainAction_Click;
 			SwitchModeButton.Click += SwitchModeButton_Click;
-			MentorCheckBox.CheckedChanged += MentorCheckBox_CheckedChanged;
 
 			SetMode(false);
 		}
 
 		// ================= UI DESIGN =================
-
 		private void InitializeDesign()
 		{
 			BackColor = Color.FromArgb(245, 247, 250);
@@ -140,26 +124,42 @@ namespace CodeTrainerApp.View
 		}
 
 		// ================= MAIN ACTION =================
-
 		private async void MainAction_Click(object sender, EventArgs e)
 		{
 			string login = LoginTextBox.Text.Trim();
 			string identifier = EmailTextBox.Text.Trim();
 			string password = PasswordTextBox.Text;
 			string repeatPassword = ConfirmPasswordTextBox.Text;
+			DateTime birthDate = BirthDatePicker.Value.Date;
+			string mentorCode = MentorCheckBox.Checked ? MentorCodeTextBox.Text.Trim() : "";
 
-			if (_isRegisterMode)
+			try
 			{
-				await RegisterAsync(login, identifier, password, repeatPassword);
+				if (_isRegisterMode)
+				{
+					bool success = await _userService.RegisterAsync(login, identifier, password, repeatPassword, birthDate, mentorCode);
+					MessageBox.Show(success ? "Реєстрація успішна" : "Помилка реєстрації");
+					if (success) SetMode(false);
+				}
+				else
+				{
+					bool success = await UserService.Instance.LoginAsync(identifier, password);
+					if (!success)
+						MessageBox.Show("Невірний логін/email або пароль");
+					else
+					{
+						DialogResult = DialogResult.OK;
+						Close();
+					}
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				await LoginAsync(identifier, password);
+				MessageBox.Show(ex.Message, "Помилка");
 			}
 		}
 
 		// ================= REGISTER =================
-
 		private async Task RegisterAsync(string login, string email, string password, string repeatPassword)
 		{
 			if (string.IsNullOrWhiteSpace(login))
@@ -249,7 +249,6 @@ namespace CodeTrainerApp.View
 		}
 
 		// ================= HELPERS =================
-
 		private bool IsValidEmail(string email)
 		{
 			return Regex.IsMatch(email,

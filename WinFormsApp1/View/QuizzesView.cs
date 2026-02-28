@@ -62,41 +62,30 @@ namespace CodeTrainerApp.View
 		// ================= PROFILE BUTTON =================
 		private void ProfileButton_Click(object sender, EventArgs e)
 		{
-			if (!_isLoggedIn)
+			if (!UserService.Instance.IsLoggedIn)
 			{
-				using (var login = new LoginView())
-				{
-					if (login.ShowDialog() == DialogResult.OK && login.LoggedUser != null)
-					{
-						var lr = login.LoggedUser; // LoginResponse
-						_currentUser = new User(
-							lr.Id,
-							lr.Email,
-							lr.Login,
-							lr.BirthDate,
-							lr.Role
-						);
-
-						_isLoggedIn = true;
-						UpdateAuthUI();
-					}
-				}
+				using var login = new LoginView();
+				if (login.ShowDialog() == DialogResult.OK)
+					UpdateAuthUI();
 			}
 			else
 			{
-				using (var profile = new ProfileView(_currentUser))
+				using var profile = new ProfileView(UserService.Instance.CurrentUser);
+
+				// Підписуємося на подію закриття форми ProfileView
+				profile.FormClosed += (s, args) =>
 				{
-					profile.ShowDialog();
-				}
+					// Перевіряємо, чи користувач ще залогінений
+					UpdateAuthUI();
+				};
+
+				profile.ShowDialog();
 			}
 		}
 
-		// ================= UPDATE UI =================
 		private void UpdateAuthUI()
 		{
-			ProfileButton.Text = _isLoggedIn
-				? $"👤 Профіль"
-				: "🔐 Увійти";
+			ProfileButton.Text = UserService.Instance.IsLoggedIn ? "👤 Профіль" : "🔐 Увійти";
 		}
 
 		// ================= QUIZ START =================

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Services;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
-using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.View
 {
@@ -32,6 +33,7 @@ namespace CodeTrainerApp.View
 		{
 			// @TODO: Додайте код для очищення даних користувача
 			this.Close();
+			UserService.Instance.Logout();
 		}
 	}
 }
