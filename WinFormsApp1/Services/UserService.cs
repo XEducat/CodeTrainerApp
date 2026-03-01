@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -22,71 +23,83 @@ namespace CodeTrainerApp.Services
 
 		private UserService()
 		{
-			var handler = new HttpClientHandler
-			{
-				ServerCertificateCustomValidationCallback =
-					HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-			};
-
-			_httpClient = new HttpClient(handler)
-			{
-				BaseAddress = new Uri("http://localhost:5181/") // встановлюємо базовий URL прямо тут
-			};
+			_httpClient = ApiClient.Instance;
 		}
 
 		// ================= LOGIN =================
-		public async Task<bool> LoginAsync(string identifier, string password)
+		public async Task<(bool success, string message)> LoginAsync(string identifier, string password)
 		{
 			if (string.IsNullOrWhiteSpace(identifier) || string.IsNullOrWhiteSpace(password))
-				throw new ArgumentException("Введіть логін/email і пароль");
+				return (false, "Введіть логін/email і пароль");
 
-			var response = await _httpClient.PostAsync(
-				$"api/auth/login?loginOrEmail={Uri.EscapeDataString(identifier)}&password={Uri.EscapeDataString(password)}",
-				null);
+			var content = new FormUrlEncodedContent(new[]
+			{
+				new KeyValuePair<string, string>("loginOrEmail", identifier),
+				new KeyValuePair<string, string>("password", password)
+			});
+
+			var response = await _httpClient.PostAsync("api/auth/login", content);
 
 			if (!response.IsSuccessStatusCode)
-				return false;
+				return (false, await response.Content.ReadAsStringAsync());
 
 			var json = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-			string id = json.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
-			string email = json.TryGetProperty("email", out var emailProp) ? emailProp.GetString() ?? "" : "";
-			string login = json.TryGetProperty("login", out var loginProp) ? loginProp.GetString() ?? "" : "";
-			DateTime birthDate = json.TryGetProperty("birthDate", out var bdProp) && bdProp.TryGetDateTime(out var dt) ? dt : DateTime.MinValue;
-			string role = json.TryGetProperty("role", out var roleProp) ? roleProp.GetString() ?? "" : "";
+			string id = json.GetProperty("id").GetString() ?? "";
+			string email = json.GetProperty("email").GetString() ?? "";
+			string login = json.GetProperty("login").GetString() ?? "";
+			DateTime birthDate = json.GetProperty("birthDate").GetDateTime();
+			string role = json.GetProperty("role").GetString() ?? "";
 
 			CurrentUser = new User(id, email, login, birthDate, role);
-			return true;
+
+			return (true, "Успішний вхід");
 		}
 
 		// ================= REGISTER =================
-		public async Task<bool> RegisterAsync(string login, string email, string password, string repeatPassword,
-			DateTime birthDate, string mentorCode = "")
+		public async Task<(bool success, string message)> RegisterAsync(
+			string login,
+			string email,
+			string password,
+			string repeatPassword,
+			DateTime birthDate,
+			string mentorCode = "")
 		{
 			if (string.IsNullOrWhiteSpace(login))
-				throw new ArgumentException("Введіть логін");
+				return (false, "Введіть логін");
+
 			if (!IsValidEmail(email))
-				throw new ArgumentException("Некоректний email");
+				return (false, "Некоректний email");
+
 			if (password.Length < 6)
-				throw new ArgumentException("Пароль мінімум 6 символів");
+				return (false, "Пароль мінімум 6 символів");
+
 			if (password != repeatPassword)
-				throw new ArgumentException("Паролі не співпадають");
+				return (false, "Паролі не співпадають");
 
-			string registerUrl =
-				$"api/auth/register?" +
-				$"email={Uri.EscapeDataString(email)}" +
-				$"&password={Uri.EscapeDataString(password)}" +
-				$"&login={Uri.EscapeDataString(login)}" +
-				$"&birthDate={birthDate:yyyy-MM-dd}" +
-				$"&mentorCode={Uri.EscapeDataString(mentorCode)}";
+			var content = new FormUrlEncodedContent(new[]
+			{
+				new KeyValuePair<string, string>("email", email),
+				new KeyValuePair<string, string>("password", password),
+				new KeyValuePair<string, string>("name", login), // ВАЖЛИВО: name а не login
+                new KeyValuePair<string, string>("birthDate", birthDate.ToString("yyyy-MM-dd")),
+				new KeyValuePair<string, string>("mentorCode", mentorCode ?? "")
+			});
 
-			var response = await _httpClient.PostAsync(registerUrl, null);
-			return response.IsSuccessStatusCode;
+			var response = await _httpClient.PostAsync("api/auth/register", content);
+
+			if (!response.IsSuccessStatusCode)
+				return (false, await response.Content.ReadAsStringAsync());
+
+			return (true, "Успішна реєстрація");
 		}
 
 		// ================= LOGOUT =================
-		public void Logout()
+		public async Task LogoutAsync()
 		{
+			await _httpClient.PostAsync("api/auth/logout", null);
+
+			ApiClient.ClearCookies();
 			CurrentUser = null;
 		}
 

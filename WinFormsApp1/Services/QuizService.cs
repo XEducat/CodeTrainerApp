@@ -6,29 +6,19 @@ namespace CodeTrainerApp.Services
 	public class QuizService
 	{
 		private readonly HttpClient _httpClient;
-		private readonly string baseUrl = "http://localhost:5181/";
+		private readonly string baseUrl = "https://localhost:7205";
 
-		public QuizService(bool ignoreSslErrors = true)
+		public QuizService()
 		{
-			if (ignoreSslErrors)
+			var handler = new HttpClientHandler //TODO: remove in production
 			{
-				var handler = new HttpClientHandler //TODO: remove in production
-				{
-					ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-				};
+				ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+			};
 
-				_httpClient = new HttpClient(handler)
-				{
-					BaseAddress = new Uri("http://localhost:5181/")
-				};
-			}
-			else
+			_httpClient = new HttpClient(handler)
 			{
-				_httpClient = new HttpClient
-				{
-					BaseAddress = new Uri(baseUrl)
-				};
-			}
+				BaseAddress = new Uri(baseUrl)
+			};
 		}
 
 		// ================= GET: всі квізи =================

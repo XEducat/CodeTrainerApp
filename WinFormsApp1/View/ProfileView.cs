@@ -33,7 +33,7 @@ namespace CodeTrainerApp.View
 		{
 			// @TODO: Додайте код для очищення даних користувача
 			this.Close();
-			UserService.Instance.Logout();
+			UserService.Instance.LogoutAsync();
 		}
 	}
 }

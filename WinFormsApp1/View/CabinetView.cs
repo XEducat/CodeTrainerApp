@@ -10,7 +10,7 @@ namespace CodeTrainerApp.View
 	{
 		private readonly string _email;
 		private readonly string _role;
-		//private readonly UserHistoryService _historyService;
+		private readonly UserHistoryService _historyService;
 
 		public CabinetView(User user)
 		{
@@ -19,27 +19,83 @@ namespace CodeTrainerApp.View
 			_email = user.Email;
 			_role = user.Role;
 
+			// Ініціалізація сервісу історії користувача (через кукі)
+			_historyService = new UserHistoryService();
+
 			LoadUserInfo();
+			LoadHistoryAsync();
 		}
 
 		private void LoadUserInfo()
 		{
 			lblEmail.Text = $"Email: {_email}";
 			lblRole.Text = $"Роль: {_role}";
-
-			// Тут пізніше можна підвантажити історію користувача
-			// dgvHistory.DataSource = await _historyService.GetUserHistoryAsync(user.Id);
 		}
 
-		//private async void LoadHistory()
-		//{
-		//	var history = await _historyService.GetUserHistoryAsync(_userId);
-		//	dgvHistory.DataSource = history;
-		//}
+		// Асинхронне завантаження історії користувача
+		private async void LoadHistoryAsync()
+		{
+			try
+			{
+				var history = await _historyService.GetUserHistoryAsync();
+				dgvHistory.DataSource = history;
+
+				// Приховуємо або переіменовуємо деякі стовпці для зручності
+				if (dgvHistory.Columns["UserId"] != null)
+					dgvHistory.Columns["UserId"].Visible = false;
+				if (dgvHistory.Columns["Id"] != null)
+					dgvHistory.Columns["Id"].HeaderText = "ID запису";
+				if (dgvHistory.Columns["QuizId"] != null)
+					dgvHistory.Columns["QuizId"].HeaderText = "ID тесту";
+				if (dgvHistory.Columns["QuizTitle"] != null)
+					dgvHistory.Columns["QuizTitle"].HeaderText = "Назва тесту";
+				if (dgvHistory.Columns["Score"] != null)
+					dgvHistory.Columns["Score"].HeaderText = "Результат";
+				if (dgvHistory.Columns["Date"] != null)
+				{
+					dgvHistory.Columns["Date"].HeaderText = "Дата проходження";
+					dgvHistory.Columns["Date"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Помилка при завантаженні історії: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
 
 		private void btnLogout_Click(object sender, EventArgs e)
 		{
 			this.Close();
+		}
+
+		// Видалення вибраного запису
+		private async void btnDeleteSelected_Click(object sender, EventArgs e)
+		{
+			if (dgvHistory.CurrentRow == null) return;
+
+			var attempt = dgvHistory.CurrentRow.DataBoundItem as QuizAttempt;
+			if (attempt == null) return;
+
+			var confirm = MessageBox.Show(
+				$"Видалити запис '{attempt.QuizTitle}'?",
+				"Підтвердження",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Warning
+			);
+
+			if (confirm == DialogResult.Yes)
+			{
+				bool success = await _historyService.DeleteHistoryAsync(attempt.Id);
+				if (success)
+				{
+					MessageBox.Show("Запис видалено.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					LoadHistoryAsync(); // оновлюємо таблицю
+				}
+				else
+				{
+					MessageBox.Show("Не вдалося видалити запис.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 	}
 }

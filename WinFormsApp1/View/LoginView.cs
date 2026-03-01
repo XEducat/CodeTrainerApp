@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace CodeTrainerApp.View
 {
@@ -126,8 +127,8 @@ namespace CodeTrainerApp.View
 		// ================= MAIN ACTION =================
 		private async void MainAction_Click(object sender, EventArgs e)
 		{
-			string login = LoginTextBox.Text.Trim();
-			string identifier = EmailTextBox.Text.Trim();
+			string login = EmailTextBox.Text.Trim();
+			string email = EmailTextBox.Text.Trim();
 			string password = PasswordTextBox.Text;
 			string repeatPassword = ConfirmPasswordTextBox.Text;
 			DateTime birthDate = BirthDatePicker.Value.Date;
@@ -137,16 +138,29 @@ namespace CodeTrainerApp.View
 			{
 				if (_isRegisterMode)
 				{
-					bool success = await _userService.RegisterAsync(login, identifier, password, repeatPassword, birthDate, mentorCode);
-					MessageBox.Show(success ? "Реєстрація успішна" : "Помилка реєстрації");
+					var (success, message) = await UserService.Instance.RegisterAsync(
+						login,
+						email,  
+						password,
+						repeatPassword,
+						birthDate,
+						mentorCode
+					);
+
+					MessageBox.Show(message);
+
 					if (success) SetMode(false);
 				}
 				else
 				{
-					bool success = await UserService.Instance.LoginAsync(identifier, password);
-					if (!success)
-						MessageBox.Show("Невірний логін/email або пароль");
-					else
+					var (success, message) = await UserService.Instance.LoginAsync(
+						email, 
+						password
+					);
+
+					MessageBox.Show(message);
+
+					if (success)
 					{
 						DialogResult = DialogResult.OK;
 						Close();
@@ -157,103 +171,6 @@ namespace CodeTrainerApp.View
 			{
 				MessageBox.Show(ex.Message, "Помилка");
 			}
-		}
-
-		// ================= REGISTER =================
-		private async Task RegisterAsync(string login, string email, string password, string repeatPassword)
-		{
-			if (string.IsNullOrWhiteSpace(login))
-			{
-				MessageBox.Show("Введіть логін");
-				return;
-			}
-
-			if (!IsValidEmail(email))
-			{
-				MessageBox.Show("Некоректний email");
-				return;
-			}
-
-			if (password.Length < 6)
-			{
-				MessageBox.Show("Пароль мінімум 6 символів");
-				return;
-			}
-
-			if (password != repeatPassword)
-			{
-				MessageBox.Show("Паролі не співпадають");
-				return;
-			}
-
-			DateTime birthDate = BirthDatePicker.Value.Date;
-			string mentorCode = MentorCheckBox.Checked
-				? MentorCodeTextBox.Text.Trim()
-				: "";
-
-			string registerUrl =
-				$"api/auth/register?" +
-				$"email={Uri.EscapeDataString(email)}" +
-				$"&password={Uri.EscapeDataString(password)}" +
-				$"&login={Uri.EscapeDataString(login)}" +
-				$"&birthDate={birthDate:yyyy-MM-dd}" +
-				$"&mentorCode={Uri.EscapeDataString(mentorCode)}";
-
-			var response = await _httpClient.PostAsync(registerUrl, null);
-
-			if (response.IsSuccessStatusCode)
-			{
-				MessageBox.Show("Реєстрація успішна");
-				SetMode(false);
-			}
-			else
-			{
-				MessageBox.Show(await response.Content.ReadAsStringAsync());
-			}
-		}
-
-		// ================= LOGIN =================
-
-		private async Task LoginAsync(string identifier, string password)
-		{
-			if (string.IsNullOrWhiteSpace(identifier) || string.IsNullOrWhiteSpace(password))
-			{
-				MessageBox.Show("Введіть логін/email і пароль");
-				return;
-			}
-
-			var response = await _httpClient.PostAsync(
-				$"api/auth/login?loginOrEmail={Uri.EscapeDataString(identifier)}&password={Uri.EscapeDataString(password)}",
-				null);
-
-			if (!response.IsSuccessStatusCode)
-			{
-				MessageBox.Show("Невірний логін/email або пароль");
-				return;
-			}
-
-			var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-			// Створюємо User через конструктор
-			string id = json.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
-			string email = json.TryGetProperty("email", out var emailProp) ? emailProp.GetString() ?? "" : "";
-			string login = json.TryGetProperty("login", out var loginProp) ? loginProp.GetString() ?? "" : "";
-			DateTime birthDate = json.TryGetProperty("birthDate", out var bdProp) && bdProp.TryGetDateTime(out var dt) ? dt : DateTime.MinValue;
-			string role = json.TryGetProperty("role", out var roleProp) ? roleProp.GetString() ?? "" : "";
-
-			LoggedUser = new User(id, email, login, birthDate, role);
-
-			IsLoggedIn = true;
-			DialogResult = DialogResult.OK;
-			Close();
-		}
-
-		// ================= HELPERS =================
-		private bool IsValidEmail(string email)
-		{
-			return Regex.IsMatch(email,
-				@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-				RegexOptions.IgnoreCase);
 		}
 	}
 }

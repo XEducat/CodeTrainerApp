@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CodeTrainerAPI.Data;
+using CodeTrainerAPI.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using CodeTrainerAPI.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace CodeTrainerAPI.Controllers
 {
@@ -11,13 +14,16 @@ namespace CodeTrainerAPI.Controllers
 	public class UserHistoryController : ControllerBase
 	{
 		private readonly AppDbContext _context;
+		private readonly ILogger<UserHistoryController> _logger;
 
-		public UserHistoryController(AppDbContext context)
+		public UserHistoryController(AppDbContext context, ILogger<UserHistoryController> logger)
 		{
 			_context = context;
+			_logger = logger;
 		}
 
-		[HttpGet("my")]
+		// ================= GET MY HISTORY =================
+		[HttpGet("my")]	
 		public IActionResult GetMyHistory()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -25,12 +31,51 @@ namespace CodeTrainerAPI.Controllers
 			if (string.IsNullOrEmpty(userId))
 				return Unauthorized();
 
-			var history = _context.QuizAttempts
-				.Where(x => x.UserId == userId)
-				.OrderByDescending(x => x.Date)
+			var history = _context.UserHistories
+				.Where((UserHistory x) => x.UserId == userId)
+				.OrderByDescending(x => x.CompletedAt)
 				.ToList();
 
 			return Ok(history);
+		}
+
+		// ================= CREATE =================
+		[HttpPost("create")]
+		public IActionResult CreateHistory([FromBody] UserHistory model)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			if (string.IsNullOrEmpty(userId))
+				return Unauthorized();
+
+			model.UserId = userId;
+			model.CompletedAt = DateTime.UtcNow;
+
+			_context.UserHistories.Add(model);
+			_context.SaveChanges();
+
+			return Ok(model);
+		}
+
+		// ================= DELETE =================
+		[HttpDelete("delete/{id}")]
+		public IActionResult DeleteHistory(int id)
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			if (string.IsNullOrEmpty(userId))
+				return Unauthorized();
+
+			var record = _context.UserHistories
+				.FirstOrDefault(x => x.Id == id && x.UserId == userId);
+
+			if (record == null)
+				return NotFound("Record not found or access denied.");
+
+			_context.UserHistories.Remove(record);
+			_context.SaveChanges();
+
+			return Ok(new { message = "Record deleted successfully." });
 		}
 	}
 }

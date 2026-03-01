@@ -8,9 +8,6 @@ namespace CodeTrainerApp.View
 		private readonly QuizService _quizService = new QuizService();
 		private List<Quiz> _quizzes = new List<Quiz>();
 
-		private User _currentUser;   // ← тепер тільки один об'єкт
-		private bool _isLoggedIn = false;
-
 		public QuizzesView()
 		{
 			InitializeComponent();

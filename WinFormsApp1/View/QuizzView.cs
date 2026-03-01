@@ -11,12 +11,16 @@ namespace CodeTrainerApp
 		private readonly Quiz _quiz;
 		private User _currentUser;
 
-		public QuizView(Quiz selectedQuiz, User user = null)
+		// Счетчик успішно пройдених завдань
+		private int _passedCount = 0;
+
+		public QuizView(Quiz selectedQuiz)
 		{
 			InitializeComponent();
 
 			_quiz = selectedQuiz;
-			_currentUser = user;
+			_currentUser = UserService.Instance.CurrentUser;
+			
 
 			CheckButton.Click += CheckButton_Click;
 			NextButton.Click += NextButton_Click;
@@ -86,7 +90,7 @@ namespace CodeTrainerApp
 
 			CodeTextBox.Enabled = true;
 			CheckButton.Enabled = _currentUser != null;
-			NextButton.Enabled = false;
+			NextButton.Enabled = false; 
 			SkipButton.Enabled = true;
 
 			NextButton.Text =
@@ -136,6 +140,9 @@ namespace CodeTrainerApp
 				ResultTextBox.Text = result.output;
 				ResultTextBox.BackColor = Color.LightGreen;
 
+				// Збільшуємо лічильник пройдених завдань
+				_passedCount++;
+
 				NextButton.Enabled = true;
 				CheckButton.Enabled = false;
 				SkipButton.Enabled = false;
@@ -156,6 +163,7 @@ namespace CodeTrainerApp
 				"Завдання пропущено. Можна переходити далі.";
 			ResultTextBox.BackColor = Color.LightYellow;
 
+			SkipButton.Enabled = false;
 			NextButton.Enabled = true;
 			CheckButton.Enabled = false;
 			CodeTextBox.Enabled = false;
@@ -163,9 +171,42 @@ namespace CodeTrainerApp
 
 		// ================= NEXT =================
 
-		private void NextButton_Click(object sender, EventArgs e)
+		private async void NextButton_Click(object sender, EventArgs e)
 		{
 			currentTaskIndex++;
+			NextButton.Enabled = false;
+
+			// Якщо натиснули "Завершити" (перейшли за останній індекс) — показати оцінку і відправити на сервер
+			if (currentTaskIndex >= _quiz.Tasks.Count && _currentUser != null)
+			{
+				// Показати оцінку
+				string scoreText = $"Ваш результат: {_passedCount} / {_quiz.Tasks.Count}";
+				MessageBox.Show(scoreText, "Оцінка проходження", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+				// Надіслати на сервер
+				try
+				{
+					var attempt = new QuizAttempt
+					{
+						QuizId = _quiz.Id,
+						QuizTitle = _quiz.Title,
+						Score = _passedCount,
+						Date = DateTime.UtcNow
+					};
+
+					var svc = new UserHistoryService();
+					await svc.CreateHistoryAsync(attempt, UserService.Instance.CurrentUser.Id);
+
+					MessageBox.Show("Результат збережено в історію.", "Інформація",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Не вдалося зберегти історію: " + ex.Message, "Помилка",
+						MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+
 			LoadCurrentTask();
 		}
 
