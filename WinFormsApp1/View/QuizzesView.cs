@@ -96,9 +96,17 @@ namespace CodeTrainerApp.View
 		{
 			if (UserService.Instance.CurrentUser != null)
 			{
-				using var cabinet = new CabinetView(UserService.Instance.CurrentUser);
-				cabinet.ShowDialog();
-				UpdateAuthUI(); // оновлюємо кнопки після можливого логауту
+				// Открываем CabinetView как немодальное окно и скрываем основную форму,
+				// при закрытии кабинета показываем основную форму снова.
+				var cabinet = new CabinetView(UserService.Instance.CurrentUser);
+				cabinet.FormClosed += (s, args) =>
+				{
+					UpdateAuthUI(); // обновляем UI (например, после логаута)
+					this.Show();
+				};
+
+				this.Hide();
+				cabinet.Show();
 			}
 		}
 
