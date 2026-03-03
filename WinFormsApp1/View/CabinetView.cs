@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
@@ -19,7 +20,6 @@ namespace CodeTrainerApp.View
 			_email = user.Email;
 			_role = user.Role;
 
-			// Ініціалізація сервісу історії користувача (через кукі)
 			_historyService = new UserHistoryService();
 
 			LoadUserInfo();
@@ -38,9 +38,11 @@ namespace CodeTrainerApp.View
 			try
 			{
 				var history = await _historyService.GetUserHistoryAsync();
+
+				history = history ?? new List<QuizAttempt>();
+
 				dgvHistory.DataSource = history;
 
-				// Приховуємо або переіменовуємо деякі стовпці для зручності
 				if (dgvHistory.Columns["UserId"] != null)
 					dgvHistory.Columns["UserId"].Visible = false;
 				if (dgvHistory.Columns["Id"] != null)
@@ -56,6 +58,14 @@ namespace CodeTrainerApp.View
 					dgvHistory.Columns["Date"].HeaderText = "Дата проходження";
 					dgvHistory.Columns["Date"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
 				}
+
+				int total = history.Count;
+				double avg = total > 0 ? history.Average(h => (double)h.Score) : 0.0;
+				int best = total > 0 ? history.Max(h => h.Score) : 0;
+
+				lblTotalValue.Text = total.ToString();
+				lblAverageValue.Text = avg.ToString("0.##");
+				lblBestValue.Text = best.ToString();
 			}
 			catch (Exception ex)
 			{
@@ -63,7 +73,8 @@ namespace CodeTrainerApp.View
 			}
 		}
 
-		private void btnLogout_Click(object sender, EventArgs e)
+		// Теперь в кабинете кнопка просто закрывает форму (logout - в ProfileView)
+		private void BtnLogout_Click(object sender, EventArgs e)
 		{
 			this.Close();
 		}

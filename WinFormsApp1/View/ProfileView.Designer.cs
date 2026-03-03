@@ -21,7 +21,7 @@ namespace CodeTrainerApp.View
 		private Label lblBirthDateValue;
 		private Label lblRoleValue;
 
-		private Button btnBack;
+		private Button btnLogout;
 
 		private void InitializeComponent()
 		{
@@ -90,7 +90,7 @@ namespace CodeTrainerApp.View
 			tableLayout.Controls.Add(lblBirthDateValue, 1, 4);
 
 			// ================= BUTTON =================
-			btnBack = new Button
+			btnLogout = new Button
 			{
 				Text = "Logout",
 				Font = new Font("Segoe UI", 12F, FontStyle.Bold),
@@ -99,11 +99,11 @@ namespace CodeTrainerApp.View
 				BackColor = Color.FromArgb(220, 53, 69),
 				ForeColor = Color.White
 			};
-			btnBack.FlatAppearance.BorderSize = 0;
-			btnBack.Click += btnLogout_Click;
+			btnLogout.FlatAppearance.BorderSize = 0;
+			btnLogout.Click += btnLogout_Click;
 
-			tableLayout.Controls.Add(btnBack, 0, 5);
-			tableLayout.SetColumnSpan(btnBack, 2);
+			tableLayout.Controls.Add(btnLogout, 0, 5);
+			tableLayout.SetColumnSpan(btnLogout, 2);
 
 			this.Controls.Add(tableLayout);
 			this.ResumeLayout(false);

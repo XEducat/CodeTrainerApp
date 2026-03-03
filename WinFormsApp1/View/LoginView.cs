@@ -158,8 +158,6 @@ namespace CodeTrainerApp.View
 						password
 					);
 
-					MessageBox.Show(message);
-
 					if (success)
 					{
 						DialogResult = DialogResult.OK;

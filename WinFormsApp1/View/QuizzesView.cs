@@ -20,6 +20,55 @@ namespace CodeTrainerApp.View
 			await LoadQuizzesAsync();
 		}
 
+		// ================= PROFILE BUTTON =================
+		private void ProfileButton_Click(object sender, EventArgs e)
+		{
+			if (!UserService.Instance.IsLoggedIn)
+			{
+				using var login = new LoginView();
+				if (login.ShowDialog() == DialogResult.OK)
+					UpdateAuthUI();
+			}
+			else
+			{
+				var profile = new ProfileView(UserService.Instance.CurrentUser);
+
+				// Подписываемся на событие выхода — обновляем UI сразу при logout
+				profile.LoggedOut += (s, args) =>
+				{
+					UpdateAuthUI();
+				};
+
+				profile.ShowDialog();
+			}
+		}
+
+		private void UpdateAuthUI()
+		{
+			bool loggedIn = UserService.Instance.IsLoggedIn;
+			ProfileButton.Text = loggedIn ? "👤 Профіль" : "🔐 Увійти";
+			CabinetButton.Visible = loggedIn; // ← додаємо показ кнопки
+			// CabinetButton.Enabled будет управляться после проверки доступности API в Load
+		}
+
+		// ================= CABINET BUTTON =================
+		private void CabinetButton_Click(object sender, EventArgs e)
+		{
+			if (UserService.Instance.CurrentUser != null)
+			{
+				var cabinet = new CabinetView(UserService.Instance.CurrentUser);
+
+				// При закрытии кабинета — только показываем основну форму (без UpdateAuthUI)
+				cabinet.FormClosed += (s, args) =>
+				{
+					this.Show();
+				};
+
+				this.Hide();
+				cabinet.Show();
+			}
+		}
+
 		// ================= LOAD QUIZZES =================
 		private async Task LoadQuizzesAsync()
 		{
@@ -56,57 +105,6 @@ namespace CodeTrainerApp.View
 				ProfileButton.Enabled = true;
 				CabinetButton.Enabled = true;
 				QuizListBox.Enabled = true;
-			}
-		}
-
-		// ================= PROFILE BUTTON =================
-		private void ProfileButton_Click(object sender, EventArgs e)
-		{
-			if (!UserService.Instance.IsLoggedIn)
-			{
-				using var login = new LoginView();
-				if (login.ShowDialog() == DialogResult.OK)
-					UpdateAuthUI();
-			}
-			else
-			{
-				using var profile = new ProfileView(UserService.Instance.CurrentUser);
-
-				// Підписуємося на подію закриття форми ProfileView
-				profile.FormClosed += (s, args) =>
-				{
-					// Перевіряємо, чи користувач ще залогінений
-					UpdateAuthUI();
-				};
-
-				profile.ShowDialog();
-			}
-		}
-
-		private void UpdateAuthUI()
-		{
-			bool loggedIn = UserService.Instance.IsLoggedIn;
-			ProfileButton.Text = loggedIn ? "👤 Профіль" : "🔐 Увійти";
-			CabinetButton.Visible = loggedIn; // ← додаємо показ кнопки
-			// CabinetButton.Enabled будет управляться после проверки доступности API в Load
-		}
-
-		// ================= CABINET BUTTON =================
-		private void CabinetButton_Click(object sender, EventArgs e)
-		{
-			if (UserService.Instance.CurrentUser != null)
-			{
-				// Открываем CabinetView как немодальное окно и скрываем основную форму,
-				// при закрытии кабинета показываем основную форму снова.
-				var cabinet = new CabinetView(UserService.Instance.CurrentUser);
-				cabinet.FormClosed += (s, args) =>
-				{
-					UpdateAuthUI(); // обновляем UI (например, после логаута)
-					this.Show();
-				};
-
-				this.Hide();
-				cabinet.Show();
 			}
 		}
 

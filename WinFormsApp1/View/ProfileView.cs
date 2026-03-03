@@ -10,6 +10,9 @@ namespace CodeTrainerApp.View
 	{
 		private readonly User _user;
 
+		// Событие выхода, подписчики (например QuizzesView) будут реагировать на него
+		public event EventHandler? LoggedOut;
+
 		public ProfileView(User user)
 		{
 			_user = user;
@@ -29,11 +32,24 @@ namespace CodeTrainerApp.View
 			lblRoleValue.Text = _user.Role;
 		}
 
-		private void btnLogout_Click(object sender, EventArgs e)
+		private async void btnLogout_Click(object sender, EventArgs e)
 		{
-			// @TODO: Додайте код для очищення даних користувача
-			this.Close();
-			UserService.Instance.LogoutAsync();
+			btnLogout.Enabled = false;
+			try
+			{
+				// Выполняем logout (очищает cookie и локальные данные)
+				await UserService.Instance.LogoutAsync();
+			}
+			catch
+			{
+				// Игнорируем ошибки logout, но всё равно продолжаем локально выходить
+			}
+			finally
+			{
+				// Уведомляем подписчиков и закрываем форму
+				LoggedOut?.Invoke(this, EventArgs.Empty);
+				this.Close();
+			}
 		}
 	}
 }

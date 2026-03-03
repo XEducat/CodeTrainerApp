@@ -12,19 +12,18 @@ namespace CodeTrainerApp.Services
 {
 	public sealed class UserService
 	{
-		private static readonly Lazy<UserService> _instance =
-			new Lazy<UserService>(() => new UserService());
-
 		public static UserService Instance => _instance.Value;
-
-		private readonly HttpClient _httpClient;
-
 		public User CurrentUser { get; private set; }
 		public bool IsLoggedIn => CurrentUser != null;
-
-		private readonly string _storageDir =
-			Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeTrainerApp");
+ 
+		private readonly TimeSpan _localSessionLifetime = TimeSpan.FromDays(30); // Время жизни локально сохранённой сессии
 		private readonly string _userFile;
+		private readonly HttpClient _httpClient;
+		private static readonly Lazy<UserService> _instance =
+	new Lazy<UserService>(() => new UserService());
+		private readonly string _storageDir = 
+			Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeTrainerApp");
+
 
 		private UserService()
 		{
@@ -140,12 +139,26 @@ namespace CodeTrainerApp.Services
 				RegexOptions.IgnoreCase);
 		}
 
+		// Wrapper для збереження разом з часовою міткою
+		private class StoredUser
+		{
+			public User User { get; set; } = null!;
+			public DateTime SavedAt { get; set; }
+		}
+
 		private void SaveCurrentUserToDisk()
 		{
 			try
 			{
 				Directory.CreateDirectory(_storageDir);
-				var json = JsonSerializer.Serialize(CurrentUser);
+
+				var wrapper = new StoredUser
+				{
+					User = CurrentUser,
+					SavedAt = DateTime.UtcNow
+				};
+
+				var json = JsonSerializer.Serialize(wrapper);
 				File.WriteAllText(_userFile, json);
 			}
 			catch
@@ -162,9 +175,23 @@ namespace CodeTrainerApp.Services
 					return;
 
 				var json = File.ReadAllText(_userFile);
-				var user = JsonSerializer.Deserialize<User>(json);
-				if (user != null)
-					CurrentUser = user;
+				var wrapper = JsonSerializer.Deserialize<StoredUser>(json);
+
+				if (wrapper == null || wrapper.User == null)
+					return;
+
+				// Перевіряємо вік збереженої сесії
+				if (DateTime.UtcNow - wrapper.SavedAt > _localSessionLifetime)
+				{
+					// сесія застаріла — очищаємо дані з диска та cookie
+					try { File.Delete(_userFile); } catch { }
+					try { ApiClient.ClearCookies(); } catch { }
+					CurrentUser = null;
+					return;
+				}
+
+				// сесія ще дійсна — відновлюємо користувача
+				CurrentUser = wrapper.User;
 			}
 			catch
 			{
