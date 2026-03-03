@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.Services
@@ -21,9 +22,25 @@ namespace CodeTrainerApp.Services
 		public User CurrentUser { get; private set; }
 		public bool IsLoggedIn => CurrentUser != null;
 
+		private readonly string _storageDir =
+			Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeTrainerApp");
+		private readonly string _userFile;
+
 		private UserService()
 		{
 			_httpClient = ApiClient.Instance;
+			_userFile = Path.Combine(_storageDir, "user.json");
+
+			// Попытка відновлення сесії при створенні сінглтону
+			try
+			{
+				LoadCurrentUserFromDisk();
+				ApiClient.LoadCookiesFromDisk();
+			}
+			catch
+			{
+				// ігнорувати помилки відновлення
+			}
 		}
 
 		// ================= LOGIN =================
@@ -52,6 +69,10 @@ namespace CodeTrainerApp.Services
 			string role = json.GetProperty("role").GetString() ?? "";
 
 			CurrentUser = new User(id, email, login, birthDate, role);
+
+			// Зберігаємо користувача та cookies для відновлення сесії
+			SaveCurrentUserToDisk();
+			ApiClient.SaveCookiesToDisk();
 
 			return (true, "Успішний вхід");
 		}
@@ -82,7 +103,7 @@ namespace CodeTrainerApp.Services
 				new KeyValuePair<string, string>("email", email),
 				new KeyValuePair<string, string>("password", password),
 				new KeyValuePair<string, string>("name", login), // ВАЖЛИВО: name а не login
-                new KeyValuePair<string, string>("birthDate", birthDate.ToString("yyyy-MM-dd")),
+				new KeyValuePair<string, string>("birthDate", birthDate.ToString("yyyy-MM-dd")),
 				new KeyValuePair<string, string>("mentorCode", mentorCode ?? "")
 			});
 
@@ -101,6 +122,14 @@ namespace CodeTrainerApp.Services
 
 			ApiClient.ClearCookies();
 			CurrentUser = null;
+
+			// Видаляємо локально збереженого користувача
+			try
+			{
+				if (File.Exists(_userFile))
+					File.Delete(_userFile);
+			}
+			catch { }
 		}
 
 		// ================= HELPERS =================
@@ -109,6 +138,38 @@ namespace CodeTrainerApp.Services
 			return Regex.IsMatch(email,
 				@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
 				RegexOptions.IgnoreCase);
+		}
+
+		private void SaveCurrentUserToDisk()
+		{
+			try
+			{
+				Directory.CreateDirectory(_storageDir);
+				var json = JsonSerializer.Serialize(CurrentUser);
+				File.WriteAllText(_userFile, json);
+			}
+			catch
+			{
+				// ігнорувати помилки запису
+			}
+		}
+
+		private void LoadCurrentUserFromDisk()
+		{
+			try
+			{
+				if (!File.Exists(_userFile))
+					return;
+
+				var json = File.ReadAllText(_userFile);
+				var user = JsonSerializer.Deserialize<User>(json);
+				if (user != null)
+					CurrentUser = user;
+			}
+			catch
+			{
+				// ігнорувати помилки читання/десеріалізації
+			}
 		}
 	}
 }

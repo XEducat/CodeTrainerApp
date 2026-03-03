@@ -16,6 +16,7 @@ namespace CodeTrainerApp.View
 		private async void QuizzesView_Load(object? sender, EventArgs e)
 		{
 			UpdateAuthUI();
+
 			await LoadQuizzesAsync();
 		}
 
@@ -25,6 +26,7 @@ namespace CodeTrainerApp.View
 			try
 			{
 				ProfileButton.Enabled = false;
+				CabinetButton.Enabled = false;
 				QuizListBox.Enabled = false;
 				TitleLabel.Text = "Завантаження квізів...";
 
@@ -52,6 +54,7 @@ namespace CodeTrainerApp.View
 			finally
 			{
 				ProfileButton.Enabled = true;
+				CabinetButton.Enabled = true;
 				QuizListBox.Enabled = true;
 			}
 		}
@@ -85,6 +88,7 @@ namespace CodeTrainerApp.View
 			bool loggedIn = UserService.Instance.IsLoggedIn;
 			ProfileButton.Text = loggedIn ? "👤 Профіль" : "🔐 Увійти";
 			CabinetButton.Visible = loggedIn; // ← додаємо показ кнопки
+			// CabinetButton.Enabled будет управляться после проверки доступности API в Load
 		}
 
 		// ================= CABINET BUTTON =================
