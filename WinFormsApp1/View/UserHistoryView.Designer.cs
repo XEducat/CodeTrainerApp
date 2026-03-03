@@ -7,7 +7,7 @@ using CodeTrainerApp.Model; // Для UserHistory
 
 namespace CodeTrainerApp.View
 {
-	public partial class CabinetView : Form
+	public partial class UserHistoryView : Form
 	{
 		private Panel mainPanel;
 		private Panel headerPanel;
@@ -221,7 +221,7 @@ namespace CodeTrainerApp.View
 			ClientSize = new Size(1200, 700);
 			Controls.Add(mainPanel);
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "Кабінет користувача";
+			Text = "Історя проходжень";
 			WindowState = FormWindowState.Maximized;
 
 			ResumeLayout(false);

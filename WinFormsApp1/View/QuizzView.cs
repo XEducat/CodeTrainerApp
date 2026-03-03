@@ -185,7 +185,7 @@ namespace CodeTrainerApp
 
 					try
 					{
-						var attempt = new UserHistory
+						var attempt = new Model.UserHistory
 						{
 							QuizId = _quiz.Id,
 							QuizTitle = _quiz.Title,

@@ -7,12 +7,12 @@ using CodeTrainerApp.Services;
 
 namespace CodeTrainerApp.View
 {
-	public partial class CabinetView : Form
+	public partial class UserHistoryView : Form
 	{
 		private readonly UserHistoryService _historyService;
-		private List<UserHistory> _allHistory = new List<UserHistory>();
+		private List<Model.UserHistory> _allHistory = new List<Model.UserHistory>();
 
-		public CabinetView(User user)
+		public UserHistoryView()
 		{
 			InitializeComponent();
 			_historyService = new UserHistoryService();
@@ -28,7 +28,7 @@ namespace CodeTrainerApp.View
 			try
 			{
 				var history = await _historyService.GetUserHistoryAsync();
-				_allHistory = history ?? new List<UserHistory>();
+				_allHistory = history ?? new List<Model.UserHistory>();
 
 				UpdateGrid(_allHistory);
 				UpdateStatistics(_allHistory);
@@ -40,7 +40,7 @@ namespace CodeTrainerApp.View
 			}
 		}
 
-		private void UpdateGrid(List<UserHistory> history)
+		private void UpdateGrid(List<Model.UserHistory> history)
 		{
 			dgvHistory.DataSource = null;
 			dgvHistory.DataSource = history;
@@ -75,7 +75,7 @@ namespace CodeTrainerApp.View
 			}
 		}
 
-		private void UpdateStatistics(List<UserHistory> history)
+		private void UpdateStatistics(List<Model.UserHistory> history)
 		{
 			int total = history.Count;
 			double avg = total > 0 ? history.Average(h => (double)h.Score / h.MaxScore * 100) : 0;
@@ -101,7 +101,7 @@ namespace CodeTrainerApp.View
 		{
 			if (dgvHistory.Columns[e.ColumnIndex].Name == "ScoreColumn")
 			{
-				var item = dgvHistory.Rows[e.RowIndex].DataBoundItem as UserHistory;
+				var item = dgvHistory.Rows[e.RowIndex].DataBoundItem as Model.UserHistory;
 				if (item != null)
 				{
 					e.Value = $"{item.Score} / {item.MaxScore}";
@@ -143,7 +143,7 @@ namespace CodeTrainerApp.View
 			string filterText = tbNameFilter.Text.ToLower();
 			DateTime today = DateTime.Today;
 
-			IEnumerable<UserHistory> filtered = _allHistory;
+			IEnumerable<Model.UserHistory> filtered = _allHistory;
 
 			// --- Фільтр по періоду/даті ---
 			switch (cbPeriod.SelectedItem.ToString())

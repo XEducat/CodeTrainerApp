@@ -55,7 +55,8 @@ namespace CodeTrainerApp.View
 		{
 			if (UserService.Instance.CurrentUser != null)
 			{
-				var cabinet = new CabinetView(UserService.Instance.CurrentUser);
+				//var cabinet = new CabinetView(UserService.Instance.CurrentUser);
+				var cabinet = new CabinetContainerView();
 
 				// При закрытии кабинета — только показываем основну форму (без UpdateAuthUI)
 				cabinet.FormClosed += (s, args) =>
