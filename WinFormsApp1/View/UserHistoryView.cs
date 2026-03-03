@@ -19,6 +19,7 @@ namespace CodeTrainerApp.View
 
 			cbPeriod.SelectedIndexChanged += FilterHistory;
 			dtpCustomDate.ValueChanged += FilterHistory;
+			cbPeriod.SelectedItem = "Весь час";
 
 			LoadHistoryAsync();
 		}

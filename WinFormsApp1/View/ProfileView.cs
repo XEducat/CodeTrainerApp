@@ -29,7 +29,7 @@ namespace CodeTrainerApp.View
 			lblEmailValue.Text = _user.Email;
 			lblLoginValue.Text = _user.Login;
 			lblBirthDateValue.Text = _user.BirthDate.ToShortDateString();
-			lblRoleValue.Text = _user.Role;
+			lblRoleValue.Text = TranslateRole(_user.Role);
 		}
 
 		private async void btnLogout_Click(object sender, EventArgs e)
@@ -50,6 +50,17 @@ namespace CodeTrainerApp.View
 				LoggedOut?.Invoke(this, EventArgs.Empty);
 				this.Close();
 			}
+		}
+
+		private string TranslateRole(string role)
+		{
+			return role switch
+			{
+				"Student" => "Студент",
+				"Mentor" => "Ментор",
+				"Admin" => "Адміністратор",
+				_ => role
+			};
 		}
 	}
 }

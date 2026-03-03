@@ -28,9 +28,9 @@ namespace CodeTrainerApp.View
 			this.SuspendLayout();
 
 			// ================= FORM =================
-			this.Text = "User Profile";
+			this.Text = "Профіль";
 			this.BackColor = Color.White;
-			this.ClientSize = new Size(400, 450);      // компактний розмір
+			this.ClientSize = new Size(400, 475);      // компактний розмір
 			this.FormBorderStyle = FormBorderStyle.FixedDialog; // забороняє змінювати розмір
 			this.StartPosition = FormStartPosition.CenterScreen;
 
@@ -58,7 +58,7 @@ namespace CodeTrainerApp.View
 			// ================= TITLE =================
 			lblTitle = new Label
 			{
-				Text = "User Profile",
+				Text = "Ваш профіль",
 				Font = new Font("Segoe UI", 20F, FontStyle.Bold),
 				Dock = DockStyle.Fill,
 				TextAlign = ContentAlignment.MiddleCenter
@@ -67,10 +67,10 @@ namespace CodeTrainerApp.View
 			tableLayout.SetColumnSpan(lblTitle, 2);
 
 			// ================= LABELS =================
-			lblLogin = SetupLabel("Login:");
-			lblEmail = SetupLabel("Email:");
-			lblRole = SetupLabel("Role:");
-			lblBirthDate = SetupLabel("Birth Date:");
+			lblLogin = SetupLabel("Логін:");
+			lblEmail = SetupLabel("Пошта:");
+			lblRole = SetupLabel("Роль:");
+			lblBirthDate = SetupLabel("Дата народження:");
 
 			lblLoginValue = SetupValueLabel();
 			lblEmailValue = SetupValueLabel();
@@ -92,7 +92,7 @@ namespace CodeTrainerApp.View
 			// ================= BUTTON =================
 			btnLogout = new Button
 			{
-				Text = "Logout",
+				Text = "Вийти з акаунту",
 				Font = new Font("Segoe UI", 12F, FontStyle.Bold),
 				Dock = DockStyle.Fill,
 				FlatStyle = FlatStyle.Flat,
@@ -116,7 +116,7 @@ namespace CodeTrainerApp.View
 				Text = text,
 				Font = new Font("Segoe UI", 14F, FontStyle.Bold),
 				Dock = DockStyle.Fill,
-				TextAlign = ContentAlignment.MiddleRight
+				TextAlign = ContentAlignment.MiddleCenter
 			};
 		}
 

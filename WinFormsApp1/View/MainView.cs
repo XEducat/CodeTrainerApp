@@ -51,22 +51,34 @@ namespace CodeTrainerApp.View
 		}
 
 		// ================= CABINET BUTTON =================
+		// ================= CABINET BUTTON =================
 		private void CabinetButton_Click(object sender, EventArgs e)
 		{
-			if (UserService.Instance.CurrentUser != null)
+			var currentUser = UserService.Instance.CurrentUser;
+
+			if (currentUser == null)
+				return;
+
+			Form cabinetForm;
+
+			// Якщо користувач ментор
+			if (currentUser.Role == "Mentor")
 			{
-				//var cabinet = new CabinetView(UserService.Instance.CurrentUser);
-				var cabinet = new CabinetContainerView();
-
-				// При закрытии кабинета — только показываем основну форму (без UpdateAuthUI)
-				cabinet.FormClosed += (s, args) =>
-				{
-					this.Show();
-				};
-
-				this.Hide();
-				cabinet.Show();
+				cabinetForm = new CabinetContainerView();
 			}
+			else
+			{
+				cabinetForm = new UserHistoryView();
+			}
+
+			// Коли кабінет закриється — знову показати MainView
+			cabinetForm.FormClosed += (s, args) =>
+			{
+				this.Show();
+			};
+
+			this.Hide();
+			cabinetForm.Show();
 		}
 
 		// ================= LOAD QUIZZES =================

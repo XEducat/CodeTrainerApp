@@ -14,8 +14,14 @@ namespace CodeTrainerApp.View
 		public CabinetContainerView()
 		{
 			InitializeComponent();
+
 			btnCabinet.Click += (s, e) => ShowForm(new UserHistoryView());
-			ShowForm(new UserHistoryView()); // форма за замовчуванням
+			btnSecondView.Click += (s, e) => ShowForm(new SecondView());
+		}
+
+		private void CabinetContainerView_Load(object sender, EventArgs e)
+		{
+			ShowForm(new UserHistoryView());
 		}
 
 		// ================= ЛОГІКА ПЕРЕМИКАННЯ =================

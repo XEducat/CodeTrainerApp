@@ -23,8 +23,16 @@ namespace CodeTrainerApp.View
 			InitializeDesign();
 
 			TogglePasswordButton.Click += TogglePasswordButton_Click;
+			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
+
+			MentorCheckBox.CheckedChanged += MentorCheckBox_CheckedChanged; // ← ОЦЕ ДОДАТИ
+
 			MainButton.Click += MainAction_Click;
 			SwitchModeButton.Click += SwitchModeButton_Click;
+
+			// Спочатку поле коду приховане
+			MentorCodeLabel.Visible = false;
+			MentorCodeTextBox.Visible = false;
 
 			SetMode(false);
 		}
