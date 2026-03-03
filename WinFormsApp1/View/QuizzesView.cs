@@ -47,8 +47,7 @@ namespace CodeTrainerApp.View
 		{
 			bool loggedIn = UserService.Instance.IsLoggedIn;
 			ProfileButton.Text = loggedIn ? "👤 Профіль" : "🔐 Увійти";
-			CabinetButton.Visible = loggedIn; // ← додаємо показ кнопки
-			// CabinetButton.Enabled будет управляться после проверки доступности API в Load
+			CabinetButton.Visible = loggedIn;
 		}
 
 		// ================= CABINET BUTTON =================

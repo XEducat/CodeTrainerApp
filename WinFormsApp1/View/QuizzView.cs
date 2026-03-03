@@ -196,9 +196,6 @@ namespace CodeTrainerApp
 
 					var svc = new UserHistoryService();
 					await svc.CreateHistoryAsync(attempt, UserService.Instance.CurrentUser.Id);
-
-					MessageBox.Show("Результат збережено в історію.", "Інформація",
-						MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				catch (Exception ex)
 				{
