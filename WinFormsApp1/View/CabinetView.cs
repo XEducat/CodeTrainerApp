@@ -38,27 +38,37 @@ namespace CodeTrainerApp.View
 			try
 			{
 				var history = await _historyService.GetUserHistoryAsync();
-
-				history = history ?? new List<QuizAttempt>();
+				history = history ?? new List<UserHistory>();
 
 				dgvHistory.DataSource = history;
 
+				// ================= ПРИХОВУЄМО ТЕХНІЧНІ ПОЛЯ =================
 				if (dgvHistory.Columns["UserId"] != null)
 					dgvHistory.Columns["UserId"].Visible = false;
+
 				if (dgvHistory.Columns["Id"] != null)
-					dgvHistory.Columns["Id"].HeaderText = "ID запису";
+					dgvHistory.Columns["Id"].Visible = false;
+
 				if (dgvHistory.Columns["QuizId"] != null)
-					dgvHistory.Columns["QuizId"].HeaderText = "ID тесту";
+					dgvHistory.Columns["QuizId"].Visible = false;
+
+				// ================= НАЛАШТОВУЄМО ВІДОБРАЖЕННЯ =================
 				if (dgvHistory.Columns["QuizTitle"] != null)
 					dgvHistory.Columns["QuizTitle"].HeaderText = "Назва тесту";
+
 				if (dgvHistory.Columns["Score"] != null)
 					dgvHistory.Columns["Score"].HeaderText = "Результат";
-				if (dgvHistory.Columns["Date"] != null)
+
+				if (dgvHistory.Columns["MaxScore"] != null)
+					dgvHistory.Columns["MaxScore"].HeaderText = "Макс. бал";
+
+				if (dgvHistory.Columns["CompletedAt"] != null)
 				{
-					dgvHistory.Columns["Date"].HeaderText = "Дата проходження";
-					dgvHistory.Columns["Date"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
+					dgvHistory.Columns["CompletedAt"].HeaderText = "Дата проходження";
+					dgvHistory.Columns["CompletedAt"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
 				}
 
+				// ================= СТАТИСТИКА =================
 				int total = history.Count;
 				double avg = total > 0 ? history.Average(h => (double)h.Score) : 0.0;
 				int best = total > 0 ? history.Max(h => h.Score) : 0;
@@ -69,7 +79,12 @@ namespace CodeTrainerApp.View
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"Помилка при завантаженні історії: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(
+					$"Помилка при завантаженні історії: {ex.Message}",
+					"Error",
+					MessageBoxButtons.OK,
+					MessageBoxIcon.Error
+				);
 			}
 		}
 
@@ -84,7 +99,7 @@ namespace CodeTrainerApp.View
 		{
 			if (dgvHistory.CurrentRow == null) return;
 
-			var attempt = dgvHistory.CurrentRow.DataBoundItem as QuizAttempt;
+			var attempt = dgvHistory.CurrentRow.DataBoundItem as UserHistory;
 			if (attempt == null) return;
 
 			var confirm = MessageBox.Show(

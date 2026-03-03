@@ -17,7 +17,7 @@ namespace CodeTrainerApp.Services
 			_httpClient = ApiClient.Instance;
 		}
 
-		public async Task<List<QuizAttempt>> GetUserHistoryAsync()
+		public async Task<List<UserHistory>> GetUserHistoryAsync()
 		{
 			var response = await _httpClient.GetAsync("api/UserHistory/my");
 
@@ -27,12 +27,12 @@ namespace CodeTrainerApp.Services
 				throw new Exception($"Помилка: {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
 			}
 
-			return await response.Content.ReadFromJsonAsync<List<QuizAttempt>>()
-				   ?? new List<QuizAttempt>();
+			return await response.Content.ReadFromJsonAsync<List<UserHistory>>()
+				   ?? new List<UserHistory>();
 		}
 
 		// Accept userId and include it in DTO sent to API.
-		public async Task<QuizAttempt?> CreateHistoryAsync(QuizAttempt attempt, string userId)
+		public async Task<UserHistory?> CreateHistoryAsync(UserHistory attempt, string userId)
 		{
 			// Prepare DTO with fields server expects from client (including UserId)
 			var dto = new
@@ -42,7 +42,7 @@ namespace CodeTrainerApp.Services
 				QuizTitle = attempt.QuizTitle,
 				Score = attempt.Score,
 				// Date is optional — server will set CompletedAt; include if you want
-				Date = attempt.Date
+				Date = attempt.CompletedAt
 			};
 
 			var response = await _httpClient.PostAsJsonAsync("api/UserHistory/create", dto);
@@ -58,14 +58,14 @@ namespace CodeTrainerApp.Services
 
 			try
 			{
-				var created = new QuizAttempt
+				var created = new UserHistory
 				{
 					Id = json.TryGetProperty("id", out var jId) && jId.ValueKind != JsonValueKind.Null ? jId.GetInt32() : 0,
 					UserId = json.TryGetProperty("userId", out var jUser) && jUser.ValueKind != JsonValueKind.Null ? jUser.GetString() ?? "" : userId,
 					QuizId = json.TryGetProperty("quizId", out var jQuiz) && jQuiz.ValueKind != JsonValueKind.Null ? jQuiz.GetInt32() : attempt.QuizId,
 					QuizTitle = json.TryGetProperty("quizTitle", out var jTitle) && jTitle.ValueKind != JsonValueKind.Null ? jTitle.GetString() ?? attempt.QuizTitle : attempt.QuizTitle,
 					Score = json.TryGetProperty("score", out var jScore) && jScore.ValueKind != JsonValueKind.Null ? jScore.GetInt32() : attempt.Score,
-					Date = json.TryGetProperty("completedAt", out var jDate) && jDate.ValueKind != JsonValueKind.Null ? jDate.GetDateTime() : (json.TryGetProperty("date", out var jDate2) && jDate2.ValueKind != JsonValueKind.Null ? jDate2.GetDateTime() : attempt.Date)
+					CompletedAt = json.TryGetProperty("completedAt", out var jDate) && jDate.ValueKind != JsonValueKind.Null ? jDate.GetDateTime() : (json.TryGetProperty("date", out var jDate2) && jDate2.ValueKind != JsonValueKind.Null ? jDate2.GetDateTime() : attempt.CompletedAt)
 				};
 
 				return created;

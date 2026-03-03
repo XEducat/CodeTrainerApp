@@ -1,6 +1,6 @@
-﻿namespace CodeTrainerAPI.Data
+﻿namespace CodeTrainerAPI.DTO
 {
-	public class LoginResponse
+	public class LoginDto
 	{
 		public string Id { get; set; }
 		public string Email { get; set; }

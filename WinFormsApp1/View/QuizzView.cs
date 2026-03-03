@@ -186,12 +186,12 @@ namespace CodeTrainerApp
 				// Надіслати на сервер
 				try
 				{
-					var attempt = new QuizAttempt
+					var attempt = new UserHistory
 					{
 						QuizId = _quiz.Id,
 						QuizTitle = _quiz.Title,
 						Score = _passedCount,
-						Date = DateTime.UtcNow
+						CompletedAt = DateTime.UtcNow
 					};
 
 					var svc = new UserHistoryService();

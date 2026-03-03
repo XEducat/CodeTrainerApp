@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging;
+using CodeTrainerAPI.DTO;
 
 namespace CodeTrainerAPI.Controllers
 {
@@ -23,7 +23,7 @@ namespace CodeTrainerAPI.Controllers
 		}
 
 		// ================= GET MY HISTORY =================
-		[HttpGet("my")]	
+		[HttpGet("my")]
 		public IActionResult GetMyHistory()
 		{
 			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -32,8 +32,18 @@ namespace CodeTrainerAPI.Controllers
 				return Unauthorized();
 
 			var history = _context.UserHistories
-				.Where((UserHistory x) => x.UserId == userId)
+				.Where(x => x.UserId == userId)
+				.Include(x => x.Quiz)   // Підтягуємо тест
 				.OrderByDescending(x => x.CompletedAt)
+				.Select(x => new UserHistoryDto
+				{
+					Id = x.Id,
+					QuizId = x.QuizId,
+					QuizTitle = x.Quiz != null ? x.Quiz.Title : "Unknown",
+					MaxScore = x.MaxScore,
+					Score = x.Score,
+					CompletedAt = x.CompletedAt
+				})
 				.ToList();
 
 			return Ok(history);

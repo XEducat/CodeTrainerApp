@@ -1,5 +1,5 @@
 ﻿using CodeTrainerAPI.Data;
-using CodeTrainerAPI.Data.Models;
+using CodeTrainerAPI.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -97,7 +97,7 @@ namespace CodeTrainerAPI.Controllers
 
 			var roles = await _userManager.GetRolesAsync(user);
 
-			return Ok(new LoginResponse
+			return Ok(new LoginDto
 			{
 				Id = user.Id,
 				Email = user.Email,
