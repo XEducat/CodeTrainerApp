@@ -87,5 +87,22 @@ namespace CodeTrainerAPI.Controllers
 
 			return Ok(new { message = "Record deleted successfully." });
 		}
+
+		[HttpDelete("clear")]
+		public async Task<IActionResult> ClearHistory()
+		{
+			var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+			if (string.IsNullOrEmpty(userId))
+				return Unauthorized();
+
+			var history = _context.UserHistories
+				.Where(x => x.UserId == userId);
+
+			_context.UserHistories.RemoveRange(history);
+			await _context.SaveChangesAsync();
+
+			return Ok();
+		}
 	}
 }

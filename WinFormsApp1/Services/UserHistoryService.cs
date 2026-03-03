@@ -82,5 +82,11 @@ namespace CodeTrainerApp.Services
 			var response = await _httpClient.DeleteAsync($"api/UserHistory/delete/{id}");
 			return response.IsSuccessStatusCode;
 		}
+
+		public async Task<bool> ClearHistoryAsync()
+		{
+			var response = await _httpClient.DeleteAsync("api/userhistory/clear");
+			return response.IsSuccessStatusCode;
+		}
 	}
 }

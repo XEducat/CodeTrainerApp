@@ -9,30 +9,16 @@ namespace CodeTrainerApp.View
 {
 	public partial class CabinetView : Form
 	{
-		private readonly string _email;
-		private readonly string _role;
 		private readonly UserHistoryService _historyService;
 
 		public CabinetView(User user)
 		{
 			InitializeComponent();
-
-			_email = user.Email;
-			_role = user.Role;
-
 			_historyService = new UserHistoryService();
-
-			LoadUserInfo();
 			LoadHistoryAsync();
 		}
 
-		private void LoadUserInfo()
-		{
-			lblEmail.Text = $"Email: {_email}";
-			lblRole.Text = $"Роль: {_role}";
-		}
-
-		// Асинхронне завантаження історії користувача
+		// ================= ЗАВАНТАЖЕННЯ ІСТОРІЇ =================
 		private async void LoadHistoryAsync()
 		{
 			try
@@ -42,7 +28,7 @@ namespace CodeTrainerApp.View
 
 				dgvHistory.DataSource = history;
 
-				// ================= ПРИХОВУЄМО ТЕХНІЧНІ ПОЛЯ =================
+				// Приховуємо технічні поля
 				if (dgvHistory.Columns["UserId"] != null)
 					dgvHistory.Columns["UserId"].Visible = false;
 
@@ -52,7 +38,7 @@ namespace CodeTrainerApp.View
 				if (dgvHistory.Columns["QuizId"] != null)
 					dgvHistory.Columns["QuizId"].Visible = false;
 
-				// ================= НАЛАШТОВУЄМО ВІДОБРАЖЕННЯ =================
+				// Налаштовуємо назви
 				if (dgvHistory.Columns["QuizTitle"] != null)
 					dgvHistory.Columns["QuizTitle"].HeaderText = "Назва тесту";
 
@@ -68,7 +54,7 @@ namespace CodeTrainerApp.View
 					dgvHistory.Columns["CompletedAt"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
 				}
 
-				// ================= СТАТИСТИКА =================
+				// Статистика
 				int total = history.Count;
 				double avg = total > 0 ? history.Average(h => (double)h.Score) : 0.0;
 				int best = total > 0 ? history.Max(h => h.Score) : 0;
@@ -88,13 +74,7 @@ namespace CodeTrainerApp.View
 			}
 		}
 
-		// Теперь в кабинете кнопка просто закрывает форму (logout - в ProfileView)
-		private void BtnLogout_Click(object sender, EventArgs e)
-		{
-			this.Close();
-		}
-
-		// Видалення вибраного запису
+		// ================= ВИДАЛЕННЯ ОДНОГО ЗАПИСУ =================
 		private async void btnDeleteSelected_Click(object sender, EventArgs e)
 		{
 			if (dgvHistory.CurrentRow == null) return;
@@ -112,16 +92,44 @@ namespace CodeTrainerApp.View
 			if (confirm == DialogResult.Yes)
 			{
 				bool success = await _historyService.DeleteHistoryAsync(attempt.Id);
+
 				if (success)
 				{
-					MessageBox.Show("Запис видалено.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					LoadHistoryAsync(); // оновлюємо таблицю
-				}
-				else
-				{
-					MessageBox.Show("Не вдалося видалити запис.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show("Запис видалено.");
+					LoadHistoryAsync();
 				}
 			}
+		}
+
+		// ================= ОЧИЩЕННЯ ВСІЄЇ ІСТОРІЇ =================
+		private async void btnClearHistory_Click(object sender, EventArgs e)
+		{
+			var confirm = MessageBox.Show(
+				"Ви впевнені, що хочете повністю очистити історію?",
+				"Підтвердження",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Warning
+			);
+
+			if (confirm != DialogResult.Yes)
+				return;
+
+			bool success = await _historyService.ClearHistoryAsync();
+
+			if (success)
+			{
+				MessageBox.Show("Історію очищено.");
+				LoadHistoryAsync();
+			}
+			else
+			{
+				MessageBox.Show("Не вдалося очистити історію.", "Error");
+			}
+		}
+
+		private void BtnLogout_Click(object sender, EventArgs e)
+		{
+			this.Close();
 		}
 	}
 }
