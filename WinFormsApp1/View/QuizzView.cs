@@ -11,7 +11,7 @@ namespace CodeTrainerApp
 		private readonly Quiz _quiz;
 		private User _currentUser;
 
-		// Счетчик успішно пройдених завдань
+		// Лічильник успішно пройдених завдань
 		private int _passedCount = 0;
 
 		public QuizView(Quiz selectedQuiz)
@@ -36,7 +36,6 @@ namespace CodeTrainerApp
 		}
 
 		// ================= ACCESS CONTROL =================
-
 		private void InitializeAccess()
 		{
 			if (_currentUser == null)
@@ -53,7 +52,6 @@ namespace CodeTrainerApp
 		}
 
 		// ================= LOAD TASK =================
-
 		private void LoadCurrentTask()
 		{
 			if (_quiz?.Tasks == null || _quiz.Tasks.Count == 0)
@@ -98,7 +96,6 @@ namespace CodeTrainerApp
 		}
 
 		// ================= CHECK =================
-
 		private async void CheckButton_Click(object sender, EventArgs e)
 		{
 			if (_currentUser == null)
@@ -156,7 +153,6 @@ namespace CodeTrainerApp
 		}
 
 		// ================= SKIP =================
-
 		private void SkipButton_Click(object sender, EventArgs e)
 		{
 			ResultTextBox.Text =
@@ -170,45 +166,61 @@ namespace CodeTrainerApp
 		}
 
 		// ================= NEXT =================
-
 		private async void NextButton_Click(object sender, EventArgs e)
 		{
 			currentTaskIndex++;
-			NextButton.Enabled = false;
 
-			// Якщо натиснули "Завершити" (перейшли за останній індекс) — показати оцінку і відправити на сервер
-			if (currentTaskIndex >= _quiz.Tasks.Count && _currentUser != null)
+			// Якщо завершено всі завдання
+			if (currentTaskIndex >= _quiz.Tasks.Count)
 			{
-				// Показати оцінку
-				string scoreText = $"Ваш результат: {_passedCount} / {_quiz.Tasks.Count}";
-				MessageBox.Show(scoreText, "Оцінка проходження", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-				// Надіслати на сервер
-				try
+				if (_currentUser != null)
 				{
-					var attempt = new UserHistory
+					string scoreText = $"Ваш результат: {_passedCount} / {_quiz.Tasks.Count}";
+					MessageBox.Show(
+						scoreText,
+						"Оцінка проходження",
+						MessageBoxButtons.OK,
+						MessageBoxIcon.Information
+					);
+
+					try
 					{
-						QuizId = _quiz.Id,
-						QuizTitle = _quiz.Title,
-						Score = _passedCount,
-						CompletedAt = DateTime.UtcNow
-					};
+						var attempt = new UserHistory
+						{
+							QuizId = _quiz.Id,
+							QuizTitle = _quiz.Title,
+							Score = _passedCount,
+							MaxScore = _quiz.Tasks.Count,
+							CompletedAt = DateTime.UtcNow
+						};
 
-					var svc = new UserHistoryService();
-					await svc.CreateHistoryAsync(attempt, UserService.Instance.CurrentUser.Id);
+						var svc = new UserHistoryService();
+						await svc.CreateHistoryAsync(attempt, _currentUser.Id);
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show(
+							"Не вдалося зберегти історію: " + ex.Message,
+							"Помилка",
+							MessageBoxButtons.OK,
+							MessageBoxIcon.Error
+						);
+					}
 				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Не вдалося зберегти історію: " + ex.Message, "Помилка",
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
+
+				// ВІДКЛЮЧАЄМО ПІДТВЕРДЖЕННЯ ЗАКРИТТЯ
+				this.FormClosing -= QuizView_FormClosing;
+
+				// ЗАКРИВАЄМО ФОРМУ
+				this.Close();
+				return;
 			}
 
+			NextButton.Enabled = false;
 			LoadCurrentTask();
 		}
 
 		// ================= LOGIN =================
-
 		private void LoginButton_Click(object sender, EventArgs e)
 		{
 			using (var loginView = new LoginView())
@@ -233,7 +245,6 @@ namespace CodeTrainerApp
 		}
 
 		// ================= CLOSE CONFIRM =================
-
 		private void QuizView_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			using (var confirmForm = new ConfirmCloseView())

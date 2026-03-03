@@ -41,7 +41,7 @@ namespace CodeTrainerApp.Services
 				QuizId = attempt.QuizId,
 				QuizTitle = attempt.QuizTitle,
 				Score = attempt.Score,
-				// Date is optional — server will set CompletedAt; include if you want
+				MaxScore = attempt.MaxScore,
 				Date = attempt.CompletedAt
 			};
 

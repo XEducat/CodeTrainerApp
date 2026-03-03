@@ -10,126 +10,182 @@ namespace CodeTrainerApp.View
 	public partial class CabinetView : Form
 	{
 		private readonly UserHistoryService _historyService;
+		private List<UserHistory> _allHistory = new List<UserHistory>();
 
 		public CabinetView(User user)
 		{
 			InitializeComponent();
 			_historyService = new UserHistoryService();
+
+			cbPeriod.SelectedIndexChanged += FilterHistory;
+			dtpCustomDate.ValueChanged += FilterHistory;
+
 			LoadHistoryAsync();
 		}
 
-		// ================= ЗАВАНТАЖЕННЯ ІСТОРІЇ =================
 		private async void LoadHistoryAsync()
 		{
 			try
 			{
 				var history = await _historyService.GetUserHistoryAsync();
-				history = history ?? new List<UserHistory>();
+				_allHistory = history ?? new List<UserHistory>();
 
-				dgvHistory.DataSource = history;
-
-				// Приховуємо технічні поля
-				if (dgvHistory.Columns["UserId"] != null)
-					dgvHistory.Columns["UserId"].Visible = false;
-
-				if (dgvHistory.Columns["Id"] != null)
-					dgvHistory.Columns["Id"].Visible = false;
-
-				if (dgvHistory.Columns["QuizId"] != null)
-					dgvHistory.Columns["QuizId"].Visible = false;
-
-				// Налаштовуємо назви
-				if (dgvHistory.Columns["QuizTitle"] != null)
-					dgvHistory.Columns["QuizTitle"].HeaderText = "Назва тесту";
-
-				if (dgvHistory.Columns["Score"] != null)
-					dgvHistory.Columns["Score"].HeaderText = "Результат";
-
-				if (dgvHistory.Columns["MaxScore"] != null)
-					dgvHistory.Columns["MaxScore"].HeaderText = "Макс. бал";
-
-				if (dgvHistory.Columns["CompletedAt"] != null)
-				{
-					dgvHistory.Columns["CompletedAt"].HeaderText = "Дата проходження";
-					dgvHistory.Columns["CompletedAt"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-				}
-
-				// Статистика
-				int total = history.Count;
-				double avg = total > 0 ? history.Average(h => (double)h.Score) : 0.0;
-				int best = total > 0 ? history.Max(h => h.Score) : 0;
-
-				lblTotalValue.Text = total.ToString();
-				lblAverageValue.Text = avg.ToString("0.##");
-				lblBestValue.Text = best.ToString();
+				UpdateGrid(_allHistory);
+				UpdateStatistics(_allHistory);
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(
-					$"Помилка при завантаженні історії: {ex.Message}",
-					"Error",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Error
-				);
+				MessageBox.Show("Помилка при завантаженні історії: " + ex.Message,
+					"Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
-		// ================= ВИДАЛЕННЯ ОДНОГО ЗАПИСУ =================
-		private async void btnDeleteSelected_Click(object sender, EventArgs e)
+		private void UpdateGrid(List<UserHistory> history)
 		{
-			if (dgvHistory.CurrentRow == null) return;
+			dgvHistory.DataSource = null;
+			dgvHistory.DataSource = history;
 
-			var attempt = dgvHistory.CurrentRow.DataBoundItem as UserHistory;
-			if (attempt == null) return;
-
-			var confirm = MessageBox.Show(
-				$"Видалити запис '{attempt.QuizTitle}'?",
-				"Підтвердження",
-				MessageBoxButtons.YesNo,
-				MessageBoxIcon.Warning
-			);
-
-			if (confirm == DialogResult.Yes)
+			// Створюємо колонки заново, щоб не було AutoGenerateColumns
+			if (dgvHistory.Columns.Count == 0)
 			{
-				bool success = await _historyService.DeleteHistoryAsync(attempt.Id);
-
-				if (success)
+				dgvHistory.Columns.Add(new DataGridViewTextBoxColumn
 				{
-					MessageBox.Show("Запис видалено.");
-					LoadHistoryAsync();
+					DataPropertyName = "QuizTitle",
+					HeaderText = "Назва тесту",
+					AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+				});
+
+				dgvHistory.Columns.Add(new DataGridViewTextBoxColumn
+				{
+					Name = "ScoreColumn",
+					HeaderText = "Результат",
+					AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+				});
+
+				dgvHistory.Columns.Add(new DataGridViewTextBoxColumn
+				{
+					DataPropertyName = "CompletedAt",
+					HeaderText = "Дата проходження",
+					DefaultCellStyle = { Format = "dd.MM.yyyy HH:mm" },
+					AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+				});
+
+				dgvHistory.CellFormatting -= DgvHistory_CellFormatting;
+				dgvHistory.CellFormatting += DgvHistory_CellFormatting;
+			}
+		}
+
+		private void UpdateStatistics(List<UserHistory> history)
+		{
+			int total = history.Count;
+			double avg = total > 0 ? history.Average(h => (double)h.Score / h.MaxScore * 100) : 0;
+			double bestPercent = total > 0 ? history.Max(h => (double)h.Score / h.MaxScore * 100) : 0;
+
+			lblTotalValue.Text = total.ToString();
+			lblAverageValue.Text = avg.ToString("0.##") + "%";
+
+			// Найкращий результат — максимальний відсоток виконання
+			var bestItem = history.OrderByDescending(h => (double)h.Score / h.MaxScore).FirstOrDefault();
+			if (bestItem != null)
+			{
+				double percent = (double)bestItem.Score / bestItem.MaxScore * 100;
+				lblBestValue.Text = $"{bestItem.Score} / {bestItem.MaxScore} ({percent:0.#}%)";
+			}
+			else
+			{
+				lblBestValue.Text = "0 / 0 (0%)";
+			}
+		}
+
+		private void DgvHistory_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+		{
+			if (dgvHistory.Columns[e.ColumnIndex].Name == "ScoreColumn")
+			{
+				var item = dgvHistory.Rows[e.RowIndex].DataBoundItem as UserHistory;
+				if (item != null)
+				{
+					e.Value = $"{item.Score} / {item.MaxScore}";
+					e.FormattingApplied = true;
 				}
 			}
 		}
 
-		// ================= ОЧИЩЕННЯ ВСІЄЇ ІСТОРІЇ =================
 		private async void btnClearHistory_Click(object sender, EventArgs e)
 		{
 			var confirm = MessageBox.Show(
-				"Ви впевнені, що хочете повністю очистити історію?",
+				"Ви впевнені, що хочете очистити історію?",
 				"Підтвердження",
 				MessageBoxButtons.YesNo,
-				MessageBoxIcon.Warning
-			);
+				MessageBoxIcon.Warning);
 
-			if (confirm != DialogResult.Yes)
-				return;
+			if (confirm != DialogResult.Yes) return;
 
 			bool success = await _historyService.ClearHistoryAsync();
-
-			if (success)
-			{
-				MessageBox.Show("Історію очищено.");
-				LoadHistoryAsync();
-			}
-			else
-			{
-				MessageBox.Show("Не вдалося очистити історію.", "Error");
-			}
+			if (success) LoadHistoryAsync();
 		}
 
-		private void BtnLogout_Click(object sender, EventArgs e)
+		private void TbNameFilter_TextChanged(object sender, EventArgs e)
 		{
-			this.Close();
+			ApplyFilters();
+		}
+
+		private void FilterHistory(object sender, EventArgs e)
+		{
+			ApplyFilters();
+		}
+
+		// Загальний метод фільтрації
+		private void ApplyFilters()
+		{
+			if (_allHistory == null || !_allHistory.Any())
+				return;
+
+			string filterText = tbNameFilter.Text.ToLower();
+			DateTime today = DateTime.Today;
+
+			IEnumerable<UserHistory> filtered = _allHistory;
+
+			// --- Фільтр по періоду/даті ---
+			switch (cbPeriod.SelectedItem.ToString())
+			{
+				case "Сьогодні":
+					filtered = filtered.Where(h => h.CompletedAt.Date == today);
+					dtpCustomDate.Visible = false;
+					break;
+				case "Вчора":
+					filtered = filtered.Where(h => h.CompletedAt.Date == today.AddDays(-1));
+					dtpCustomDate.Visible = false;
+					break;
+				case "За тиждень":
+					filtered = filtered.Where(h => h.CompletedAt.Date >= today.AddDays(-7));
+					dtpCustomDate.Visible = false;
+					break;
+				case "2 тижні":
+					filtered = filtered.Where(h => h.CompletedAt.Date >= today.AddDays(-14));
+					dtpCustomDate.Visible = false;
+					break;
+				case "Місяць":
+					filtered = filtered.Where(h => h.CompletedAt.Date >= today.AddMonths(-1));
+					dtpCustomDate.Visible = false;
+					break;
+				case "Весь час":
+					dtpCustomDate.Visible = false;
+					break;
+				case "Обрана дата":
+					filtered = filtered.Where(h => h.CompletedAt.Date == dtpCustomDate.Value.Date);
+					dtpCustomDate.Visible = true;
+					break;
+			}
+
+			// --- Фільтр по назві ---
+			if (!string.IsNullOrWhiteSpace(filterText))
+			{
+				filtered = filtered.Where(h => h.QuizTitle != null && h.QuizTitle.ToLower().Contains(filterText));
+			}
+
+			var filteredList = filtered.ToList();
+			UpdateGrid(filteredList);
+			UpdateStatistics(filteredList);
 		}
 	}
 }

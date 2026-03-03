@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using CodeTrainerApp.Model; // Для UserHistory
 
 namespace CodeTrainerApp.View
 {
@@ -11,24 +14,26 @@ namespace CodeTrainerApp.View
 		private Label lblTitle;
 
 		private FlowLayoutPanel statsPanel;
-
 		private Panel pnlStatTotal;
 		private Label lblTotalTitle;
 		private Label lblTotalValue;
-
 		private Panel pnlStatAverage;
 		private Label lblAverageTitle;
 		private Label lblAverageValue;
-
 		private Panel pnlStatBest;
 		private Label lblBestTitle;
 		private Label lblBestValue;
 
-		private Panel footerPanel;
-		private Button btnLogout;
-		private Button btnClearHistory;
-
+		private Panel dgvContainer; // Панель для обводки
 		private DataGridView dgvHistory;
+
+		private Panel filterPanel;
+		private Label lblNameFilter;
+		private TextBox tbNameFilter;
+		private Label lblFilter;
+		private ComboBox cbPeriod;
+		private DateTimePicker dtpCustomDate;
+		private Button btnClearHistory;
 
 		private void InitializeComponent()
 		{
@@ -37,34 +42,36 @@ namespace CodeTrainerApp.View
 			lblTitle = new Label();
 
 			statsPanel = new FlowLayoutPanel();
-
 			pnlStatTotal = new Panel();
 			lblTotalTitle = new Label();
 			lblTotalValue = new Label();
-
 			pnlStatAverage = new Panel();
 			lblAverageTitle = new Label();
 			lblAverageValue = new Label();
-
 			pnlStatBest = new Panel();
 			lblBestTitle = new Label();
 			lblBestValue = new Label();
 
-			footerPanel = new Panel();
-			btnLogout = new Button();
-			btnClearHistory = new Button();
-
+			dgvContainer = new Panel();
 			dgvHistory = new DataGridView();
+
+			filterPanel = new Panel();
+			lblNameFilter = new Label();
+			tbNameFilter = new TextBox();
+			lblFilter = new Label();
+			cbPeriod = new ComboBox();
+			dtpCustomDate = new DateTimePicker();
+			btnClearHistory = new Button();
 
 			SuspendLayout();
 
 			// ================= MAIN PANEL =================
 			mainPanel.Dock = DockStyle.Fill;
 			mainPanel.BackColor = Color.White;
-			mainPanel.Padding = new Padding(30);
-			mainPanel.Controls.Add(dgvHistory);
+			mainPanel.Padding = new Padding(20);
+			mainPanel.Controls.Add(dgvContainer);
+			mainPanel.Controls.Add(filterPanel);
 			mainPanel.Controls.Add(statsPanel);
-			mainPanel.Controls.Add(footerPanel);
 			mainPanel.Controls.Add(headerPanel);
 
 			// ================= HEADER =================
@@ -74,8 +81,8 @@ namespace CodeTrainerApp.View
 			lblTitle.Text = "Кабінет користувача";
 			lblTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
 			lblTitle.ForeColor = Color.FromArgb(33, 37, 41);
-			lblTitle.Location = new Point(0, 0);
 			lblTitle.AutoSize = true;
+			lblTitle.Location = new Point(0, 0);
 
 			headerPanel.Controls.Add(lblTitle);
 
@@ -94,34 +101,70 @@ namespace CodeTrainerApp.View
 			statsPanel.Controls.Add(pnlStatAverage);
 			statsPanel.Controls.Add(pnlStatBest);
 
-			// ================= FOOTER =================
-			footerPanel.Dock = DockStyle.Bottom;
-			footerPanel.Height = 80;
+			// ================= FILTER PANEL =================
+			filterPanel.Dock = DockStyle.Right;
+			filterPanel.Width = 250;
+			filterPanel.Padding = new Padding(10);
+			filterPanel.BackColor = Color.FromArgb(248, 249, 250);
 
-			btnLogout.Text = "Вийти";
-			btnLogout.Width = 130;
-			btnLogout.Height = 42;
-			btnLogout.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-			btnLogout.BackColor = Color.FromArgb(220, 53, 69);
-			btnLogout.ForeColor = Color.White;
-			btnLogout.FlatStyle = FlatStyle.Flat;
-			btnLogout.FlatAppearance.BorderSize = 0;
-			btnLogout.Location = new Point(30, 18);
-			btnLogout.Click += BtnLogout_Click;
+			lblNameFilter.Text = "Назва квізу";
+			lblNameFilter.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			lblNameFilter.AutoSize = true;
+			lblNameFilter.Location = new Point(10, 10);
+
+			tbNameFilter.Width = 220;
+			tbNameFilter.Location = new Point(10, 35);
+			tbNameFilter.TextChanged += TbNameFilter_TextChanged;
+
+			lblFilter.Text = "Показати за";
+			lblFilter.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			lblFilter.AutoSize = true;
+			lblFilter.Location = new Point(10, 75);
+
+			cbPeriod.DropDownStyle = ComboBoxStyle.DropDownList;
+			cbPeriod.Items.AddRange(new string[]
+			{
+				"Сьогодні",
+				"Вчора",
+				"За тиждень",
+				"2 тижні",
+				"Місяць",
+				"Весь час",
+				"Обрана дата"
+			});
+			cbPeriod.SelectedIndex = 0;
+			cbPeriod.Location = new Point(10, 100);
+			cbPeriod.Width = 220;
+
+			dtpCustomDate.Format = DateTimePickerFormat.Short;
+			dtpCustomDate.Location = new Point(10, 130);
+			dtpCustomDate.Width = 220;
+			dtpCustomDate.Visible = false;
 
 			btnClearHistory.Text = "Очистити історію";
-			btnClearHistory.Width = 180;
+			btnClearHistory.Width = 220;
 			btnClearHistory.Height = 42;
 			btnClearHistory.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-			btnClearHistory.BackColor = Color.FromArgb(108, 117, 125);
+			btnClearHistory.BackColor = Color.FromArgb(220, 53, 69);
 			btnClearHistory.ForeColor = Color.White;
 			btnClearHistory.FlatStyle = FlatStyle.Flat;
 			btnClearHistory.FlatAppearance.BorderSize = 0;
-			btnClearHistory.Location = new Point(200, 18);
+			btnClearHistory.Location = new Point(10, filterPanel.Height - 60);
+			btnClearHistory.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			btnClearHistory.Click += btnClearHistory_Click;
 
-			footerPanel.Controls.Add(btnLogout);
-			footerPanel.Controls.Add(btnClearHistory);
+			filterPanel.Controls.Add(lblNameFilter);
+			filterPanel.Controls.Add(tbNameFilter);
+			filterPanel.Controls.Add(lblFilter);
+			filterPanel.Controls.Add(cbPeriod);
+			filterPanel.Controls.Add(dtpCustomDate);
+			filterPanel.Controls.Add(btnClearHistory);
+
+			// ================= DATAGRIDVIEW CONTAINER =================
+			dgvContainer.Dock = DockStyle.Fill;
+			dgvContainer.Padding = new Padding(1);
+			dgvContainer.BackColor = Color.FromArgb(200, 200, 200); // сірий для рамки
+			dgvContainer.Controls.Add(dgvHistory);
 
 			// ================= DATAGRIDVIEW =================
 			dgvHistory.Dock = DockStyle.Fill;
@@ -138,7 +181,7 @@ namespace CodeTrainerApp.View
 			dgvHistory.MultiSelect = false;
 
 			dgvHistory.RowHeadersVisible = false;
-			dgvHistory.AutoGenerateColumns = true;
+			dgvHistory.AutoGenerateColumns = false;
 			dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
 			dgvHistory.EnableHeadersVisualStyles = false;
@@ -151,9 +194,7 @@ namespace CodeTrainerApp.View
 			dgvHistory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
 			dgvHistory.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 			dgvHistory.ColumnHeadersHeight = 45;
-
-			dgvHistory.ColumnHeadersDefaultCellStyle.SelectionBackColor =
-				dgvHistory.ColumnHeadersDefaultCellStyle.BackColor;
+			dgvHistory.ColumnHeadersDefaultCellStyle.SelectionBackColor = dgvHistory.ColumnHeadersDefaultCellStyle.BackColor;
 
 			dgvHistory.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
 			dgvHistory.DefaultCellStyle.SelectionBackColor = Color.FromArgb(13, 110, 253);
@@ -164,12 +205,6 @@ namespace CodeTrainerApp.View
 
 			dgvHistory.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 250);
 			dgvHistory.ScrollBars = ScrollBars.Vertical;
-
-			dgvHistory.DataBindingComplete += (s, e) =>
-			{
-				dgvHistory.ClearSelection();
-				dgvHistory.CurrentCell = null;
-			};
 
 			// ================= FORM =================
 			BackColor = Color.FromArgb(245, 246, 250);
