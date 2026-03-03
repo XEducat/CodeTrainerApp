@@ -3,12 +3,12 @@ using CodeTrainerApp.Services;
 
 namespace CodeTrainerApp.View
 {
-	public partial class QuizzesView : Form
+	public partial class MainView : Form
 	{
 		private readonly QuizService _quizService = new QuizService();
 		private List<Quiz> _quizzes = new List<Quiz>();
 
-		public QuizzesView()
+		public MainView()
 		{
 			InitializeComponent();
 		}

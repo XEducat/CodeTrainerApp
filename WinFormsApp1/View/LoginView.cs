@@ -10,9 +10,6 @@ namespace CodeTrainerApp.View
 {
 	public partial class LoginView : Form
 	{
-		private readonly HttpClient _httpClient;
-		private readonly UserService _userService;
-
 		private bool _isRegisterMode = false;
 		private bool _passwordVisible = false;
 		private bool _confirmPasswordVisible = false;

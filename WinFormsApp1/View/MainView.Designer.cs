@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace CodeTrainerApp.View
 {
-	partial class QuizzesView
+	partial class MainView
 	{
 		private System.ComponentModel.IContainer components = null;
 		private ListBox QuizListBox;

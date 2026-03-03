@@ -104,22 +104,28 @@ namespace CodeTrainerApp.View
 			// ================= FILTER PANEL =================
 			filterPanel.Dock = DockStyle.Right;
 			filterPanel.Width = 250;
-			filterPanel.Padding = new Padding(10);
+			filterPanel.Padding = new Padding(15);
 			filterPanel.BackColor = Color.FromArgb(248, 249, 250);
 
+			// --- Фільтр за назвою ---
 			lblNameFilter.Text = "Назва квізу";
-			lblNameFilter.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			lblNameFilter.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+			lblNameFilter.ForeColor = Color.FromArgb(33, 37, 41);
 			lblNameFilter.AutoSize = true;
 			lblNameFilter.Location = new Point(10, 10);
 
 			tbNameFilter.Width = 220;
-			tbNameFilter.Location = new Point(10, 35);
+			tbNameFilter.Height = 30;
+			tbNameFilter.Location = new Point(10, 40);
+			tbNameFilter.Font = new Font("Segoe UI", 11F);
 			tbNameFilter.TextChanged += TbNameFilter_TextChanged;
 
+			// --- Фільтр за період/дату ---
 			lblFilter.Text = "Показати за";
-			lblFilter.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			lblFilter.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+			lblFilter.ForeColor = Color.FromArgb(33, 37, 41);
 			lblFilter.AutoSize = true;
-			lblFilter.Location = new Point(10, 75);
+			lblFilter.Location = new Point(10, 80);
 
 			cbPeriod.DropDownStyle = ComboBoxStyle.DropDownList;
 			cbPeriod.Items.AddRange(new string[]
@@ -133,23 +139,27 @@ namespace CodeTrainerApp.View
 				"Обрана дата"
 			});
 			cbPeriod.SelectedIndex = 0;
-			cbPeriod.Location = new Point(10, 100);
+			cbPeriod.Location = new Point(10, 110);
 			cbPeriod.Width = 220;
+			cbPeriod.Font = new Font("Segoe UI", 11F);
 
 			dtpCustomDate.Format = DateTimePickerFormat.Short;
-			dtpCustomDate.Location = new Point(10, 130);
+			dtpCustomDate.Location = new Point(10, 145);
 			dtpCustomDate.Width = 220;
+			dtpCustomDate.Height = 30;
+			dtpCustomDate.Font = new Font("Segoe UI", 11F);
 			dtpCustomDate.Visible = false;
 
+			// --- Кнопка очистити історію ---
 			btnClearHistory.Text = "Очистити історію";
 			btnClearHistory.Width = 220;
-			btnClearHistory.Height = 42;
-			btnClearHistory.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+			btnClearHistory.Height = 45;
+			btnClearHistory.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
 			btnClearHistory.BackColor = Color.FromArgb(220, 53, 69);
 			btnClearHistory.ForeColor = Color.White;
 			btnClearHistory.FlatStyle = FlatStyle.Flat;
 			btnClearHistory.FlatAppearance.BorderSize = 0;
-			btnClearHistory.Location = new Point(10, filterPanel.Height - 60);
+			btnClearHistory.Location = new Point(10, filterPanel.Height - 70);
 			btnClearHistory.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			btnClearHistory.Click += btnClearHistory_Click;
 
@@ -196,7 +206,7 @@ namespace CodeTrainerApp.View
 			dgvHistory.ColumnHeadersHeight = 45;
 			dgvHistory.ColumnHeadersDefaultCellStyle.SelectionBackColor = dgvHistory.ColumnHeadersDefaultCellStyle.BackColor;
 
-			dgvHistory.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+			dgvHistory.DefaultCellStyle.Font = new Font("Segoe UI", 11F); // трохи більший шрифт для читабельності
 			dgvHistory.DefaultCellStyle.SelectionBackColor = Color.FromArgb(13, 110, 253);
 			dgvHistory.DefaultCellStyle.SelectionForeColor = Color.White;
 			dgvHistory.DefaultCellStyle.Padding = new Padding(8);
