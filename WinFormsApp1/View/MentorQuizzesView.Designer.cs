@@ -1,6 +1,6 @@
 ﻿namespace CodeTrainerApp.View
 {
-	partial class SecondView
+	partial class MentorQuizzesView
 	{
 		/// <summary>
 		/// Required designer variable.

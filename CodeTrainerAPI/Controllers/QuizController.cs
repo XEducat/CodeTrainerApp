@@ -17,6 +17,25 @@ namespace CodeTrainerAPI.Controllers
 			_context = context;
 		}
 
+		// ================= GET: api/quiz/my =================
+		[HttpGet("my")]
+		[Authorize(Roles = "Mentor")]
+		public async Task<ActionResult<IEnumerable<Quiz>>> GetMyQuizzes()
+		{
+			var mentorId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+			if (mentorId == null)
+				return Unauthorized();
+
+			var quizzes = await _context.Quizzes
+				.Where(q => q.MentorId == mentorId)
+				.Include(q => q.Tasks)
+					.ThenInclude(t => t.Tests)
+				.ToListAsync();
+
+			return quizzes;
+		}
+
 		// ================= GET: api/quiz =================
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Quiz>>> GetQuizzes()
@@ -41,18 +60,30 @@ namespace CodeTrainerAPI.Controllers
 			return quiz;
 		}
 
-		// ================= POST: api/quiz =================
+		//// ================= POST: api/quiz =================
 		[HttpPost]
-		[Authorize(Roles = "Mentor")]
 		public async Task<ActionResult<Quiz>> CreateQuiz([FromBody] Quiz quiz)
 		{
-			_context.Quizzes.Add(quiz);
+			if (quiz == null)
+				return BadRequest();
 
+			_context.Quizzes.Add(quiz);
 			await _context.SaveChangesAsync();
 
 			return CreatedAtAction(nameof(GetQuiz), new { id = quiz.Id }, quiz);
 		}
 
+		[HttpGet("mentor/{mentorId}")]
+		public async Task<ActionResult<IEnumerable<Quiz>>> GetMentorQuizzes(string mentorId)
+		{
+			var quizzes = await _context.Quizzes
+				.Where(q => q.MentorId == mentorId)
+				.Include(q => q.Tasks)
+					.ThenInclude(t => t.Tests)
+				.ToListAsync();
+
+			return quizzes;
+		}
 
 		// ================= PUT: api/quiz/5 =================
 		[HttpPut("{id}")]

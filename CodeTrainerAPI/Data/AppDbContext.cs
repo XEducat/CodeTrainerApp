@@ -13,5 +13,16 @@ namespace CodeTrainerAPI.Data
 		public DbSet<ProgrammingTask> ProgrammingTasks { get; set; }
 		public DbSet<TestCase> TestCases { get; set; }
 		public DbSet<UserHistory> UserHistories { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			base.OnModelCreating(builder);
+
+			builder.Entity<Quiz>()
+				.HasOne(q => q.Mentor)
+				.WithMany()
+				.HasForeignKey(q => q.MentorId)
+				.OnDelete(DeleteBehavior.Restrict);
+		}
 	}
 }

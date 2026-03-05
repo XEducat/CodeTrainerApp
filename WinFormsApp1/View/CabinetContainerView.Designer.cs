@@ -10,10 +10,7 @@ namespace CodeTrainerApp.View
 		private Panel headerPanel;
 		private Button btnCabinet;
 		private Button btnSecondView;
-
 		private Panel contentPanel;
-
-		private Form currentForm;
 
 		private void InitializeComponent()
 		{
@@ -58,7 +55,7 @@ namespace CodeTrainerApp.View
 			btnSecondView.Name = "btnSecondView";
 			btnSecondView.Size = new Size(150, 40);
 			btnSecondView.TabIndex = 1;
-			btnSecondView.Text = "Інша форма";
+			btnSecondView.Text = "Мої квізи";
 			btnSecondView.UseVisualStyleBackColor = false;
 			// 
 			// contentPanel

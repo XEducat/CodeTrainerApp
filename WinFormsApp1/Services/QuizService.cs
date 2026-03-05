@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Threading;
 using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.Services
@@ -12,17 +11,17 @@ namespace CodeTrainerApp.Services
 			_httpClient = ApiClient.Instance;
 		}
 
-		// ================= GET: всі квізи =================
-		public async Task<List<Quiz>> GetAllQuizzesAsync()
+		// ================= GET: квізи поточного ментора =================
+		public async Task<List<Quiz>> GetMyQuizzesAsync()
 		{
 			try
 			{
-				var quizzes = await _httpClient.GetFromJsonAsync<List<Quiz>>("api/quiz");
+				var quizzes = await _httpClient.GetFromJsonAsync<List<Quiz>>("api/quiz/my");
 				return quizzes ?? new List<Quiz>();
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Помилка при отриманні квізів: " + ex.Message);
+				throw new Exception("Помилка при отриманні квізів ментора: " + ex.Message);
 			}
 		}
 
@@ -82,19 +81,45 @@ namespace CodeTrainerApp.Services
 			}
 		}
 
-		// ================= POST: створити квіз =================
-		public async Task<Quiz> CreateQuizAsync(Quiz quiz)
+		// ================= GET: один квіз =================
+		public async Task<Quiz?> GetQuizByMentorAsync(int id)
 		{
 			try
 			{
-				var response = await _httpClient.PostAsJsonAsync("api/quiz", quiz);
-				response.EnsureSuccessStatusCode();
-				var createdQuiz = await response.Content.ReadFromJsonAsync<Quiz>();
-				return createdQuiz!;
+				return await _httpClient.GetFromJsonAsync<Quiz>($"api/quiz/{id}");
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Помилка при створенні квізу: " + ex.Message);
+				throw new Exception("Помилка при отриманні квізу: " + ex.Message);
+			}
+		}
+
+		// ================= POST: створити квіз =================
+		public async Task<(bool success, string message, Quiz? quiz)> AddQuizAsync(string title, string description)
+		{
+			try
+			{
+				var newQuiz = new Quiz
+				{
+					Title = title,
+					Description = description
+				};
+
+				var response = await _httpClient.PostAsJsonAsync("api/quiz", newQuiz);
+
+				if (!response.IsSuccessStatusCode)
+				{
+					var error = await response.Content.ReadAsStringAsync();
+					return (false, error, null);
+				}
+
+				var createdQuiz = await response.Content.ReadFromJsonAsync<Quiz>();
+
+				return (true, "Квіз створено успішно", createdQuiz);
+			}
+			catch (Exception ex)
+			{
+				return (false, "Помилка створення квізу: " + ex.Message, null);
 			}
 		}
 

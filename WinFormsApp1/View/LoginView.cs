@@ -1,10 +1,5 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace CodeTrainerApp.View
 {
@@ -26,8 +21,6 @@ namespace CodeTrainerApp.View
 			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
 
 			MentorCheckBox.CheckedChanged += MentorCheckBox_CheckedChanged; // ← ОЦЕ ДОДАТИ
-
-			MainButton.Click += MainAction_Click;
 			SwitchModeButton.Click += SwitchModeButton_Click;
 
 			// Спочатку поле коду приховане
@@ -132,7 +125,7 @@ namespace CodeTrainerApp.View
 		// ================= MAIN ACTION =================
 		private async void MainAction_Click(object sender, EventArgs e)
 		{
-			string login = EmailTextBox.Text.Trim();
+			string login = LoginTextBox.Text.Trim();
 			string email = EmailTextBox.Text.Trim();
 			string password = PasswordTextBox.Text;
 			string repeatPassword = ConfirmPasswordTextBox.Text;
@@ -145,7 +138,7 @@ namespace CodeTrainerApp.View
 				{
 					var (success, message) = await UserService.Instance.RegisterAsync(
 						login,
-						email,  
+						email,
 						password,
 						repeatPassword,
 						birthDate,
@@ -159,7 +152,7 @@ namespace CodeTrainerApp.View
 				else
 				{
 					var (success, message) = await UserService.Instance.LoginAsync(
-						email, 
+						email,
 						password
 					);
 
@@ -167,6 +160,10 @@ namespace CodeTrainerApp.View
 					{
 						DialogResult = DialogResult.OK;
 						Close();
+					}
+					else
+					{
+						MessageBox.Show(message, success ? "Успіх" : "Помилка");
 					}
 				}
 			}
