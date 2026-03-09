@@ -1,5 +1,4 @@
-using CodeTrainerApp;
-using CodeTrainerApp.View;
+using CodeTrainerApp.Views;
 
 namespace CodeTrainerApp
 {

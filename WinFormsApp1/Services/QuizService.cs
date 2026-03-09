@@ -95,21 +95,18 @@ namespace CodeTrainerApp.Services
 		}
 
 		// ================= POST: створити квіз =================
-		public async Task<(bool success, string message, Quiz? quiz)> AddQuizAsync(string title, string description)
+		public async Task<(bool success, string message, Quiz? quiz)> AddQuizAsync(Quiz quiz)
 		{
 			try
 			{
-				var newQuiz = new Quiz
-				{
-					Title = title,
-					Description = description
-				};
-
-				var response = await _httpClient.PostAsJsonAsync("api/quiz", newQuiz);
+				var response = await _httpClient.PostAsJsonAsync("api/quiz", quiz);
 
 				if (!response.IsSuccessStatusCode)
 				{
 					var error = await response.Content.ReadAsStringAsync();
+
+					MessageBox.Show(error); // показує реальну помилку сервера
+
 					return (false, error, null);
 				}
 

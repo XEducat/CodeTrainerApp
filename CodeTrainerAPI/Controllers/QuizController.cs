@@ -62,6 +62,7 @@ namespace CodeTrainerAPI.Controllers
 
 		//// ================= POST: api/quiz =================
 		[HttpPost]
+		[Authorize(Roles = "Mentor")]
 		public async Task<ActionResult<Quiz>> CreateQuiz([FromBody] Quiz quiz)
 		{
 			if (quiz == null)

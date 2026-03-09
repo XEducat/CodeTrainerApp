@@ -1,4 +1,4 @@
-﻿namespace CodeTrainerApp
+﻿namespace CodeTrainerApp.Views
 {
 	partial class QuizView
 	{

@@ -1,7 +1,7 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views
 {
 	public partial class LoginView : Form
 	{

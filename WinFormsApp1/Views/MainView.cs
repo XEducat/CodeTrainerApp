@@ -1,7 +1,9 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.Views.MentorViews;
+using CodeTrainerApp.Views.RegisteredUserViews;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views
 {
 	public partial class MainView : Form
 	{
@@ -51,30 +53,24 @@ namespace CodeTrainerApp.View
 		}
 
 		// ================= CABINET BUTTON =================
-		// ================= CABINET BUTTON =================
 		private void CabinetButton_Click(object sender, EventArgs e)
 		{
 			var currentUser = UserService.Instance.CurrentUser;
-
 			if (currentUser == null)
 				return;
 
 			Form cabinetForm;
 
-			// Якщо користувач ментор
 			if (currentUser.Role == "Mentor")
-			{
 				cabinetForm = new CabinetContainerView();
-			}
 			else
-			{
 				cabinetForm = new UserHistoryView();
-			}
 
-			// Коли кабінет закриється — знову показати MainView
-			cabinetForm.FormClosed += (s, args) =>
+			// Підписка на закриття форми
+			cabinetForm.FormClosed += async (s, args) =>
 			{
 				this.Show();
+				await LoadQuizzesAsync(); // Підвантажуємо список тестів після закриття
 			};
 
 			this.Hide();

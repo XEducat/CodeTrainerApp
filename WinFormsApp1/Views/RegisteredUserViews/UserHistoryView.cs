@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views.RegisteredUserViews
 {
 	public partial class UserHistoryView : Form
 	{

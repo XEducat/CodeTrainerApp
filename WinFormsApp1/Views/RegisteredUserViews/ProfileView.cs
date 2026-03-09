@@ -1,10 +1,7 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views.RegisteredUserViews
 {
 	public partial class ProfileView : Form
 	{

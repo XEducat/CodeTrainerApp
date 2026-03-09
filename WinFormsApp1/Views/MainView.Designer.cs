@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views
 {
 	partial class MainView
 	{
@@ -29,27 +29,62 @@ namespace CodeTrainerApp.View
 			e.DrawBackground();
 
 			bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-			Color bgColor = isSelected ? Color.FromArgb(233, 236, 239) : Color.White;
 
+			// Фон елемента
+			Color bgColor = isSelected ? Color.FromArgb(200, 220, 240) : Color.White;
 			using (var bgBrush = new SolidBrush(bgColor))
 				e.Graphics.FillRectangle(bgBrush, e.Bounds);
 
+			// Ліва вертикальна смужка кольору
+			using (var stripeBrush = new SolidBrush(Color.FromArgb(0, 123, 255)))
+				e.Graphics.FillRectangle(stripeBrush, e.Bounds.Left, e.Bounds.Top, 6, e.Bounds.Height);
+
+			// Заголовок квізу
 			using (var titleFont = new Font("Segoe UI", 12, FontStyle.Bold))
 			using (var titleBrush = new SolidBrush(Color.FromArgb(33, 37, 41)))
 				e.Graphics.DrawString(quiz.Title, titleFont, titleBrush, e.Bounds.Left + 15, e.Bounds.Top + 10);
 
-			using (var descFont = new Font("Segoe UI", 9))
-			using (var descBrush = new SolidBrush(Color.FromArgb(108, 117, 125)))
-				e.Graphics.DrawString(quiz.Description, descFont, descBrush, e.Bounds.Left + 15, e.Bounds.Top + 40);
+			// Опис квізу
+			using (var descFont = new Font("Segoe UI", 10, FontStyle.Regular))
+			using (var descBrush = new SolidBrush(Color.FromArgb(55, 65, 75)))
+				e.Graphics.DrawString(quiz.Description, descFont, descBrush, e.Bounds.Left + 15, e.Bounds.Top + 35);
 
-			string questionsText = $"Питань: {quiz.Tasks.Count}";
-			using (var countFont = new Font("Segoe UI", 11, FontStyle.Bold))
-			using (var countBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
+			// Бейдж з кількістю задач — більший і заокруглений
+			string questionsText = $"{quiz.Tasks.Count} питань";
+			using (var countFont = new Font("Segoe UI", 10, FontStyle.Bold))
+			using (var countBrush = new SolidBrush(Color.White))
+			using (var badgeBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
 			{
 				SizeF textSize = e.Graphics.MeasureString(questionsText, countFont);
-				float x = e.Bounds.Right - textSize.Width - 20;
-				float y = e.Bounds.Top + (e.Bounds.Height - textSize.Height) / 2;
-				e.Graphics.DrawString(questionsText, countFont, countBrush, x, y);
+				float paddingH = 16;
+				float paddingV = 8;
+				RectangleF badgeRect = new RectangleF(
+					e.Bounds.Right - textSize.Width - paddingH - 10,
+					e.Bounds.Top + (e.Bounds.Height - textSize.Height - paddingV) / 2, // Центруємо по вертикалі
+					textSize.Width + paddingH,
+					textSize.Height + paddingV
+				);
+
+				// Заокруглені кути
+				using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+				{
+					float radius = badgeRect.Height / 2;
+					path.AddArc(badgeRect.Left, badgeRect.Top, radius, radius, 180, 90);
+					path.AddArc(badgeRect.Right - radius, badgeRect.Top, radius, radius, 270, 90);
+					path.AddArc(badgeRect.Right - radius, badgeRect.Bottom - radius, radius, radius, 0, 90);
+					path.AddArc(badgeRect.Left, badgeRect.Bottom - radius, radius, radius, 90, 90);
+					path.CloseFigure();
+
+					e.Graphics.FillPath(badgeBrush, path);
+				}
+
+				// Вирівнювання тексту по центру бейджу через StringFormat
+				using (StringFormat sf = new StringFormat())
+				{
+					sf.Alignment = StringAlignment.Center;       // горизонталь
+					sf.LineAlignment = StringAlignment.Center;   // вертикаль
+					e.Graphics.DrawString(questionsText, countFont, countBrush, badgeRect, sf);
+				}
 			}
 
 			e.DrawFocusRectangle();

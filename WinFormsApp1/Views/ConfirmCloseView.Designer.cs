@@ -1,4 +1,4 @@
-﻿namespace CodeTrainerApp.View
+﻿namespace CodeTrainerApp.Views
 {
     partial class ConfirmCloseView
     {

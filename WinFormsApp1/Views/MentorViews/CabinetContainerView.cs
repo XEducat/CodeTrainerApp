@@ -1,13 +1,7 @@
-﻿using CodeTrainerApp.Services;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using CodeTrainerApp.Views.MentorViews;
+using CodeTrainerApp.Views.RegisteredUserViews;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views.MentorViews
 {
 	public partial class CabinetContainerView : Form
 	{

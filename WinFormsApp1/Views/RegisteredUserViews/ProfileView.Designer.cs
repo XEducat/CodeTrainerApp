@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CodeTrainerApp.Model;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views.RegisteredUserViews
 {
 	public partial class ProfileView : Form
 	{

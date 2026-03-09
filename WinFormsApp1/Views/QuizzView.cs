@@ -1,9 +1,7 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
-using CodeTrainerApp.View;
-using System.Drawing;
 
-namespace CodeTrainerApp
+namespace CodeTrainerApp.Views
 {
 	public partial class QuizView : Form
 	{

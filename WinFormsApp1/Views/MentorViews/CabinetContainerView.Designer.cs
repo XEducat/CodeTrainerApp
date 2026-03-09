@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace CodeTrainerApp.View
+namespace CodeTrainerApp.Views.MentorViews
 {
 	public partial class CabinetContainerView : Form
 	{
