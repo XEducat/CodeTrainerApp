@@ -46,7 +46,7 @@
 			btnAddTask.Click += btnAddTask_Click;
 
 			// Create quiz
-			btnCreateQuiz.Text = "Створити Quiz";
+			btnCreateQuiz.Text = "Створити";
 			btnCreateQuiz.Location = new Point(180, 340);
 			btnCreateQuiz.Size = new Size(120, 30);
 			btnCreateQuiz.Click += btnCreateQuiz_Click;

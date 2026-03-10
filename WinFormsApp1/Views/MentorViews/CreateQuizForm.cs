@@ -8,14 +8,15 @@ namespace CodeTrainerApp.Views.MentorViews
 		public Quiz CreatedQuiz { get; private set; } = new Quiz();
 		private List<ProgrammingTask> _tasks = new();
 
-		    public CreateQuizForm(Quiz? quiz = null)
+	public CreateQuizForm(Quiz? quiz = null)
     {
         InitializeComponent();
 
         if (quiz != null)
         {
-            // Якщо передано існуючий Quiz, заповнюємо форму
-            CreatedQuiz = quiz;
+			btnCreateQuiz.Text = "Оновити";
+			// Якщо передано існуючий Quiz, заповнюємо форму
+			CreatedQuiz = quiz;
 
             txtTitle.Text = quiz.Title ?? string.Empty;
             txtDescription.Text = quiz.Description ?? string.Empty;
@@ -31,11 +32,6 @@ namespace CodeTrainerApp.Views.MentorViews
                     lbTasks.Items.Add($"{task.Title} ({testCount} tests)");
                 }
             }
-        }
-        else
-        {
-            // Якщо quiz == null, створюємо новий порожній об'єкт
-            CreatedQuiz = new Quiz();
         }
     }
 
@@ -83,25 +79,28 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void btnCreateQuiz_Click(object sender, EventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(txtTitle.Text))
+			if (CreatedQuiz == null)
 			{
-				MessageBox.Show("Введіть назву квіза");
-				return;
-			}
+				if (string.IsNullOrWhiteSpace(txtTitle.Text))
+				{
+					MessageBox.Show("Введіть назву квіза");
+					return;
+				}
 
-			if (_tasks.Count == 0)
-			{
-				MessageBox.Show("Додайте хоча б одну задачу");
-				return;
-			}
+				if (_tasks.Count == 0)
+				{
+					MessageBox.Show("Додайте хоча б одну задачу");
+					return;
+				}
 
-			CreatedQuiz = new Quiz
-			{
-				Title = txtTitle.Text,
-				Description = txtDescription.Text,
-				Tasks = _tasks,
-				MentorId = UserService.Instance.CurrentUser.Id
-			};
+				CreatedQuiz = new Quiz
+				{
+					Title = txtTitle.Text,
+					Description = txtDescription.Text,
+					Tasks = _tasks,
+					MentorId = UserService.Instance.CurrentUser.Id
+				};
+			}
 
 			DialogResult = DialogResult.OK;
 			Close();
