@@ -12,7 +12,7 @@ namespace CodeTrainerAPI.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
 
-		private const string MentorSecretCode = "MENTOR-2024";
+		private const string MentorSecretCode = "MENTOR-2026";
 
 		public AuthController(UserManager<ApplicationUser> userManager,
 							  SignInManager<ApplicationUser> signInManager)

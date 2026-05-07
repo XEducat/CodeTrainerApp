@@ -276,6 +276,8 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			Controls.Add(mainPanel);
 			Text = "Історія проходжень";
 			StartPosition = FormStartPosition.CenterScreen;
+			WindowState = FormWindowState.Maximized;
+			BackColor = CodeTrainerApp.UI.Theme.Background;
 
 			mainPanel.ResumeLayout(false);
 			dgvContainer.ResumeLayout(false);

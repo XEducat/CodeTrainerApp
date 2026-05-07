@@ -1,5 +1,6 @@
-﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views
 {
@@ -8,178 +9,177 @@ namespace CodeTrainerApp.Views
 		private int currentTaskIndex = 0;
 		private readonly Quiz _quiz;
 		private User _currentUser;
-
-		// Лічильник успішно пройдених завдань
 		private int _passedCount = 0;
 
 		public QuizView(Quiz selectedQuiz)
 		{
 			InitializeComponent();
-
 			_quiz = selectedQuiz;
 			_currentUser = UserService.Instance.CurrentUser;
-			
 
-			CheckButton.Click += CheckButton_Click;
-			NextButton.Click += NextButton_Click;
-			SkipButton.Click += SkipButton_Click;
-			LoginButton.Click += LoginButton_Click;
-
-			CheckButton.Enabled = false;
-			NextButton.Enabled = false;
+			ApplyModernStyles();
 
 			InitializeAccess();
-
 			LoadCurrentTask();
 		}
 
-		// ================= ACCESS CONTROL =================
+		private void ApplyModernStyles()
+		{
+			// Кнопки
+			StyleHelper.ApplySuccessButton(CheckButton);
+			StyleHelper.ApplyPrimaryButton(NextButton);
+
+			SkipButton.FlatStyle = FlatStyle.Flat;
+			SkipButton.FlatAppearance.BorderSize = 0;
+			SkipButton.BackColor = Theme.Warning;
+			SkipButton.ForeColor = Color.White;
+			SkipButton.Cursor = Cursors.Hand;
+			SkipButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+
+			// Налаштування LoginButton (використовуємо кастомні кольори без дублювання подій)
+			StyleHelper.ApplyPrimaryButton(LoginButton);
+			LoginButton.BackColor = Theme.TextSecondary;
+
+			// Оновлюємо кольори для Hover, видаляючи старі та додаючи нові, 
+			// але оскільки це конструктор, краще просто перевизначити логіку
+			LoginButton.MouseEnter += (s, e) => { if (LoginButton.Enabled) LoginButton.BackColor = Theme.TextPrimary; };
+			LoginButton.MouseLeave += (s, e) => { if (LoginButton.Enabled) LoginButton.BackColor = Theme.TextSecondary; };
+
+			// Панелі
+			TopPanel.BackColor = Theme.Primary;
+			SidePanel.BackColor = Theme.Sidebar;
+			EditorPanel.BackColor = Theme.Background;
+
+			CodePanel.BackColor = Theme.CodeBackground;
+			CodeTextBox.BackColor = Theme.CodeBackground;
+			CodeTextBox.ForeColor = Theme.CodeForeground;
+			CodeHeaderLabel.BackColor = Color.FromArgb(17, 24, 39);
+
+			ResultPanel.BackColor = Color.White;
+			ResultHeaderLabel.BackColor = Color.FromArgb(249, 250, 251);
+
+			if (_quiz != null)
+			{
+				QuizTitleLabel.Text = _quiz.Title;
+				QuizProgressBar.Maximum = _quiz.Tasks.Count;
+			}
+		}
+
 		private void InitializeAccess()
 		{
 			if (_currentUser == null)
 			{
 				LoginButton.Visible = true;
-				CheckButton.Enabled = false;
 				NextButton.Enabled = false;
+				LoginButton.Text = "👤 Увійти";
 			}
 			else
 			{
-				LoginButton.Visible = false;
-				CheckButton.Enabled = true;
+				LoginButton.Visible = true;
+				LoginButton.Text = $"👤 {_currentUser.Email.Split('@')[0]}";
+				LoginButton.Enabled = false;
 			}
 		}
 
-		// ================= LOAD TASK =================
 		private void LoadCurrentTask()
 		{
 			if (_quiz?.Tasks == null || _quiz.Tasks.Count == 0)
 			{
-				CurrentTaskLabel.Text = "У квізі відсутні завдання.";
-				TaskDescriptionLabel.Text = "";
-				CodeTextBox.Clear();
-				CheckButton.Enabled = false;
-				NextButton.Enabled = false;
+				CurrentTaskLabel.Text = "Квіз порожній";
 				return;
 			}
 
-			if (currentTaskIndex >= _quiz.Tasks.Count)
-			{
-				CurrentTaskLabel.Text = "Вітаємо! Усі завдання виконано!";
-				TaskDescriptionLabel.Text = "Ви успішно пройшли цей квіз.";
-				CodeTextBox.Clear();
-				CodeTextBox.Enabled = false;
-				CheckButton.Enabled = false;
-				NextButton.Enabled = false;
-				return;
-			}
+			if (currentTaskIndex >= _quiz.Tasks.Count) return;
 
 			var task = _quiz.Tasks[currentTaskIndex];
 
-			CurrentTaskLabel.Text =
-				$"Завдання {currentTaskIndex + 1} з {_quiz.Tasks.Count}: {task.Title}";
+			CurrentTaskLabel.Text = $"Завдання {currentTaskIndex + 1}";
+			ProgressLabel.Text = $"ПРОГРЕС: {currentTaskIndex} / {_quiz.Tasks.Count}";
+			QuizProgressBar.Value = currentTaskIndex;
 
 			TaskDescriptionLabel.Text = task.Description;
 			CodeTextBox.Text = task.CodeTemplate.Replace("\n", "\r\n");
 
 			ResultTextBox.Clear();
-			ResultTextBox.BackColor = SystemColors.Window;
+			ResultTextBox.ForeColor = Theme.TextPrimary;
+			ResultHeaderLabel.Text = "КОНСОЛЬ ВИВОДУ";
 
 			CodeTextBox.Enabled = true;
-			CheckButton.Enabled = _currentUser != null;
-			NextButton.Enabled = false; 
+			NextButton.Enabled = false;
 			SkipButton.Enabled = true;
 
-			NextButton.Text =
-				currentTaskIndex == _quiz.Tasks.Count - 1 ? "Завершити" : "Далі >>";
+			NextButton.Text = currentTaskIndex == _quiz.Tasks.Count - 1 ? "Завершити 🏁" : "Наступне ➡";
+			NextButton.BackColor = Color.Gray;
 		}
 
-		// ================= CHECK =================
 		private async void CheckButton_Click(object sender, EventArgs e)
 		{
-			if (_currentUser == null)
-			{
-				MessageBox.Show("Спочатку необхідно увійти.");
-				return;
-			}
+			//if (_currentUser == null) return;
 
 			if (string.IsNullOrWhiteSpace(CodeTextBox.Text))
 			{
-				ResultTextBox.Text = "Поле для коду не може бути порожнім!";
-				ResultTextBox.BackColor = Color.LightCoral;
+				SetConsoleOutput("Помилка: Код не може бути порожнім!", Theme.Danger);
 				return;
 			}
 
+			ResultHeaderLabel.Text = "⌛ ПЕРЕВІРКА...";
 			var task = _quiz.Tasks[currentTaskIndex];
-			string userCode = CodeTextBox.Text;
-
-			if (task.CodeTemplate == userCode)
-			{
-				ResultTextBox.Text = "Ви не змінили шаблонний код.";
-				ResultTextBox.BackColor = Color.Yellow;
-				return;
-			}
-
-			ResultTextBox.Clear();
-
-			var result = await CodeCompiler.RunCode(task, userCode);
+			var result = await CodeCompiler.RunCode(task, CodeTextBox.Text);
 
 			if (!string.IsNullOrEmpty(result.errorMessage))
 			{
-				ResultTextBox.Text = result.errorMessage;
-				ResultTextBox.BackColor = Color.LightCoral;
+				SetConsoleOutput(result.errorMessage, Theme.Danger);
 				return;
 			}
 
 			if (result.success)
 			{
-				ResultTextBox.Text = result.output;
-				ResultTextBox.BackColor = Color.LightGreen;
-
-				// Збільшуємо лічильник пройдених завдань
+				SetConsoleOutput("✅ ТЕСТИ ПРОЙДЕНО!\n" + result.output, Theme.Success);
 				_passedCount++;
 
 				NextButton.Enabled = true;
+				StyleHelper.ApplyPrimaryButton(NextButton);
+
 				CheckButton.Enabled = false;
 				SkipButton.Enabled = false;
 				CodeTextBox.Enabled = false;
 			}
 			else
 			{
-				ResultTextBox.Text = result.output;
-				ResultTextBox.BackColor = Color.Yellow;
+				SetConsoleOutput("❌ ТЕСТИ ПРОВАЛЕНО:\n" + result.output, Theme.Warning);
 			}
 		}
 
-		// ================= SKIP =================
+		private void SetConsoleOutput(string text, Color color)
+		{
+			ResultTextBox.Text = text;
+			ResultTextBox.ForeColor = color;
+			ResultHeaderLabel.Text = "РЕЗУЛЬТАТ ПЕРЕВІРКИ";
+		}
+
 		private void SkipButton_Click(object sender, EventArgs e)
 		{
-			ResultTextBox.Text =
-				"Завдання пропущено. Можна переходити далі.";
-			ResultTextBox.BackColor = Color.LightYellow;
-
-			SkipButton.Enabled = false;
+			SetConsoleOutput("Завдання пропущено.", Theme.TextSecondary);
 			NextButton.Enabled = true;
+			StyleHelper.ApplyPrimaryButton(NextButton);
 			CheckButton.Enabled = false;
+			SkipButton.Enabled = false;
 			CodeTextBox.Enabled = false;
 		}
 
-		// ================= NEXT =================
 		private async void NextButton_Click(object sender, EventArgs e)
 		{
 			currentTaskIndex++;
 
-			// Якщо завершено всі завдання
 			if (currentTaskIndex >= _quiz.Tasks.Count)
 			{
+				QuizProgressBar.Value = _quiz.Tasks.Count;
+				ProgressLabel.Text = $"ПРОГРЕС: {_quiz.Tasks.Count} / {_quiz.Tasks.Count}";
+
 				if (_currentUser != null)
 				{
-					string scoreText = $"Ваш результат: {_passedCount} / {_quiz.Tasks.Count}";
-					MessageBox.Show(
-						scoreText,
-						"Оцінка проходження",
-						MessageBoxButtons.OK,
-						MessageBoxIcon.Information
-					);
+					MessageBox.Show($"Вітаємо! Ваш результат: {_passedCount} / {_quiz.Tasks.Count}",
+						"Квіз завершено", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 					try
 					{
@@ -191,58 +191,30 @@ namespace CodeTrainerApp.Views
 							MaxScore = _quiz.Tasks.Count,
 							CompletedAt = DateTime.UtcNow
 						};
-
-						var svc = new UserHistoryService();
-						await svc.CreateHistoryAsync(attempt, _currentUser.Id);
+						await new UserHistoryService().CreateHistoryAsync(attempt, _currentUser.Id);
 					}
-					catch (Exception ex)
-					{
-						MessageBox.Show(
-							"Не вдалося зберегти історію: " + ex.Message,
-							"Помилка",
-							MessageBoxButtons.OK,
-							MessageBoxIcon.Error
-						);
-					}
+					catch { }
 				}
-
-				// ВІДКЛЮЧАЄМО ПІДТВЕРДЖЕННЯ ЗАКРИТТЯ
 				this.FormClosing -= QuizView_FormClosing;
-
-				// ЗАКРИВАЄМО ФОРМУ
 				this.Close();
 				return;
 			}
 
-			NextButton.Enabled = false;
 			LoadCurrentTask();
 		}
 
-		// ================= LOGIN =================
 		private void LoginButton_Click(object sender, EventArgs e)
 		{
 			using (var loginView = new LoginView())
 			{
-				if (loginView.ShowDialog() != DialogResult.OK)
-					return;
-
-				if (!loginView.IsLoggedIn)
-					return;
+				if (loginView.ShowDialog() != DialogResult.OK) return;
+				if (!loginView.IsLoggedIn) return;
 
 				_currentUser = loginView.LoggedUser;
-
-				MessageBox.Show(
-					$"Вхід виконано як {_currentUser.Email}\nРоль: {_currentUser.Role}",
-					"Успіх",
-					MessageBoxButtons.OK,
-					MessageBoxIcon.Information
-				);
-
 				InitializeAccess();
 			}
 		}
 
-		// ================= CLOSE CONFIRM =================
 		private void QuizView_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			using (var confirmForm = new ConfirmCloseView())

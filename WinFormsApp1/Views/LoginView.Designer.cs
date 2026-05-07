@@ -1,4 +1,6 @@
-﻿namespace CodeTrainerApp.Views
+﻿using System.Drawing.Drawing2D;
+
+namespace CodeTrainerApp.Views
 {
 	partial class LoginView
 	{
@@ -38,188 +40,177 @@
 
 		private void InitializeComponent()
 		{
+			Font labelFont = new Font("Segoe UI", 10F);
+			Font inputFont = new Font("Segoe UI", 10F);
+			Font buttonFont = new Font("Segoe UI", 10.5F);
+
 			LoginLabel = new Label();
 			LoginTextBox = new TextBox();
+
 			EmailLabel = new Label();
 			EmailTextBox = new TextBox();
+
 			PasswordLabel = new Label();
 			PasswordTextBox = new TextBox();
 			TogglePasswordButton = new Button();
+
 			ConfirmPasswordLabel = new Label();
 			ConfirmPasswordTextBox = new TextBox();
 			ToggleConfirmPasswordButton = new Button();
+
 			BirthDateLabel = new Label();
 			BirthDatePicker = new DateTimePicker();
+
 			MentorCheckBox = new CheckBox();
 			MentorCodeLabel = new Label();
 			MentorCodeTextBox = new TextBox();
+
 			MainButton = new Button();
 			SwitchModeButton = new Button();
+
 			SuspendLayout();
-			// 
+
 			// LoginLabel
-			// 
 			LoginLabel.Location = new Point(30, 20);
-			LoginLabel.Name = "LoginLabel";
-			LoginLabel.Size = new Size(270, 20);
-			LoginLabel.TabIndex = 0;
+			LoginLabel.Size = new Size(270, 22);
 			LoginLabel.Text = "Логін";
-			// 
+			LoginLabel.Font = labelFont;
+
 			// LoginTextBox
-			// 
-			LoginTextBox.Location = new Point(30, 40);
-			LoginTextBox.Name = "LoginTextBox";
-			LoginTextBox.Size = new Size(270, 23);
-			LoginTextBox.TabIndex = 1;
-			// 
+			LoginTextBox.Location = new Point(30, 45);
+			LoginTextBox.Size = new Size(270, 25);
+			LoginTextBox.Font = inputFont;
+
 			// EmailLabel
-			// 
-			EmailLabel.Location = new Point(30, 75);
-			EmailLabel.Name = "EmailLabel";
-			EmailLabel.Size = new Size(270, 20);
-			EmailLabel.TabIndex = 2;
+			EmailLabel.Location = new Point(30, 80);
+			EmailLabel.Size = new Size(270, 22);
 			EmailLabel.Text = "Email";
-			// 
+			EmailLabel.Font = labelFont;
+
 			// EmailTextBox
-			// 
-			EmailTextBox.Location = new Point(30, 95);
-			EmailTextBox.Name = "EmailTextBox";
-			EmailTextBox.Size = new Size(270, 23);
-			EmailTextBox.TabIndex = 3;
-			// 
+			EmailTextBox.Location = new Point(30, 105);
+			EmailTextBox.Size = new Size(270, 25);
+			EmailTextBox.Font = inputFont;
+
 			// PasswordLabel
-			// 
-			PasswordLabel.Location = new Point(30, 130);
-			PasswordLabel.Name = "PasswordLabel";
-			PasswordLabel.Size = new Size(270, 20);
-			PasswordLabel.TabIndex = 4;
+			PasswordLabel.Location = new Point(30, 140);
+			PasswordLabel.Size = new Size(270, 22);
 			PasswordLabel.Text = "Пароль";
-			// 
+			PasswordLabel.Font = labelFont;
+
 			// PasswordTextBox
-			// 
-			PasswordTextBox.Location = new Point(30, 150);
-			PasswordTextBox.Name = "PasswordTextBox";
-			PasswordTextBox.Size = new Size(240, 23);
-			PasswordTextBox.TabIndex = 5;
+			PasswordTextBox.Location = new Point(30, 165);
+			PasswordTextBox.Size = new Size(240, 25);
 			PasswordTextBox.UseSystemPasswordChar = true;
-			// 
+			PasswordTextBox.Font = inputFont;
+
 			// TogglePasswordButton
-			// 
-			TogglePasswordButton.Cursor = Cursors.Hand;
-			TogglePasswordButton.FlatAppearance.BorderSize = 0;
-			TogglePasswordButton.FlatStyle = FlatStyle.Flat;
-			TogglePasswordButton.Location = new Point(275, 150);
-			TogglePasswordButton.Name = "TogglePasswordButton";
-			TogglePasswordButton.Size = new Size(25, 23);
-			TogglePasswordButton.TabIndex = 6;
+			TogglePasswordButton.Location = new Point(275, 165);
+			TogglePasswordButton.Size = new Size(25, 25);
 			TogglePasswordButton.Text = "👁";
-			// 
+			TogglePasswordButton.FlatStyle = FlatStyle.Flat;
+			TogglePasswordButton.FlatAppearance.BorderSize = 0;
+
 			// ConfirmPasswordLabel
-			// 
-			ConfirmPasswordLabel.Location = new Point(30, 185);
-			ConfirmPasswordLabel.Name = "ConfirmPasswordLabel";
-			ConfirmPasswordLabel.Size = new Size(270, 20);
-			ConfirmPasswordLabel.TabIndex = 7;
+			ConfirmPasswordLabel.Location = new Point(30, 200);
+			ConfirmPasswordLabel.Size = new Size(270, 22);
 			ConfirmPasswordLabel.Text = "Повторіть пароль";
-			// 
+			ConfirmPasswordLabel.Font = labelFont;
+
 			// ConfirmPasswordTextBox
-			// 
-			ConfirmPasswordTextBox.Location = new Point(30, 205);
-			ConfirmPasswordTextBox.Name = "ConfirmPasswordTextBox";
-			ConfirmPasswordTextBox.Size = new Size(240, 23);
-			ConfirmPasswordTextBox.TabIndex = 8;
+			ConfirmPasswordTextBox.Location = new Point(30, 225);
+			ConfirmPasswordTextBox.Size = new Size(240, 25);
 			ConfirmPasswordTextBox.UseSystemPasswordChar = true;
-			// 
+			ConfirmPasswordTextBox.Font = inputFont;
+
 			// ToggleConfirmPasswordButton
-			// 
-			ToggleConfirmPasswordButton.Cursor = Cursors.Hand;
-			ToggleConfirmPasswordButton.FlatAppearance.BorderSize = 0;
-			ToggleConfirmPasswordButton.FlatStyle = FlatStyle.Flat;
-			ToggleConfirmPasswordButton.Location = new Point(275, 205);
-			ToggleConfirmPasswordButton.Name = "ToggleConfirmPasswordButton";
-			ToggleConfirmPasswordButton.Size = new Size(25, 23);
-			ToggleConfirmPasswordButton.TabIndex = 9;
+			ToggleConfirmPasswordButton.Location = new Point(275, 225);
+			ToggleConfirmPasswordButton.Size = new Size(25, 25);
 			ToggleConfirmPasswordButton.Text = "👁";
-			// 
+			ToggleConfirmPasswordButton.FlatStyle = FlatStyle.Flat;
+			ToggleConfirmPasswordButton.FlatAppearance.BorderSize = 0;
+
 			// BirthDateLabel
-			// 
-			BirthDateLabel.Location = new Point(30, 240);
-			BirthDateLabel.Name = "BirthDateLabel";
-			BirthDateLabel.Size = new Size(270, 20);
-			BirthDateLabel.TabIndex = 10;
+			BirthDateLabel.Location = new Point(30, 260);
+			BirthDateLabel.Size = new Size(270, 22);
 			BirthDateLabel.Text = "Дата народження";
-			// 
+			BirthDateLabel.Font = labelFont;
+
 			// BirthDatePicker
-			// 
-			BirthDatePicker.Location = new Point(30, 260);
-			BirthDatePicker.Name = "BirthDatePicker";
-			BirthDatePicker.Size = new Size(270, 23);
-			BirthDatePicker.TabIndex = 11;
-			// 
+			BirthDatePicker.Location = new Point(30, 285);
+			BirthDatePicker.Size = new Size(270, 25);
+			BirthDatePicker.Font = inputFont;
+
 			// MentorCheckBox
-			// 
-			MentorCheckBox.Location = new Point(30, 295);
-			MentorCheckBox.Name = "MentorCheckBox";
-			MentorCheckBox.Size = new Size(104, 24);
-			MentorCheckBox.TabIndex = 12;
+			MentorCheckBox.Location = new Point(30, 320);
 			MentorCheckBox.Text = "Я Mentor";
-			// 
+			MentorCheckBox.Font = inputFont;
+
 			// MentorCodeLabel
-			// 
-			MentorCodeLabel.Location = new Point(30, 320);
-			MentorCodeLabel.Name = "MentorCodeLabel";
-			MentorCodeLabel.Size = new Size(270, 20);
-			MentorCodeLabel.TabIndex = 13;
+			MentorCodeLabel.Location = new Point(30, 350);
+			MentorCodeLabel.Size = new Size(270, 22);
 			MentorCodeLabel.Text = "Код ментора";
-			// 
+			MentorCodeLabel.Font = labelFont;
+
 			// MentorCodeTextBox
-			// 
-			MentorCodeTextBox.Location = new Point(30, 340);
-			MentorCodeTextBox.Name = "MentorCodeTextBox";
-			MentorCodeTextBox.Size = new Size(270, 23);
-			MentorCodeTextBox.TabIndex = 14;
-			// 
+			MentorCodeTextBox.Location = new Point(30, 375);
+			MentorCodeTextBox.Size = new Size(270, 25);
+			MentorCodeTextBox.Font = inputFont;
+
 			// MainButton
-			// 
-			MainButton.Location = new Point(30, 380);
-			MainButton.Name = "MainButton";
-			MainButton.Size = new Size(270, 40);
-			MainButton.TabIndex = 15;
+			MainButton.Location = new Point(30, 420);
+			MainButton.Size = new Size(270, 45);
 			MainButton.Text = "Увійти";
+			MainButton.Font = buttonFont;
+			MainButton.ForeColor = Color.White;
+			MainButton.BackColor = Color.FromArgb(0, 120, 215);
+			MainButton.FlatStyle = FlatStyle.Flat;
+			MainButton.FlatAppearance.BorderSize = 0;
+			MainButton.Cursor = Cursors.Hand;
 			MainButton.Click += MainAction_Click;
-			// 
+
 			// SwitchModeButton
-			// 
-			SwitchModeButton.Location = new Point(30, 430);
-			SwitchModeButton.Name = "SwitchModeButton";
-			SwitchModeButton.Size = new Size(270, 30);
-			SwitchModeButton.TabIndex = 16;
+			SwitchModeButton.Location = new Point(30, 480);
+			SwitchModeButton.Size = new Size(270, 35);
 			SwitchModeButton.Text = "Зареєструватися";
-			// 
+			SwitchModeButton.Font = new Font("Segoe UI", 10F);
+			SwitchModeButton.FlatStyle = FlatStyle.Flat;
+			SwitchModeButton.FlatAppearance.BorderSize = 0;
+			SwitchModeButton.ForeColor = Color.FromArgb(0, 120, 215);
+			SwitchModeButton.Cursor = Cursors.Hand;
+
 			// LoginView
-			// 
-			ClientSize = new Size(340, 480);
+			ClientSize = new Size(340, 540);
+			BackColor = Color.White;
+
 			Controls.Add(LoginLabel);
 			Controls.Add(LoginTextBox);
+
 			Controls.Add(EmailLabel);
 			Controls.Add(EmailTextBox);
+
 			Controls.Add(PasswordLabel);
 			Controls.Add(PasswordTextBox);
 			Controls.Add(TogglePasswordButton);
+
 			Controls.Add(ConfirmPasswordLabel);
 			Controls.Add(ConfirmPasswordTextBox);
 			Controls.Add(ToggleConfirmPasswordButton);
+
 			Controls.Add(BirthDateLabel);
 			Controls.Add(BirthDatePicker);
+
 			Controls.Add(MentorCheckBox);
 			Controls.Add(MentorCodeLabel);
 			Controls.Add(MentorCodeTextBox);
+
 			Controls.Add(MainButton);
 			Controls.Add(SwitchModeButton);
+
 			FormBorderStyle = FormBorderStyle.FixedDialog;
-			Name = "LoginView";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "Вхід";
+			Text = "CodeTrainer — Вхід";
+
 			ResumeLayout(false);
 			PerformLayout();
 		}

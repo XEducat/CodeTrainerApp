@@ -6,8 +6,11 @@
         private System.Windows.Forms.Label labelMessage;
         private System.Windows.Forms.Button btnYes;
         private System.Windows.Forms.Button btnNo;
+		private System.Windows.Forms.Label labelTitle;
+		private System.Windows.Forms.Panel mainPanel;
+		private System.Windows.Forms.Panel buttonPanel;
 
-        protected override void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
             {
@@ -16,62 +19,97 @@
             base.Dispose(disposing);
         }
 
-        private void InitializeComponent()
-        {
-            this.labelMessage = new System.Windows.Forms.Label();
-            this.btnYes = new System.Windows.Forms.Button();
-            this.btnNo = new System.Windows.Forms.Button();
-            this.SuspendLayout();
-            // 
-            // labelMessage
-            // 
-            this.labelMessage.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelMessage.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.labelMessage.Location = new System.Drawing.Point(0, 0);
-            this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(300, 50);
-            this.labelMessage.TabIndex = 0;
-            this.labelMessage.Text = "Дійсно бажаєте закрити тест?";
-            this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnYes
-            // 
-            this.btnYes.BackColor = System.Drawing.Color.Red;
-            this.btnYes.ForeColor = System.Drawing.Color.White;
-            this.btnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.btnYes.Location = new System.Drawing.Point(50, 70);
-            this.btnYes.Name = "btnYes";
-            this.btnYes.Size = new System.Drawing.Size(80, 30);
-            this.btnYes.TabIndex = 1;
-            this.btnYes.Text = "Так";
-            this.btnYes.UseVisualStyleBackColor = false;
-            // 
-            // btnNo
-            // 
-            this.btnNo.BackColor = System.Drawing.Color.LightGreen;
-            this.btnNo.DialogResult = System.Windows.Forms.DialogResult.No;
-            this.btnNo.Location = new System.Drawing.Point(150, 70);
-            this.btnNo.Name = "btnNo";
-            this.btnNo.Size = new System.Drawing.Size(80, 30);
-            this.btnNo.TabIndex = 2;
-            this.btnNo.Text = "Ні";
-            this.btnNo.UseVisualStyleBackColor = false;
-            // 
-            // ConfirmCloseForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 150);
-            this.Controls.Add(this.btnNo);
-            this.Controls.Add(this.btnYes);
-            this.Controls.Add(this.labelMessage);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ConfirmCloseForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Підтвердження";
-            this.ResumeLayout(false);
-        }
-    }
+		private void InitializeComponent()
+		{
+			labelTitle = new Label();
+			labelMessage = new Label();
+			btnYes = new Button();
+			btnNo = new Button();
+			mainPanel = new Panel();
+			buttonPanel = new Panel();
+			mainPanel.SuspendLayout();
+			buttonPanel.SuspendLayout();
+			SuspendLayout();
+			// 
+			// labelTitle
+			// 
+			labelTitle.Dock = DockStyle.Top;
+			labelTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+			labelTitle.Location = new Point(20, 20);
+			labelTitle.Name = "labelTitle";
+			labelTitle.Size = new Size(360, 40);
+			labelTitle.TabIndex = 3;
+			labelTitle.Text = "Завершити тест?";
+			labelTitle.TextAlign = ContentAlignment.MiddleCenter;
+			// 
+			// labelMessage
+			// 
+			labelMessage.Dock = DockStyle.Top;
+			labelMessage.Font = new Font("Segoe UI", 10F);
+			labelMessage.ForeColor = Color.FromArgb(107, 114, 128);
+			labelMessage.Location = new Point(20, 60);
+			labelMessage.Name = "labelMessage";
+			labelMessage.Size = new Size(360, 45);
+			labelMessage.TabIndex = 0;
+			labelMessage.Text = "Ваш прогрес у цьому тесті не буде збережено. Ви дійсно бажаєте вийти?";
+			labelMessage.TextAlign = ContentAlignment.MiddleCenter;
+			// 
+			// btnYes
+			// 
+			btnYes.DialogResult = DialogResult.Yes;
+			btnYes.Location = new Point(204, 10);
+			btnYes.Name = "btnYes";
+			btnYes.Size = new Size(130, 40);
+			btnYes.TabIndex = 1;
+			btnYes.Text = "Так, вийти";
+			btnYes.UseVisualStyleBackColor = true;
+			// 
+			// btnNo
+			// 
+			btnNo.DialogResult = DialogResult.No;
+			btnNo.Location = new Point(28, 10);
+			btnNo.Name = "btnNo";
+			btnNo.Size = new Size(130, 40);
+			btnNo.TabIndex = 2;
+			btnNo.Text = "Продовжити";
+			btnNo.UseVisualStyleBackColor = true;
+			// 
+			// mainPanel
+			// 
+			mainPanel.BackColor = Color.White;
+			mainPanel.Controls.Add(buttonPanel);
+			mainPanel.Controls.Add(labelMessage);
+			mainPanel.Controls.Add(labelTitle);
+			mainPanel.Dock = DockStyle.Fill;
+			mainPanel.Location = new Point(0, 0);
+			mainPanel.Name = "mainPanel";
+			mainPanel.Padding = new Padding(20);
+			mainPanel.Size = new Size(400, 200);
+			mainPanel.TabIndex = 3;
+			// 
+			// buttonPanel
+			// 
+			buttonPanel.Controls.Add(btnNo);
+			buttonPanel.Controls.Add(btnYes);
+			buttonPanel.Dock = DockStyle.Bottom;
+			buttonPanel.Location = new Point(20, 120);
+			buttonPanel.Name = "buttonPanel";
+			buttonPanel.Size = new Size(360, 60);
+			buttonPanel.TabIndex = 4;
+			// 
+			// ConfirmCloseView
+			// 
+			AutoScaleDimensions = new SizeF(7F, 15F);
+			AutoScaleMode = AutoScaleMode.Font;
+			ClientSize = new Size(400, 200);
+			Controls.Add(mainPanel);
+			FormBorderStyle = FormBorderStyle.None;
+			Name = "ConfirmCloseView";
+			StartPosition = FormStartPosition.CenterParent;
+			Text = "Підтвердження";
+			mainPanel.ResumeLayout(false);
+			buttonPanel.ResumeLayout(false);
+			ResumeLayout(false);
+		}
+	}
 }
