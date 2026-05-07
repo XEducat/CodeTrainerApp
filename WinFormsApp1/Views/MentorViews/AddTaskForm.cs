@@ -1,4 +1,5 @@
 ﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Services;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -8,7 +9,13 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private List<TestCase> _tests = new();
 		private int selectedTestIndex = -1;
-		private bool _isEditing = false; // прапорець редагування
+		private bool _isEditing = false;
+		private bool _isVerified = false;
+
+		private const string DefaultStub = @"public class Solution
+{
+
+}";
 
 		public AddTaskForm(ProgrammingTask? task = null)
 		{
@@ -17,18 +24,93 @@ namespace CodeTrainerApp.Views.MentorViews
 			if (task != null)
 			{
 				_isEditing = true;
-				CreatedTask = task; // зберігаємо посилання на оригінальний об'єкт
+				CreatedTask = task; 
 
 				txtTitle.Text = task.Title;
 				txtDescription.Text = task.Description;
 				txtCode.Text = task.CodeTemplate;
 
-				_tests = new List<TestCase>(task.Tests); // копія для редагування
+				_tests = new List<TestCase>(task.Tests); 
 				foreach (var test in _tests)
 				{
 					lbTests.Items.Add($"{test.Call} -> {test.Expected}");
 				}
+				_isVerified = true; // Припускаємо що існуюча задача валідна
 			}
+			ValidateForm(this, EventArgs.Empty);
+			ValidateTestInputs(this, EventArgs.Empty);
+
+			txtCode.TextChanged += (s, e) => { _isVerified = false; ValidateForm(s, e); };
+			lbTests.Items.Clear(); // Clear and re-add to sync with _tests if needed, but it's done in constructor
+			// Re-adding tests to ensure UI is in sync if edited
+			RefreshTestsList();
+		}
+
+		private void RefreshTestsList()
+		{
+			lbTests.Items.Clear();
+			foreach (var test in _tests)
+			{
+				lbTests.Items.Add($"{test.Call} -> {test.Expected}");
+			}
+		}
+
+		private void ValidateForm(object? sender, EventArgs e)
+		{
+			bool isTitleValid = !string.IsNullOrWhiteSpace(txtTitle.Text) && txtTitle.Text.Length > 3;
+			bool isDescriptionValid = !string.IsNullOrWhiteSpace(txtDescription.Text) && txtDescription.Text.Length > 5;
+			
+			string currentCode = txtCode.Text.Trim().Replace("\r\n", "\n");
+			string stub = DefaultStub.Trim().Replace("\r\n", "\n");
+			
+			bool isNotDefault = !currentCode.Equals(stub, StringComparison.OrdinalIgnoreCase);
+			bool isCodeValid = !string.IsNullOrWhiteSpace(txtCode.Text) && txtCode.Text.Contains("class Solution") && isNotDefault;
+			bool hasTests = _tests.Count > 0;
+
+			if (!isTitleValid) errorProvider1.SetError(txtTitle, "Назва занадто коротка або порожня");
+			else errorProvider1.SetError(txtTitle, "");
+
+			if (!isDescriptionValid) errorProvider1.SetError(txtDescription, "Опис занадто короткий або порожній");
+			else errorProvider1.SetError(txtDescription, "");
+
+			if (!isCodeValid) 
+			{
+				if (!isNotDefault) errorProvider1.SetError(txtCode, "Ви не змінили шаблон коду!");
+				else errorProvider1.SetError(txtCode, "Код повинен містити 'class Solution' і не бути порожнім");
+			}
+			else errorProvider1.SetError(txtCode, "");
+
+			if (!hasTests) errorProvider1.SetError(lbTests, "Додайте хоча б один тест");
+			else errorProvider1.SetError(lbTests, "");
+
+			btnVerify.Enabled = isTitleValid && isDescriptionValid && isCodeValid && hasTests;
+			btnCreate.Enabled = btnVerify.Enabled && _isVerified;
+			
+			if (_isVerified)
+			{
+				lblStatus.Text = "✅ Перевірено";
+				lblStatus.ForeColor = Color.Green;
+			}
+			else
+			{
+				lblStatus.Text = "⚠️ Потрібна перевірка";
+				lblStatus.ForeColor = Color.Orange;
+			}
+		}
+
+		private void ValidateTestInputs(object? sender, EventArgs e)
+		{
+			bool isCallValid = !string.IsNullOrWhiteSpace(txtCall.Text) && txtCall.Text.Contains("new Solution().");
+			bool isExpectedValid = !string.IsNullOrWhiteSpace(txtExpected.Text);
+
+			if (!string.IsNullOrWhiteSpace(txtCall.Text) && !isCallValid)
+				errorProvider1.SetError(txtCall, "Виклик повинен починатися з 'new Solution().'");
+			else
+				errorProvider1.SetError(txtCall, "");
+
+			btnAddTest.Enabled = isCallValid && isExpectedValid;
+			btnUpdateTest.Enabled = isCallValid && isExpectedValid && selectedTestIndex != -1;
+			btnDeleteTest.Enabled = lbTests.SelectedIndex != -1;
 		}
 
 		// Tab у редакторі коду
@@ -38,20 +120,14 @@ namespace CodeTrainerApp.Views.MentorViews
 			{
 				e.SuppressKeyPress = true;
 				int pos = txtCode.SelectionStart;
-				txtCode.Text = txtCode.Text.Insert(pos, "\t");
-				txtCode.SelectionStart = pos + 1;
+				txtCode.Text = txtCode.Text.Insert(pos, "    "); // 4 пробіли замість \t
+				txtCode.SelectionStart = pos + 4;
 			}
 		}
 
 		// Додавання тесту
 		private void btnAddTest_Click(object sender, EventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(txtCall.Text) || string.IsNullOrWhiteSpace(txtExpected.Text))
-			{
-				MessageBox.Show("Введіть Call і Expected");
-				return;
-			}
-
 			var test = new TestCase
 			{
 				Call = txtCall.Text,
@@ -59,39 +135,35 @@ namespace CodeTrainerApp.Views.MentorViews
 			};
 
 			_tests.Add(test);
-			lbTests.Items.Add($"{test.Call} -> {test.Expected}");
+			_isVerified = false;
+			RefreshTestsList();
 
-			txtCall.Clear();
-			txtExpected.Clear();
-			selectedTestIndex = -1;
+			btnClearTest_Click(this, EventArgs.Empty);
+			ValidateForm(this, EventArgs.Empty);
 		}
 
 		// Вибір тесту зі списку
 		private void lbTests_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (lbTests.SelectedIndex == -1) return;
+			if (lbTests.SelectedIndex == -1)
+			{
+				selectedTestIndex = -1;
+				ValidateTestInputs(this, EventArgs.Empty);
+				return;
+			}
 
 			selectedTestIndex = lbTests.SelectedIndex;
 			var test = _tests[selectedTestIndex];
 
 			txtCall.Text = test.Call;
 			txtExpected.Text = test.Expected;
+			ValidateTestInputs(this, EventArgs.Empty);
 		}
 
 		// Оновлення тесту
 		private void btnUpdateTest_Click(object sender, EventArgs e)
 		{
-			if (selectedTestIndex == -1)
-			{
-				MessageBox.Show("Оберіть тест зі списку");
-				return;
-			}
-
-			if (string.IsNullOrWhiteSpace(txtCall.Text) || string.IsNullOrWhiteSpace(txtExpected.Text))
-			{
-				MessageBox.Show("Заповніть Call і Expected");
-				return;
-			}
+			if (selectedTestIndex == -1) return;
 
 			_tests[selectedTestIndex] = new TestCase
 			{
@@ -99,27 +171,73 @@ namespace CodeTrainerApp.Views.MentorViews
 				Expected = txtExpected.Text
 			};
 
-			lbTests.Items[selectedTestIndex] = $"{txtCall.Text} -> {txtExpected.Text}";
+			_isVerified = false;
+			RefreshTestsList();
+			ValidateForm(this, EventArgs.Empty);
+		}
+
+		private void btnDeleteTest_Click(object sender, EventArgs e)
+		{
+			if (lbTests.SelectedIndex == -1) return;
+
+			int index = lbTests.SelectedIndex;
+			_tests.RemoveAt(index);
+			_isVerified = false;
+			RefreshTestsList();
+			
+			btnClearTest_Click(this, EventArgs.Empty);
+			ValidateForm(this, EventArgs.Empty);
+		}
+
+		private void btnClearTest_Click(object sender, EventArgs e)
+		{
+			txtCall.Clear();
+			txtExpected.Clear();
+			lbTests.SelectedIndex = -1;
+			selectedTestIndex = -1;
+			ValidateTestInputs(this, EventArgs.Empty);
+		}
+
+		private async void btnVerify_Click(object sender, EventArgs e)
+		{
+			btnVerify.Enabled = false;
+			lblStatus.Text = "⌛ Перевірка...";
+			lblStatus.ForeColor = Color.Blue;
+
+			var task = new ProgrammingTask
+			{
+				CodeTemplate = txtCode.Text,
+				Tests = _tests
+			};
+
+			var result = await CodeCompiler.RunCode(task, txtCode.Text);
+
+			if (result.success)
+			{
+				_isVerified = true;
+				MessageBox.Show("Всі тести успішно пройдено!", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else
+			{
+				_isVerified = false;
+				string errorMsg = string.IsNullOrEmpty(result.errorMessage) ? result.output : result.errorMessage;
+				MessageBox.Show($"Помилка перевірки:\n\n{errorMsg}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			btnVerify.Enabled = true;
+			ValidateForm(this, EventArgs.Empty);
 		}
 
 		// Створення або редагування задачі
 		private void btnCreate_Click(object sender, EventArgs e)
 		{
-			if (string.IsNullOrWhiteSpace(txtTitle.Text) || string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtCode.Text))
+			if (!_isVerified)
 			{
-				MessageBox.Show("Заповніть всі поля");
+				MessageBox.Show("Будь ласка, спочатку перевірте код!", "Попередження", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return;
 			}
-
-			if (_tests.Count == 0)
-			{
-				MessageBox.Show("Додайте хоча б один тест");
-				return;
-			}
-
 			if (_isEditing)
 			{
-				// Оновлюємо існуючий об'єкт
 				CreatedTask.Title = txtTitle.Text;
 				CreatedTask.Description = txtDescription.Text;
 				CreatedTask.CodeTemplate = txtCode.Text;
@@ -127,7 +245,6 @@ namespace CodeTrainerApp.Views.MentorViews
 			}
 			else
 			{
-				// Створюємо новий
 				CreatedTask = new ProgrammingTask
 				{
 					Title = txtTitle.Text,

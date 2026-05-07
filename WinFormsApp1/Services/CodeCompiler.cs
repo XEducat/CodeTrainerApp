@@ -15,72 +15,81 @@ namespace CodeTrainerApp.Services
 		public static async Task<CodeRunResult> RunCode(ProgrammingTask task, string userCode)
 		{
 			var result = new CodeRunResult();
-			result.success = true; // Припускаємо успіх на початку
+			result.success = true;
 
-			// Починаємо з порожнього виводу
 			string fullOutput = "";
-			// Налаштування Roslyn
 			var options = ScriptOptions.Default
-				.AddReferences(typeof(object).Assembly, typeof(ProgrammingTask).Assembly)
-				.AddImports("System");
+				.AddReferences(typeof(object).Assembly, typeof(ProgrammingTask).Assembly, typeof(Enumerable).Assembly)
+				.AddImports("System", "System.Collections.Generic", "System.Linq", "System.Text");
 
-			foreach (var testCase in task.Tests) // !!! ІТЕРУЄМО ПО ВСІХ ТЕСТАХ !!!
+			// 1. ПЕРЕВІРКА ОСНОВНОГО КОДУ (Шаблону/рішення)
+			try
 			{
-				string testMethodCall = testCase.Call;
+				var userScript = CSharpScript.Create(userCode, options: options);
+				userScript.Compile();
+			}
+			catch (CompilationErrorException e)
+			{
+				result.errorMessage = "❌ ПОМИЛКА В ОСНОВНОМУ КОДІ:\r\n" + string.Join("\r\n", e.Diagnostics.Select(d => d.ToString()));
+				result.success = false;
+				return result;
+			}
+			catch (Exception e)
+			{
+				result.errorMessage = "❌ Критична помилка аналізу коду:\r\n" + e.Message;
+				result.success = false;
+				return result;
+			}
+
+			foreach (var testCase in task.Tests)
+			{
+				string testMethodCall = testCase.Call.Trim();
+				// Видаляємо крапку з комою в кінці, якщо вона є, щоб Roslyn міг повернути значення
+				string callExpression = testMethodCall.EndsWith(";") ? testMethodCall.Substring(0, testMethodCall.Length - 1) : testMethodCall;
 				string expectedValue = testCase.Expected;
 
-				// 1. Формування повного коду для виконання
+				// 2. Формування коду для виконання ТЕСТУ
+				// Ми НЕ використовуємо 'return', щоб підтримати void методи (вони повернуть null)
 				string scriptSource = $@"
-using System;
-{userCode} // Код, наданий користувачем
-return {testMethodCall}; // Виклик тестового методу
-";
+{userCode}
+{callExpression}";
 
 				try
 				{
-					// 2. Виконання коду за допомогою Roslyn
-					// (припускаємо, що у вас налаштовані опції для LINQ та List<T>)
-					var runner = CSharpScript.Create(scriptSource, options: options);
-					var scriptResult = await runner.RunAsync();
+					var script = CSharpScript.Create<object>(scriptSource, options: options);
+					var scriptState = await script.RunAsync();
 
-					string actualResult = scriptResult.ReturnValue?.ToString() ?? "null";
+					object returnValue = scriptState.ReturnValue;
+					string actualResult = returnValue?.ToString() ?? "null";
+					
 					string shortMethodCall = testMethodCall.Replace("new Solution().", "");
 
-					// 3. Перевірка результату
 					if (actualResult.Equals(expectedValue, StringComparison.OrdinalIgnoreCase))
 					{
-						// Успіх для цього тесту
-						fullOutput += $"Тест успішно пройдено: {shortMethodCall} = {actualResult}\r\n";
+						fullOutput += $"✅ Тест пройдено: {shortMethodCall} == {actualResult}\r\n";
 					}
 					else
 					{
-						// Помилка для цього тесту
 						result.success = false;
-						fullOutput += $"ПОМИЛКА ТЕСТУ: {shortMethodCall}\r\n";
+						fullOutput += $"❌ ПОМИЛКА ТЕСТУ: {shortMethodCall}\r\n";
 						fullOutput += $"   Очікувалося: {expectedValue}\r\n";
-						fullOutput += $"   Отримано:   {actualResult}\r\n\n";
-
-						// Якщо хоча б один тест провалився, ми можемо перервати виконання
-						// або продовжити для збору всіх помилок. Залишимо, щоб показати всі помилки.
+						fullOutput += $"   Отримано:    {actualResult}\r\n\n";
 					}
 				}
 				catch (CompilationErrorException e)
 				{
-					// Помилка компіляції (синтаксис)
-					result.errorMessage = "Помилка компіляції:\r\n" + e.Message;
-					result.output = fullOutput; // Додаємо те, що вже зібрали
+					// Помилка в самому виклику тесту (Call)
+					result.errorMessage = $"❌ ПОМИЛКА У ВИКЛИКУ ТЕСТУ ({testMethodCall}):\r\n" + e.Message;
 					result.success = false;
 					return result;
 				}
 				catch (Exception e)
 				{
-					// Помилка виконання (Runtime)
-					result.errorMessage = "Помилка виконання:\r\n" + e.Message;
-					result.output = fullOutput;
+					result.errorMessage = "❌ Помилка виконання:\r\n" + e.Message;
 					result.success = false;
 					return result;
 				}
-			} // Кінець циклу по тестах
+			}
 
 			result.output = fullOutput;
 			return result;

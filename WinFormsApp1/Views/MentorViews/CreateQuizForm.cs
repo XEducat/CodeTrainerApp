@@ -15,7 +15,6 @@ namespace CodeTrainerApp.Views.MentorViews
         if (quiz != null)
         {
 			btnCreateQuiz.Text = "Оновити";
-			// Якщо передано існуючий Quiz, заповнюємо форму
 			CreatedQuiz = quiz;
 
             txtTitle.Text = quiz.Title ?? string.Empty;
@@ -23,7 +22,7 @@ namespace CodeTrainerApp.Views.MentorViews
 
             if (quiz.Tasks != null && quiz.Tasks.Any())
             {
-                _tasks = quiz.Tasks;
+                _tasks = new List<ProgrammingTask>(quiz.Tasks);
 
                 lbTasks.Items.Clear();
                 foreach (var task in _tasks)
@@ -33,17 +32,43 @@ namespace CodeTrainerApp.Views.MentorViews
                 }
             }
         }
+		ValidateForm(this, EventArgs.Empty);
     }
+
+		private void ValidateForm(object? sender, EventArgs e)
+		{
+			bool isTitleValid = !string.IsNullOrWhiteSpace(txtTitle.Text) && txtTitle.Text.Length > 3;
+			bool isDescriptionValid = !string.IsNullOrWhiteSpace(txtDescription.Text) && txtDescription.Text.Length > 5;
+			bool hasTasks = _tasks.Count > 0;
+
+			if (!isTitleValid)
+				errorProvider1.SetError(txtTitle, "Назва квіза занадто коротка або порожня (мін. 4 символи)");
+			else
+				errorProvider1.SetError(txtTitle, "");
+
+			if (!isDescriptionValid)
+				errorProvider1.SetError(txtDescription, "Опис занадто короткий або порожній (мін. 6 символів)");
+			else
+				errorProvider1.SetError(txtDescription, "");
+
+			if (!hasTasks)
+				errorProvider1.SetError(lbTasks, "Додайте хоча б одну задачу");
+			else
+				errorProvider1.SetError(lbTasks, "");
+
+			btnCreateQuiz.Enabled = isTitleValid && isDescriptionValid && hasTasks;
+			btnDeleteTask.Enabled = lbTasks.SelectedIndex != -1;
+		}
 
 		private void btnAddTask_Click(object sender, EventArgs e)
 		{
 			var form = new AddTaskForm();
 
-			this.Hide(); // скрываем только CreateQuizForm
+			this.Hide(); 
 
 			var result = form.ShowDialog();
 
-			this.Show(); // показываем обратно CreateQuizForm
+			this.Show(); 
 
 			if (result == DialogResult.OK)
 			{
@@ -51,7 +76,19 @@ namespace CodeTrainerApp.Views.MentorViews
 
 				_tasks.Add(task);
 				lbTasks.Items.Add($"{task.Title} ({task.Tests.Count} tests)");
+				ValidateForm(this, EventArgs.Empty);
 			}
+		}
+
+		private void btnDeleteTask_Click(object sender, EventArgs e)
+		{
+			if (lbTasks.SelectedIndex == -1)
+				return;
+
+			int index = lbTasks.SelectedIndex;
+			_tasks.RemoveAt(index);
+			lbTasks.Items.RemoveAt(index);
+			ValidateForm(this, EventArgs.Empty);
 		}
 
 		private void lbTasks_DoubleClick(object sender, EventArgs e)
@@ -64,43 +101,26 @@ namespace CodeTrainerApp.Views.MentorViews
 
 			var form = new AddTaskForm(selectedTask);
 
-			this.Hide(); // скрываем только CreateQuizForm
+			this.Hide(); 
 
 			var result = form.ShowDialog();
 
-			this.Show(); // возвращаем форму
+			this.Show(); 
 
 			if (result == DialogResult.OK)
 			{
-				var task = _tasks[index];
-				lbTasks.Items[index] = $"{task.Title} ({task.Tests.Count} tests)";
+				_tasks[index] = form.CreatedTask;
+				lbTasks.Items[index] = $"{_tasks[index].Title} ({_tasks[index].Tests.Count} tests)";
+				ValidateForm(this, EventArgs.Empty);
 			}
 		}
 
 		private void btnCreateQuiz_Click(object sender, EventArgs e)
 		{
-			if (CreatedQuiz == null)
-			{
-				if (string.IsNullOrWhiteSpace(txtTitle.Text))
-				{
-					MessageBox.Show("Введіть назву квіза");
-					return;
-				}
-
-				if (_tasks.Count == 0)
-				{
-					MessageBox.Show("Додайте хоча б одну задачу");
-					return;
-				}
-
-				CreatedQuiz = new Quiz
-				{
-					Title = txtTitle.Text,
-					Description = txtDescription.Text,
-					Tasks = _tasks,
-					MentorId = UserService.Instance.CurrentUser.Id
-				};
-			}
+			CreatedQuiz.Title = txtTitle.Text;
+			CreatedQuiz.Description = txtDescription.Text;
+			CreatedQuiz.Tasks = _tasks;
+			CreatedQuiz.MentorId = UserService.Instance.CurrentUser.Id;
 
 			DialogResult = DialogResult.OK;
 			Close();
