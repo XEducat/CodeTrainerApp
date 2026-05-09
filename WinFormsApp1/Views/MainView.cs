@@ -137,7 +137,11 @@ namespace CodeTrainerApp.Views
 			var selectedQuiz = (Quiz)QuizListBox.SelectedItem;
 			var quizView = new QuizView(selectedQuiz);
 
-			quizView.FormClosed += (s, args) => this.Show();
+			quizView.FormClosed += (s, args) => 
+			{
+				UpdateAuthUI();
+				this.Show();
+			};
 
 			this.Hide();
 			quizView.Show();

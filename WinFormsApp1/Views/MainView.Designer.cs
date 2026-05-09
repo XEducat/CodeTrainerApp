@@ -178,15 +178,18 @@ namespace CodeTrainerApp.Views
 			WindowState = FormWindowState.Maximized;
 			Load += QuizzesView_Load;
 
-			// ✨ застосування стилів
-			StyleHelper.ApplySuccessButton(CabinetButton);
-			StyleHelper.ApplyPrimaryButton(ProfileButton);
-
 			MainPanel.ResumeLayout(false);
 			HeaderPanel.ResumeLayout(false);
 			HeaderPanel.PerformLayout();
 			ButtonPanel.ResumeLayout(false);
+			ApplyModernStyles();
 			ResumeLayout(false);
+		}
+
+		private void ApplyModernStyles()
+		{
+			StyleHelper.ApplySuccessButton(CabinetButton);
+			StyleHelper.ApplyPrimaryButton(ProfileButton);
 		}
 	}
 }

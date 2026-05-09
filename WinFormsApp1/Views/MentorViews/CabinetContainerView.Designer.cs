@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -40,9 +41,9 @@ namespace CodeTrainerApp.Views.MentorViews
 			btnCabinet.ForeColor = Color.White;
 			btnCabinet.Location = new Point(20, 10);
 			btnCabinet.Name = "btnCabinet";
-			btnCabinet.Size = new Size(150, 40);
+			btnCabinet.Size = new Size(160, 40);
 			btnCabinet.TabIndex = 0;
-			btnCabinet.Text = "Історія проходжень";
+			btnCabinet.Text = "Історія";
 			btnCabinet.UseVisualStyleBackColor = false;
 			// 
 			// btnSecondView
@@ -53,7 +54,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			btnSecondView.ForeColor = Color.White;
 			btnSecondView.Location = new Point(190, 10);
 			btnSecondView.Name = "btnSecondView";
-			btnSecondView.Size = new Size(150, 40);
+			btnSecondView.Size = new Size(160, 40);
 			btnSecondView.TabIndex = 1;
 			btnSecondView.Text = "Мої квізи";
 			btnSecondView.UseVisualStyleBackColor = false;
@@ -78,7 +79,23 @@ namespace CodeTrainerApp.Views.MentorViews
 			WindowState = FormWindowState.Maximized;
 			Load += CabinetContainerView_Load;
 			headerPanel.ResumeLayout(false);
+			ApplyModernStyles();
 			ResumeLayout(false);
+		}
+
+		private void ApplyModernStyles()
+		{
+			headerPanel.BackColor = Color.White;
+			headerPanel.Padding = new Padding(0, 0, 0, 1);
+			headerPanel.Paint += (s, e) => 
+			{
+				e.Graphics.DrawLine(new Pen(Theme.Border), 0, headerPanel.Height - 1, headerPanel.Width, headerPanel.Height - 1);
+			};
+
+			contentPanel.BackColor = Theme.Background;
+			
+			StyleHelper.ApplyMenuButton(btnCabinet);
+			StyleHelper.ApplyMenuButton(btnSecondView);
 		}
 	}
 }

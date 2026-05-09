@@ -10,32 +10,35 @@ namespace CodeTrainerApp.UI
 		{
 			btn.FlatStyle = FlatStyle.Flat;
 			btn.FlatAppearance.BorderSize = 0;
+			btn.FlatAppearance.MouseOverBackColor = Theme.PrimaryHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.Primary;
 
 			btn.UseVisualStyleBackColor = false;
-
 			btn.BackColor = Theme.Primary;
 			btn.ForeColor = Color.White;
 
 			btn.Font = new Font("Segoe UI", 10F);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
 			btn.Cursor = Cursors.Hand;
 
 			MakeRounded(btn, 5);
-
-			btn.MouseEnter += (s, e) => btn.BackColor = Theme.PrimaryHover;
-			btn.MouseLeave += (s, e) => btn.BackColor = Theme.Primary;
 		}
 
 		public static void ApplySuccessButton(Button btn)
 		{
 			btn.FlatStyle = FlatStyle.Flat;
 			btn.FlatAppearance.BorderSize = 0;
+			btn.FlatAppearance.MouseOverBackColor = Theme.SuccessHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.Success;
 
 			btn.UseVisualStyleBackColor = false;
-
 			btn.BackColor = Theme.Success;
 			btn.ForeColor = Color.White;
 
 			btn.Font = new Font("Segoe UI", 10F);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
 			btn.Cursor = Cursors.Hand;
 
 			MakeRounded(btn, 5);
@@ -45,13 +48,35 @@ namespace CodeTrainerApp.UI
 		{
 			btn.FlatStyle = FlatStyle.Flat;
 			btn.FlatAppearance.BorderSize = 0;
+			btn.FlatAppearance.MouseOverBackColor = Theme.DangerHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.Danger;
 
 			btn.UseVisualStyleBackColor = false;
-
 			btn.BackColor = Theme.Danger;
 			btn.ForeColor = Color.White;
 
 			btn.Font = new Font("Segoe UI", 10F);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
+			btn.Cursor = Cursors.Hand;
+
+			MakeRounded(btn, 5);
+		}
+
+		public static void ApplyMenuButton(Button btn)
+		{
+			btn.FlatStyle = FlatStyle.Flat;
+			btn.FlatAppearance.BorderSize = 0;
+			btn.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.MenuSelected;
+
+			btn.UseVisualStyleBackColor = false;
+			btn.BackColor = Color.Transparent;
+			btn.ForeColor = Theme.TextSecondary;
+
+			btn.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
 			btn.Cursor = Cursors.Hand;
 
 			MakeRounded(btn, 5);

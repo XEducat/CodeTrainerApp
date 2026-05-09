@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using CodeTrainerApp.UI;
+using System.Drawing.Drawing2D;
 
 namespace CodeTrainerApp.Views
 {
@@ -211,8 +212,65 @@ namespace CodeTrainerApp.Views
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "CodeTrainer — Вхід";
 
+			ApplyModernStyles();
 			ResumeLayout(false);
 			PerformLayout();
+		}
+
+		private void ApplyModernStyles()
+		{
+			BackColor = Theme.Background;
+
+			StyleHelper.ApplyPrimaryButton(MainButton);
+			
+			SwitchModeButton.FlatStyle = FlatStyle.Flat;
+			SwitchModeButton.FlatAppearance.BorderSize = 0;
+			SwitchModeButton.ForeColor = Theme.Primary;
+			SwitchModeButton.BackColor = Color.Transparent;
+			SwitchModeButton.Cursor = Cursors.Hand;
+
+			TogglePasswordButton.BackColor = Color.Transparent;
+			ToggleConfirmPasswordButton.BackColor = Color.Transparent;
+		}
+
+		private void UpdateModeLayout(bool register)
+		{
+			LoginLabel.Visible = register;
+			LoginTextBox.Visible = register;
+
+			ConfirmPasswordLabel.Visible = register;
+			ConfirmPasswordTextBox.Visible = register;
+			ToggleConfirmPasswordButton.Visible = register;
+
+			BirthDateLabel.Visible = register;
+			BirthDatePicker.Visible = register;
+
+			MentorCheckBox.Visible = register;
+			MentorCodeLabel.Visible = register && MentorCheckBox.Checked;
+			MentorCodeTextBox.Visible = register && MentorCheckBox.Checked;
+
+			if (register)
+			{
+				Text = "Реєстрація";
+				MainButton.Text = "Зареєструватися";
+				SwitchModeButton.Text = "Назад до входу";
+				EmailLabel.Text = "Email";
+
+				ClientSize = new Size(340, 480);
+				MainButton.Location = new Point(30, 380);
+				SwitchModeButton.Location = new Point(30, 430);
+			}
+			else
+			{
+				Text = "Вхід";
+				MainButton.Text = "Увійти";
+				SwitchModeButton.Text = "Зареєструватися";
+				EmailLabel.Text = "Логін або Email";
+
+				ClientSize = new Size(340, 340);
+				MainButton.Location = new Point(30, 200);
+				SwitchModeButton.Location = new Point(30, 250);
+			}
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace CodeTrainerApp.Views.MentorViews
+﻿using CodeTrainerApp.UI;
+
+namespace CodeTrainerApp.Views.MentorViews
 {
 	partial class CreateQuizForm
 	{
@@ -31,54 +33,78 @@
 			SuspendLayout();
 
 			// Title
-			txtTitle.Location = new Point(30, 30);
-			txtTitle.Size = new Size(300, 25);
-			txtTitle.PlaceholderText = "Назва квіза";
+			txtTitle.Location = new Point(30, 25);
+			txtTitle.Size = new Size(520, 25);
+			txtTitle.PlaceholderText = "Назва квіза (напр. Основи C#)";
 			txtTitle.TextChanged += ValidateForm;
 
 			// Description
-			txtDescription.Location = new Point(30, 70);
-			txtDescription.Size = new Size(300, 25);
-			txtDescription.PlaceholderText = "Опис";
+			txtDescription.Location = new Point(30, 65);
+			txtDescription.Size = new Size(520, 25);
+			txtDescription.PlaceholderText = "Короткий опис квіза...";
 			txtDescription.TextChanged += ValidateForm;
 
+			// Tasks list label
+			Label lblTasks = new Label();
+			lblTasks.Text = "Список задач:";
+			lblTasks.Location = new Point(30, 105);
+			lblTasks.AutoSize = true;
+
 			// Tasks list
-			lbTasks.Location = new Point(30, 120);
-			lbTasks.Size = new Size(400, 200);
+			lbTasks.Location = new Point(30, 130);
+			lbTasks.Size = new Size(520, 220);
 			lbTasks.DoubleClick += lbTasks_DoubleClick;
 			lbTasks.SelectedIndexChanged += ValidateForm;
 
 			// Add Task
-			btnAddTask.Text = "Додати задачу";
-			btnAddTask.Location = new Point(30, 340);
-			btnAddTask.Size = new Size(120, 30);
+			btnAddTask.Text = "➕ Додати задачу";
+			btnAddTask.Location = new Point(30, 370);
+			btnAddTask.Size = new Size(150, 35);
 			btnAddTask.Click += btnAddTask_Click;
 
 			// Delete Task
-			btnDeleteTask.Text = "Видалити задачу";
-			btnDeleteTask.Location = new Point(160, 340);
-			btnDeleteTask.Size = new Size(120, 30);
+			btnDeleteTask.Text = "🗑 Видалити";
+			btnDeleteTask.Location = new Point(190, 370);
+			btnDeleteTask.Size = new Size(120, 35);
 			btnDeleteTask.Click += btnDeleteTask_Click;
 
 			// Create quiz
-			btnCreateQuiz.Text = "Створити";
-			btnCreateQuiz.Location = new Point(310, 340);
-			btnCreateQuiz.Size = new Size(120, 30);
+			btnCreateQuiz.Text = "💾 Зберегти квіз";
+			btnCreateQuiz.Location = new Point(400, 370);
+			btnCreateQuiz.Size = new Size(150, 35);
 			btnCreateQuiz.Click += btnCreateQuiz_Click;
 
 			Controls.Add(txtTitle);
 			Controls.Add(txtDescription);
+			Controls.Add(lblTasks);
 			Controls.Add(lbTasks);
 			Controls.Add(btnAddTask);
 			Controls.Add(btnDeleteTask);
 			Controls.Add(btnCreateQuiz);
 
-			Text = "Створення квізу";
-			ClientSize = new Size(500, 400);
+			Text = "Редактор квізу";
+			ClientSize = new Size(580, 430);
+			FormBorderStyle = FormBorderStyle.FixedDialog;
+			StartPosition = FormStartPosition.CenterParent;
+			MaximizeBox = false;
 
 			((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
+			ApplyModernStyles();
 			ResumeLayout(false);
 			PerformLayout();
+		}
+
+		private void ApplyModernStyles()
+		{
+			this.BackColor = Theme.Background;
+			this.Font = new Font("Segoe UI", 9F);
+
+			StyleHelper.ApplyPrimaryButton(btnAddTask);
+			StyleHelper.ApplyDangerButton(btnDeleteTask);
+			StyleHelper.ApplySuccessButton(btnCreateQuiz);
+
+			lbTasks.BackColor = Color.White;
+			lbTasks.BorderStyle = BorderStyle.FixedSingle;
 		}
 	}
 }

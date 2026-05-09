@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using CodeTrainerApp.UI;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CodeTrainerApp.Views.MentorViews
@@ -59,9 +60,16 @@ namespace CodeTrainerApp.Views.MentorViews
 			ClientSize = new Size(800, 600);
 			Controls.Add(_quizPanel);
 			Controls.Add(_addQuizButton);
+			ApplyModernStyles();
 			Name = "MentorQuizzesView";
 			Text = "Квізи ментора";
 			ResumeLayout(false);
+		}
+
+		private void ApplyModernStyles()
+		{
+			this.BackColor = Theme.Background;
+			StyleHelper.ApplySuccessButton(_addQuizButton);
 		}
 	}
 }

@@ -15,7 +15,6 @@ namespace CodeTrainerApp.Views
 		public LoginView()
 		{
 			InitializeComponent();
-			InitializeDesign();
 
 			TogglePasswordButton.Click += TogglePasswordButton_Click;
 			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
@@ -28,22 +27,6 @@ namespace CodeTrainerApp.Views
 			MentorCodeTextBox.Visible = false;
 
 			SetMode(false);
-		}
-
-		// ================= UI DESIGN =================
-		private void InitializeDesign()
-		{
-			BackColor = Color.FromArgb(245, 247, 250);
-
-			MainButton.BackColor = Color.FromArgb(52, 120, 246);
-			MainButton.ForeColor = Color.White;
-			MainButton.FlatStyle = FlatStyle.Flat;
-			MainButton.FlatAppearance.BorderSize = 0;
-
-			SwitchModeButton.FlatStyle = FlatStyle.Flat;
-			SwitchModeButton.FlatAppearance.BorderSize = 0;
-			SwitchModeButton.ForeColor = Color.FromArgb(52, 120, 246);
-			SwitchModeButton.BackColor = Color.Transparent;
 		}
 
 		// ================= PASSWORD TOGGLE =================
@@ -67,47 +50,11 @@ namespace CodeTrainerApp.Views
 		private void SetMode(bool register)
 		{
 			_isRegisterMode = register;
-
-			LoginLabel.Visible = register;
-			LoginTextBox.Visible = register;
-
-			ConfirmPasswordLabel.Visible = register;
-			ConfirmPasswordTextBox.Visible = register;
-			ToggleConfirmPasswordButton.Visible = register;
-
-			BirthDateLabel.Visible = register;
-			BirthDatePicker.Visible = register;
-
-			MentorCheckBox.Visible = register;
-			MentorCodeLabel.Visible = register && MentorCheckBox.Checked;
-			MentorCodeTextBox.Visible = register && MentorCheckBox.Checked;
+			UpdateModeLayout(register);
 
 			TogglePasswordButton.Visible = true;
 			PasswordTextBox.Visible = true;
 			PasswordLabel.Visible = true;
-
-			if (register)
-			{
-				Text = "Реєстрація";
-				MainButton.Text = "Зареєструватися";
-				SwitchModeButton.Text = "Назад до входу";
-				EmailLabel.Text = "Email";
-
-				ClientSize = new Size(340, 480);
-				MainButton.Location = new Point(30, 380);
-				SwitchModeButton.Location = new Point(30, 430);
-			}
-			else
-			{
-				Text = "Вхід";
-				MainButton.Text = "Увійти";
-				SwitchModeButton.Text = "Зареєструватися";
-				EmailLabel.Text = "Логін або Email";
-
-				ClientSize = new Size(340, 340);
-				MainButton.Location = new Point(30, 200);
-				SwitchModeButton.Location = new Point(30, 250);
-			}
 		}
 
 		private void SwitchModeButton_Click(object sender, EventArgs e)

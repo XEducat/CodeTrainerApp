@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -34,6 +35,7 @@ namespace CodeTrainerApp.Views.MentorViews
 		private void RefreshQuizList()
 		{
 			_quizPanel.Controls.Clear();
+			_quizPanel.BackColor = Theme.Background;
 
 			foreach (var quiz in _quizzes)
 			{
@@ -46,28 +48,32 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			var panel = new Panel()
 			{
-				Width = _quizPanel.ClientSize.Width - 30,
-				Height = 100,
+				Width = _quizPanel.ClientSize.Width - 40,
+				Height = 110,
 				BackColor = Color.White,
 				BorderStyle = BorderStyle.None,
-				Padding = new Padding(10),
-				Margin = new Padding(5),
+				Padding = new Padding(15),
+				Margin = new Padding(10),
 			};
 
-			// Тінь/рамка
 			panel.Paint += (s, e) =>
 			{
 				var rect = panel.ClientRectangle;
-				rect.Inflate(-1, -1);
-				e.Graphics.DrawRectangle(Pens.LightGray, rect);
+				rect.Width -= 1;
+				rect.Height -= 1;
+				using (var pen = new Pen(Theme.Border, 1))
+				{
+					e.Graphics.DrawRectangle(pen, rect);
+				}
 			};
 
 			// Заголовок
 			var lblTitle = new Label()
 			{
 				Text = quiz.Title,
-				Font = new Font("Segoe UI", 11, FontStyle.Bold),
-				Location = new Point(10, 10),
+				Font = new Font("Segoe UI", 12, FontStyle.Bold),
+				ForeColor = Theme.TextPrimary,
+				Location = new Point(15, 15),
 				AutoSize = true
 			};
 			panel.Controls.Add(lblTitle);
@@ -77,50 +83,46 @@ namespace CodeTrainerApp.Views.MentorViews
 			{
 				Text = quiz.Description,
 				Font = new Font("Segoe UI", 9, FontStyle.Regular),
-				Location = new Point(10, 35),
-				MaximumSize = new Size(panel.Width - 150, 0), // перенос рядків
+				ForeColor = Theme.TextSecondary,
+				Location = new Point(15, 45),
+				MaximumSize = new Size(panel.Width - 250, 40),
 				AutoSize = true
 			};
 			panel.Controls.Add(lblDesc);
 
-			// Бейдж із кількістю задач
+			// Бейдж
 			var lblTasksCount = new Label()
 			{
-				Text = $"{quiz.Tasks?.Count ?? 0} задач",
-				Font = new Font("Segoe UI", 8, FontStyle.Regular),
-				BackColor = Color.LightGray,
-				ForeColor = Color.Black,
+				Text = $"📑 {quiz.Tasks?.Count ?? 0} задач",
+				Font = new Font("Segoe UI", 8, FontStyle.Bold),
+				BackColor = Color.FromArgb(230, 240, 255),
+				ForeColor = Theme.Primary,
 				AutoSize = true,
 				Padding = new Padding(5),
-				Location = new Point(10, 65)
+				Location = new Point(15, 75)
 			};
 			panel.Controls.Add(lblTasksCount);
 
 			// Кнопка редагувати
 			var btnEdit = new Button()
 			{
-				Text = "Редагувати",
-				Size = new Size(90, 30),
-				BackColor = Color.Orange,
-				ForeColor = Color.White,
-				FlatStyle = FlatStyle.Flat,
-				Location = new Point(panel.Width - 200, 35)
+				Text = "✏ Редагувати",
+				Size = new Size(110, 32),
+				Location = new Point(panel.Width - 240, 35)
 			};
-			btnEdit.FlatAppearance.BorderSize = 0;
+			StyleHelper.ApplyPrimaryButton(btnEdit);
+			btnEdit.BackColor = Theme.Warning;
 			btnEdit.Click += (s, e) => EditQuiz(quiz);
 			panel.Controls.Add(btnEdit);
 
 			// Кнопка видалити
 			var btnDelete = new Button()
 			{
-				Text = "Видалити",
-				Size = new Size(90, 30),
-				BackColor = Color.Red,
-				ForeColor = Color.White,
-				FlatStyle = FlatStyle.Flat,
-				Location = new Point(panel.Width - 100, 35)
+				Text = "🗑 Видалити",
+				Size = new Size(110, 32),
+				Location = new Point(panel.Width - 120, 35)
 			};
-			btnDelete.FlatAppearance.BorderSize = 0;
+			StyleHelper.ApplyDangerButton(btnDelete);
 			btnDelete.Click += (s, e) => DeleteQuiz(quiz);
 			panel.Controls.Add(btnDelete);
 

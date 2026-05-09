@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Views.MentorViews;
 using CodeTrainerApp.Views.RegisteredUserViews;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -50,13 +51,15 @@ namespace CodeTrainerApp.Views.MentorViews
 			{
 				if (btn == button)
 				{
-					btn.BackColor = Color.DodgerBlue; // активна кнопка синя
+					btn.BackColor = Theme.Primary; 
 					btn.ForeColor = Color.White;
+					btn.FlatAppearance.MouseOverBackColor = Theme.PrimaryHover;
 				}
 				else
 				{
-					btn.BackColor = Color.LightGray; // неактивні сірі
-					btn.ForeColor = Color.Black;
+					btn.BackColor = Color.Transparent;
+					btn.ForeColor = Theme.TextSecondary;
+					btn.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
 				}
 			}
 		}

@@ -1,3 +1,5 @@
+using CodeTrainerApp.UI;
+
 namespace CodeTrainerApp.Views
 {
 	partial class QuizView
@@ -333,7 +335,38 @@ namespace CodeTrainerApp.Views
 			ButtonsPanel.ResumeLayout(false);
 			ResultPanel.ResumeLayout(false);
 			CodePanel.ResumeLayout(false);
+			ApplyModernStyles();
 			ResumeLayout(false);
+		}
+
+		private void ApplyModernStyles()
+		{
+			// Кнопки
+			StyleHelper.ApplySuccessButton(CheckButton);
+			StyleHelper.ApplyPrimaryButton(NextButton);
+
+			StyleHelper.ApplyMenuButton(SkipButton);
+			SkipButton.BackColor = Theme.Warning;
+			SkipButton.ForeColor = Color.White;
+			SkipButton.FlatAppearance.MouseOverBackColor = Theme.WarningHover;
+
+			// Налаштування LoginButton
+			StyleHelper.ApplyPrimaryButton(LoginButton);
+			LoginButton.BackColor = Theme.TextSecondary;
+			LoginButton.FlatAppearance.MouseOverBackColor = Theme.TextPrimary;
+
+			// Панелі
+			TopPanel.BackColor = Theme.Primary;
+			SidePanel.BackColor = Theme.Sidebar;
+			EditorPanel.BackColor = Theme.Background;
+
+			CodePanel.BackColor = Theme.CodeBackground;
+			CodeTextBox.BackColor = Theme.CodeBackground;
+			CodeTextBox.ForeColor = Theme.CodeForeground;
+			CodeHeaderLabel.BackColor = Color.FromArgb(17, 24, 39);
+
+			ResultPanel.BackColor = Color.White;
+			ResultHeaderLabel.BackColor = Color.FromArgb(249, 250, 251);
 		}
 
 		#endregion

@@ -1,6 +1,7 @@
 using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
 using CodeTrainerApp.UI;
+using CodeTrainerApp.Views.RegisteredUserViews;
 
 namespace CodeTrainerApp.Views
 {
@@ -17,67 +18,32 @@ namespace CodeTrainerApp.Views
 			_quiz = selectedQuiz;
 			_currentUser = UserService.Instance.CurrentUser;
 
-			ApplyModernStyles();
+			// Встановлюємо дані квізу
+			if (_quiz != null)
+			{
+				QuizTitleLabel.Text = $"Code Trainer - {_quiz.Title}";
+				QuizProgressBar.Maximum = _quiz.Tasks.Count;
+			}
 
 			InitializeAccess();
 			LoadCurrentTask();
 		}
 
-		private void ApplyModernStyles()
-		{
-			// Кнопки
-			StyleHelper.ApplySuccessButton(CheckButton);
-			StyleHelper.ApplyPrimaryButton(NextButton);
-
-			SkipButton.FlatStyle = FlatStyle.Flat;
-			SkipButton.FlatAppearance.BorderSize = 0;
-			SkipButton.BackColor = Theme.Warning;
-			SkipButton.ForeColor = Color.White;
-			SkipButton.Cursor = Cursors.Hand;
-			SkipButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-
-			// Налаштування LoginButton (використовуємо кастомні кольори без дублювання подій)
-			StyleHelper.ApplyPrimaryButton(LoginButton);
-			LoginButton.BackColor = Theme.TextSecondary;
-
-			// Оновлюємо кольори для Hover, видаляючи старі та додаючи нові, 
-			// але оскільки це конструктор, краще просто перевизначити логіку
-			LoginButton.MouseEnter += (s, e) => { if (LoginButton.Enabled) LoginButton.BackColor = Theme.TextPrimary; };
-			LoginButton.MouseLeave += (s, e) => { if (LoginButton.Enabled) LoginButton.BackColor = Theme.TextSecondary; };
-
-			// Панелі
-			TopPanel.BackColor = Theme.Primary;
-			SidePanel.BackColor = Theme.Sidebar;
-			EditorPanel.BackColor = Theme.Background;
-
-			CodePanel.BackColor = Theme.CodeBackground;
-			CodeTextBox.BackColor = Theme.CodeBackground;
-			CodeTextBox.ForeColor = Theme.CodeForeground;
-			CodeHeaderLabel.BackColor = Color.FromArgb(17, 24, 39);
-
-			ResultPanel.BackColor = Color.White;
-			ResultHeaderLabel.BackColor = Color.FromArgb(249, 250, 251);
-
-			if (_quiz != null)
-			{
-				QuizTitleLabel.Text = _quiz.Title;
-				QuizProgressBar.Maximum = _quiz.Tasks.Count;
-			}
-		}
-
 		private void InitializeAccess()
+
 		{
 			if (_currentUser == null)
 			{
 				LoginButton.Visible = true;
 				NextButton.Enabled = false;
 				LoginButton.Text = "👤 Увійти";
+				LoginButton.Enabled = true;
 			}
 			else
 			{
 				LoginButton.Visible = true;
-				LoginButton.Text = $"👤 {_currentUser.Email.Split('@')[0]}";
-				LoginButton.Enabled = false;
+				LoginButton.Text = "👤 Профіль";
+				LoginButton.Enabled = true;
 			}
 		}
 
@@ -205,13 +171,28 @@ namespace CodeTrainerApp.Views
 
 		private void LoginButton_Click(object sender, EventArgs e)
 		{
-			using (var loginView = new LoginView())
+			if (!UserService.Instance.IsLoggedIn)
 			{
-				if (loginView.ShowDialog() != DialogResult.OK) return;
-				if (!loginView.IsLoggedIn) return;
+				using (var loginView = new LoginView())
+				{
+					if (loginView.ShowDialog() == DialogResult.OK)
+					{
+						_currentUser = UserService.Instance.CurrentUser;
+						InitializeAccess();
+					}
+				}
+			}
+			else
+			{
+				var profile = new ProfileView(UserService.Instance.CurrentUser);
 
-				_currentUser = loginView.LoggedUser;
-				InitializeAccess();
+				profile.LoggedOut += (s, args) =>
+				{
+					_currentUser = null;
+					InitializeAccess();
+				};
+
+				profile.ShowDialog();
 			}
 		}
 

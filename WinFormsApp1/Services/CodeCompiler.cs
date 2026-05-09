@@ -30,7 +30,15 @@ namespace CodeTrainerApp.Services
 			}
 			catch (CompilationErrorException e)
 			{
-				result.errorMessage = "❌ ПОМИЛКА В ОСНОВНОМУ КОДІ:\r\n" + string.Join("\r\n", e.Diagnostics.Select(d => d.ToString()));
+				var diagnostics = e.Diagnostics
+					.Select(d => {
+						var lineSpan = d.Location.GetLineSpan();
+						int line = lineSpan.StartLinePosition.Line + 1;
+						int col = lineSpan.StartLinePosition.Character + 1;
+						return $"[Рядок {line}, Символ {col}] {d.GetMessage()}";
+					});
+
+				result.errorMessage = "❌ ПОМИЛКА В ОСНОВНОМУ КОДІ:\r\n" + string.Join("\r\n", diagnostics);
 				result.success = false;
 				return result;
 			}
@@ -57,23 +65,37 @@ namespace CodeTrainerApp.Services
 				try
 				{
 					var script = CSharpScript.Create<object>(scriptSource, options: options);
-					var scriptState = await script.RunAsync();
-
-					object returnValue = scriptState.ReturnValue;
-					string actualResult = returnValue?.ToString() ?? "null";
 					
-					string shortMethodCall = testMethodCall.Replace("new Solution().", "");
+					// Додаємо таймаут (наприклад, 5 секунд) для захисту від нескінченних циклів
+					using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+					{
+						var scriptTask = script.RunAsync(cancellationToken: cts.Token);
+						var completedTask = await Task.WhenAny(scriptTask, Task.Delay(5500)); // Трохи більше ніж CTS для надійності
 
-					if (actualResult.Equals(expectedValue, StringComparison.OrdinalIgnoreCase))
-					{
-						fullOutput += $"✅ Тест пройдено: {shortMethodCall} == {actualResult}\r\n";
-					}
-					else
-					{
-						result.success = false;
-						fullOutput += $"❌ ПОМИЛКА ТЕСТУ: {shortMethodCall}\r\n";
-						fullOutput += $"   Очікувалося: {expectedValue}\r\n";
-						fullOutput += $"   Отримано:    {actualResult}\r\n\n";
+						if (completedTask != scriptTask)
+						{
+							result.errorMessage = "❌ ПОМИЛКА: Перевищено час виконання (можливо, нескінченний цикл або занадто складні обчислення).";
+							result.success = false;
+							return result;
+						}
+
+						var scriptState = await scriptTask;
+						object returnValue = scriptState.ReturnValue;
+						string actualResult = returnValue?.ToString() ?? "null";
+						
+						string shortMethodCall = testMethodCall.Replace("new Solution().", "");
+
+						if (actualResult.Equals(expectedValue, StringComparison.OrdinalIgnoreCase))
+						{
+							fullOutput += $"✅ Тест пройдено: {shortMethodCall} == {actualResult}\r\n";
+						}
+						else
+						{
+							result.success = false;
+							fullOutput += $"❌ ПОМИЛКА ТЕСТУ: {shortMethodCall}\r\n";
+							fullOutput += $"   Очікувалося: {expectedValue}\r\n";
+							fullOutput += $"   Отримано:    {actualResult}\r\n\n";
+						}
 					}
 				}
 				catch (CompilationErrorException e)

@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -8,32 +9,32 @@ namespace CodeTrainerApp.Views.MentorViews
 		public Quiz CreatedQuiz { get; private set; } = new Quiz();
 		private List<ProgrammingTask> _tasks = new();
 
-	public CreateQuizForm(Quiz? quiz = null)
-    {
-        InitializeComponent();
+		public CreateQuizForm(Quiz? quiz = null)
+		{
+			InitializeComponent();
 
-        if (quiz != null)
-        {
-			btnCreateQuiz.Text = "Оновити";
-			CreatedQuiz = quiz;
+			if (quiz != null)
+			{
+				btnCreateQuiz.Text = "Оновити";
+				CreatedQuiz = quiz;
 
-            txtTitle.Text = quiz.Title ?? string.Empty;
-            txtDescription.Text = quiz.Description ?? string.Empty;
+				txtTitle.Text = quiz.Title ?? string.Empty;
+				txtDescription.Text = quiz.Description ?? string.Empty;
 
-            if (quiz.Tasks != null && quiz.Tasks.Any())
-            {
-                _tasks = new List<ProgrammingTask>(quiz.Tasks);
+				if (quiz.Tasks != null && quiz.Tasks.Any())
+				{
+					_tasks = new List<ProgrammingTask>(quiz.Tasks);
 
-                lbTasks.Items.Clear();
-                foreach (var task in _tasks)
-                {
-                    var testCount = task.Tests?.Count ?? 0;
-                    lbTasks.Items.Add($"{task.Title} ({testCount} tests)");
-                }
-            }
-        }
-		ValidateForm(this, EventArgs.Empty);
-    }
+					lbTasks.Items.Clear();
+					foreach (var task in _tasks)
+					{
+						var testCount = task.Tests?.Count ?? 0;
+						lbTasks.Items.Add($"{task.Title} ({testCount} tests)");
+					}
+				}
+			}
+			ValidateForm(this, EventArgs.Empty);
+		}
 
 		private void ValidateForm(object? sender, EventArgs e)
 		{

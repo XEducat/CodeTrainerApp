@@ -30,7 +30,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 
 			// ================= FORM =================
 			this.Text = "Профіль";
-			this.BackColor = Theme.Background;
 			this.ClientSize = new Size(540, 520);
 			this.StartPosition = FormStartPosition.CenterScreen;
 			this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -39,7 +38,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			cardPanel = new Panel
 			{
 				Size = new Size(460, 540),
-				BackColor = Theme.Surface,
 				Padding = new Padding(35),
 				Location = new Point(40, 0)
 			};
@@ -68,8 +66,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			lblTitle = new Label
 			{
 				Text = "Профіль",
-				Font = new Font("Segoe UI Semibold", 20F),
-				ForeColor = Theme.TextPrimary,
 				Dock = DockStyle.Fill,
 				TextAlign = ContentAlignment.MiddleCenter
 			};
@@ -110,8 +106,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 				Margin = new Padding(0, 20, 0, 0)
 			};
 
-			StyleHelper.ApplyPrimaryButton(btnLogout);
-
 			btnLogout.Click += btnLogout_Click;
 
 			tableLayout.Controls.Add(btnLogout, 0, 5);
@@ -121,7 +115,38 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			cardPanel.Controls.Add(tableLayout);
 			this.Controls.Add(cardPanel);
 
+			ApplyModernStyles();
 			this.ResumeLayout(false);
+		}
+
+		private void ApplyModernStyles()
+		{
+			this.BackColor = Theme.Background;
+			cardPanel.BackColor = Theme.Surface;
+
+			lblTitle.Font = new Font("Segoe UI Semibold", 20F);
+			lblTitle.ForeColor = Theme.TextPrimary;
+
+			StyleHelper.ApplyPrimaryButton(btnLogout);
+			btnLogout.BackColor = Theme.Danger; // Вихід — це небезпечна дія
+			btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(220, 38, 38);
+
+			foreach (Control control in tableLayout.Controls)
+			{
+				if (control is Label lbl)
+				{
+					if (tableLayout.GetColumn(lbl) == 0) // SetupLabel logic
+					{
+						lbl.Font = new Font("Segoe UI Semibold", 12F);
+						lbl.ForeColor = Theme.TextSecondary;
+					}
+					else if (lbl != lblTitle) // SetupValueLabel logic
+					{
+						lbl.Font = new Font("Segoe UI", 12F);
+						lbl.ForeColor = Theme.TextPrimary;
+					}
+				}
+			}
 		}
 
 		private Label SetupLabel(string text)
@@ -129,8 +154,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			return new Label
 			{
 				Text = text,
-				Font = new Font("Segoe UI Semibold", 12F),
-				ForeColor = Theme.TextSecondary,
 				Dock = DockStyle.Fill,
 				TextAlign = ContentAlignment.MiddleLeft
 			};
@@ -140,8 +163,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 		{
 			return new Label
 			{
-				Font = new Font("Segoe UI", 12F),
-				ForeColor = Theme.TextPrimary,
 				Dock = DockStyle.Fill,
 				TextAlign = ContentAlignment.MiddleLeft
 			};

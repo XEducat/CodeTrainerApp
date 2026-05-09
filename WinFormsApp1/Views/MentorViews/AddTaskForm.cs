@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
 {
@@ -31,19 +32,13 @@ namespace CodeTrainerApp.Views.MentorViews
 				txtCode.Text = task.CodeTemplate;
 
 				_tests = new List<TestCase>(task.Tests); 
-				foreach (var test in _tests)
-				{
-					lbTests.Items.Add($"{test.Call} -> {test.Expected}");
-				}
-				_isVerified = true; // Припускаємо що існуюча задача валідна
+				_isVerified = true; 
 			}
+			RefreshTestsList();
 			ValidateForm(this, EventArgs.Empty);
 			ValidateTestInputs(this, EventArgs.Empty);
 
 			txtCode.TextChanged += (s, e) => { _isVerified = false; ValidateForm(s, e); };
-			lbTests.Items.Clear(); // Clear and re-add to sync with _tests if needed, but it's done in constructor
-			// Re-adding tests to ensure UI is in sync if edited
-			RefreshTestsList();
 		}
 
 		private void RefreshTestsList()
