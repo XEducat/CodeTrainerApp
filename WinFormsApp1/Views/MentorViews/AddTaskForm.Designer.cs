@@ -103,7 +103,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			txtCode.KeyDown += TxtCode_KeyDown;
 
 			lblExample.Font = new Font("Segoe UI", 8F);
-			lblExample.ForeColor = Color.DimGray;
+			lblExample.ForeColor = Theme.TextSecondary;
 			lblExample.Location = new Point(480, 25);
 			lblExample.Size = new Size(265, 180);
 			lblExample.Text = "Приклад структури:\n\npublic class Solution\n{\n    public int Sum(int a, int b)\n    {\n        return a + b;\n    }\n}\n\n* Використовуйте class Solution обов'язково.";
@@ -167,7 +167,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// pnlBottom
 			pnlBottom.Dock = DockStyle.Bottom;
 			pnlBottom.Height = 60;
-			pnlBottom.BackColor = Color.White;
+			pnlBottom.BackColor = Theme.Surface;
 			pnlBottom.Controls.Add(btnCreate);
 			pnlBottom.Controls.Add(btnVerify);
 			pnlBottom.Controls.Add(lblStatus);
@@ -206,7 +206,6 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void ApplyModernStyles()
 		{
-			this.BackColor = Theme.Background;
 			this.Font = new Font("Segoe UI", 9F);
 
 			StyleHelper.ApplyPrimaryButton(btnVerify);
@@ -220,13 +219,16 @@ namespace CodeTrainerApp.Views.MentorViews
 			btnClearTest.FlatStyle = FlatStyle.Flat;
 			btnClearTest.FlatAppearance.BorderSize = 1;
 			btnClearTest.FlatAppearance.BorderColor = Theme.Border;
-			btnClearTest.BackColor = Color.White;
+			btnClearTest.BackColor = Theme.Surface;
+			btnClearTest.ForeColor = Theme.TextPrimary;
 			btnClearTest.Cursor = Cursors.Hand;
 
 			txtCode.BackColor = Theme.CodeBackground;
 			txtCode.ForeColor = Theme.CodeForeground;
 
 			lblStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+			
+			StyleHelper.ApplyFormStyle(this);
 		}
 	}
 }

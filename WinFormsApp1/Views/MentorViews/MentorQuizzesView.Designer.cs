@@ -41,7 +41,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// 
 			// _addQuizButton
 			// 
-			_addQuizButton.BackColor = Color.MediumSeaGreen;
+			_addQuizButton.BackColor = Theme.Success;
 			_addQuizButton.Dock = DockStyle.Top;
 			_addQuizButton.FlatStyle = FlatStyle.Flat;
 			_addQuizButton.ForeColor = Color.White;
@@ -68,7 +68,7 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void ApplyModernStyles()
 		{
-			this.BackColor = Theme.Background;
+			StyleHelper.ApplyFormStyle(this);
 			StyleHelper.ApplySuccessButton(_addQuizButton);
 		}
 	}

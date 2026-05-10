@@ -48,7 +48,7 @@ namespace CodeTrainerApp.Views
 			// 
 			labelMessage.Dock = DockStyle.Top;
 			labelMessage.Font = new Font("Segoe UI", 10F);
-			labelMessage.ForeColor = Color.FromArgb(107, 114, 128);
+			labelMessage.ForeColor = Theme.TextSecondary;
 			labelMessage.Location = new Point(20, 60);
 			labelMessage.Name = "labelMessage";
 			labelMessage.Size = new Size(360, 45);
@@ -78,7 +78,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// mainPanel
 			// 
-			mainPanel.BackColor = Color.White;
+			mainPanel.BackColor = Theme.Surface;
 			mainPanel.Controls.Add(buttonPanel);
 			mainPanel.Controls.Add(labelMessage);
 			mainPanel.Controls.Add(labelTitle);
@@ -122,22 +122,14 @@ namespace CodeTrainerApp.Views
 			labelMessage.ForeColor = Theme.TextSecondary;
 
 			StyleHelper.ApplyPrimaryButton(btnNo);
-			
-			// Налаштовуємо кнопку "Вийти" (Danger style)
-			btnYes.FlatStyle = FlatStyle.Flat;
-			btnYes.FlatAppearance.BorderSize = 0;
-			btnYes.BackColor = Color.FromArgb(254, 226, 226); // Light red
-			btnYes.ForeColor = Color.FromArgb(220, 38, 38);   // Dark red
-			btnYes.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-			btnYes.Cursor = Cursors.Hand;
+			StyleHelper.ApplyDangerButton(btnYes);
 
-			// Малюємо рівномірну сіру рамку прямо на mainPanel
+			// Малюємо тонку сучасну рамку
 			mainPanel.Paint += (s, e) =>
 			{
-				// Виразна сіра рамка (2 пікселі) для кращого контрасту
-				using (var pen = new Pen(Color.FromArgb(160, 160, 160), 2))
+				using (var pen = new Pen(Theme.Border, 1))
 				{
-					e.Graphics.DrawRectangle(pen, 1, 1, mainPanel.Width - 2, mainPanel.Height - 2);
+					e.Graphics.DrawRectangle(pen, 0, 0, mainPanel.Width - 1, mainPanel.Height - 1);
 				}
 			};
 		}

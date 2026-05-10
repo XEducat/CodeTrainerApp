@@ -24,7 +24,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// 
 			// headerPanel
 			// 
-			headerPanel.BackColor = Color.FromArgb(33, 37, 41);
+			headerPanel.BackColor = Theme.Surface;
 			headerPanel.Controls.Add(btnCabinet);
 			headerPanel.Controls.Add(btnSecondView);
 			headerPanel.Dock = DockStyle.Top;
@@ -35,7 +35,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// 
 			// btnCabinet
 			// 
-			btnCabinet.BackColor = Color.FromArgb(52, 120, 246);
+			btnCabinet.BackColor = Theme.Primary;
 			btnCabinet.FlatAppearance.BorderSize = 0;
 			btnCabinet.FlatStyle = FlatStyle.Flat;
 			btnCabinet.ForeColor = Color.White;
@@ -48,7 +48,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// 
 			// btnSecondView
 			// 
-			btnSecondView.BackColor = Color.FromArgb(108, 117, 125);
+			btnSecondView.BackColor = Theme.TextSecondary;
 			btnSecondView.FlatAppearance.BorderSize = 0;
 			btnSecondView.FlatStyle = FlatStyle.Flat;
 			btnSecondView.ForeColor = Color.White;
@@ -61,7 +61,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			// 
 			// contentPanel
 			// 
-			contentPanel.BackColor = Color.FromArgb(245, 246, 250);
+			contentPanel.BackColor = Theme.Background;
 			contentPanel.Dock = DockStyle.Fill;
 			contentPanel.Location = new Point(0, 60);
 			contentPanel.Name = "contentPanel";
@@ -73,6 +73,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			ClientSize = new Size(1400, 800);
 			Controls.Add(contentPanel);
 			Controls.Add(headerPanel);
+			FormBorderStyle = FormBorderStyle.Sizable;
 			Name = "CabinetContainerView";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "CodeTrainer - Кабінет";
@@ -85,15 +86,17 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void ApplyModernStyles()
 		{
-			headerPanel.BackColor = Color.White;
-			headerPanel.Padding = new Padding(0, 0, 0, 1);
+			StyleHelper.ApplyFormStyle(this);
+
+			headerPanel.BackColor = Theme.Surface;
 			headerPanel.Paint += (s, e) => 
 			{
-				e.Graphics.DrawLine(new Pen(Theme.Border), 0, headerPanel.Height - 1, headerPanel.Width, headerPanel.Height - 1);
+				using (var pen = new Pen(Theme.Border))
+				{
+					e.Graphics.DrawLine(pen, 0, headerPanel.Height - 1, headerPanel.Width, headerPanel.Height - 1);
+				}
 			};
 
-			contentPanel.BackColor = Theme.Background;
-			
 			StyleHelper.ApplyMenuButton(btnCabinet);
 			StyleHelper.ApplyMenuButton(btnSecondView);
 		}

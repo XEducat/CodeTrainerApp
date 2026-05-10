@@ -13,12 +13,22 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			InitializeComponent();
 
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			// Збираємо кнопки меню в список для зручності
 			menuButtons = new List<Button> { btnCabinet, btnSecondView /*, додай інші кнопки */ };
 
 			// Підписуємося на події
 			btnCabinet.Click += (s, e) => { ActivateButton(btnCabinet); ShowForm(new UserHistoryView()); };
 			btnSecondView.Click += (s, e) => { ActivateButton(btnSecondView); ShowForm(new MentorQuizzesView()); };
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 
 		private void CabinetContainerView_Load(object sender, EventArgs e)
@@ -54,12 +64,14 @@ namespace CodeTrainerApp.Views.MentorViews
 					btn.BackColor = Theme.Primary; 
 					btn.ForeColor = Color.White;
 					btn.FlatAppearance.MouseOverBackColor = Theme.PrimaryHover;
+					btn.FlatAppearance.MouseDownBackColor = Theme.Primary;
 				}
 				else
 				{
 					btn.BackColor = Color.Transparent;
 					btn.ForeColor = Theme.TextSecondary;
 					btn.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
+					btn.FlatAppearance.MouseDownBackColor = Theme.MenuSelected;
 				}
 			}
 		}

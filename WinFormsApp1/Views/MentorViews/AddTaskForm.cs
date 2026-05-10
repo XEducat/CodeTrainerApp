@@ -22,7 +22,12 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			InitializeComponent();
 
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			if (task != null)
+// ... (rest of constructor)
 			{
 				_isEditing = true;
 				CreatedTask = task; 
@@ -39,6 +44,12 @@ namespace CodeTrainerApp.Views.MentorViews
 			ValidateTestInputs(this, EventArgs.Empty);
 
 			txtCode.TextChanged += (s, e) => { _isVerified = false; ValidateForm(s, e); };
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 
 		private void RefreshTestsList()
@@ -84,12 +95,12 @@ namespace CodeTrainerApp.Views.MentorViews
 			if (_isVerified)
 			{
 				lblStatus.Text = "✅ Перевірено";
-				lblStatus.ForeColor = Color.Green;
+				lblStatus.ForeColor = Theme.Success;
 			}
 			else
 			{
 				lblStatus.Text = "⚠️ Потрібна перевірка";
-				lblStatus.ForeColor = Color.Orange;
+				lblStatus.ForeColor = Theme.Warning;
 			}
 		}
 
@@ -197,7 +208,7 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			btnVerify.Enabled = false;
 			lblStatus.Text = "⌛ Перевірка...";
-			lblStatus.ForeColor = Color.Blue;
+			lblStatus.ForeColor = Theme.Primary;
 
 			var task = new ProgrammingTask
 			{

@@ -51,7 +51,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// TopPanel
 			// 
-			TopPanel.BackColor = Color.FromArgb(79, 70, 229);
+			TopPanel.BackColor = Theme.Primary;
 			TopPanel.Controls.Add(QuizTitleLabel);
 			TopPanel.Controls.Add(LoginButton);
 			TopPanel.Dock = DockStyle.Top;
@@ -74,7 +74,7 @@ namespace CodeTrainerApp.Views
 			// LoginButton
 			// 
 			LoginButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			LoginButton.BackColor = Color.FromArgb(99, 102, 241);
+			LoginButton.BackColor = Theme.PrimaryHover;
 			LoginButton.FlatAppearance.BorderSize = 0;
 			LoginButton.FlatStyle = FlatStyle.Flat;
 			LoginButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
@@ -107,7 +107,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// SidePanel
 			// 
-			SidePanel.BackColor = Color.White;
+			SidePanel.BackColor = Theme.Sidebar;
 			SidePanel.Controls.Add(ProgressLabel);
 			SidePanel.Controls.Add(QuizProgressBar);
 			SidePanel.Controls.Add(TaskDescriptionLabel);
@@ -123,7 +123,7 @@ namespace CodeTrainerApp.Views
 			// 
 			ProgressLabel.AutoSize = true;
 			ProgressLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-			ProgressLabel.ForeColor = Color.FromArgb(107, 114, 128);
+			ProgressLabel.ForeColor = Theme.TextSecondary;
 			ProgressLabel.Location = new Point(25, 65);
 			ProgressLabel.Name = "ProgressLabel";
 			ProgressLabel.Size = new Size(83, 15);
@@ -142,7 +142,7 @@ namespace CodeTrainerApp.Views
 			// 
 			TaskDescriptionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			TaskDescriptionLabel.Font = new Font("Segoe UI", 11F);
-			TaskDescriptionLabel.ForeColor = Color.FromArgb(55, 65, 81);
+			TaskDescriptionLabel.ForeColor = Theme.TextPrimary;
 			TaskDescriptionLabel.Location = new Point(25, 120);
 			TaskDescriptionLabel.Name = "TaskDescriptionLabel";
 			TaskDescriptionLabel.Size = new Size(300, 495);
@@ -153,7 +153,7 @@ namespace CodeTrainerApp.Views
 			// 
 			CurrentTaskLabel.AutoSize = true;
 			CurrentTaskLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-			CurrentTaskLabel.ForeColor = Color.FromArgb(17, 24, 39);
+			CurrentTaskLabel.ForeColor = Theme.TextPrimary;
 			CurrentTaskLabel.Location = new Point(25, 25);
 			CurrentTaskLabel.Name = "CurrentTaskLabel";
 			CurrentTaskLabel.Size = new Size(134, 30);
@@ -162,7 +162,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// EditorPanel
 			// 
-			EditorPanel.BackColor = Color.FromArgb(243, 244, 246);
+			EditorPanel.BackColor = Theme.Background;
 			EditorPanel.Controls.Add(ButtonsPanel);
 			EditorPanel.Controls.Add(ResultPanel);
 			EditorPanel.Controls.Add(CodePanel);
@@ -186,7 +186,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// CheckButton
 			// 
-			CheckButton.BackColor = Color.FromArgb(16, 185, 129);
+			CheckButton.BackColor = Theme.Success;
 			CheckButton.FlatAppearance.BorderSize = 0;
 			CheckButton.FlatStyle = FlatStyle.Flat;
 			CheckButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -201,7 +201,7 @@ namespace CodeTrainerApp.Views
 			// 
 			// SkipButton
 			// 
-			SkipButton.BackColor = Color.FromArgb(245, 158, 11);
+			SkipButton.BackColor = Theme.Warning;
 			SkipButton.FlatAppearance.BorderSize = 0;
 			SkipButton.FlatStyle = FlatStyle.Flat;
 			SkipButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -217,7 +217,7 @@ namespace CodeTrainerApp.Views
 			// NextButton
 			// 
 			NextButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			NextButton.BackColor = Color.FromArgb(79, 70, 229);
+			NextButton.BackColor = Theme.Primary;
 			NextButton.FlatAppearance.BorderSize = 0;
 			NextButton.FlatStyle = FlatStyle.Flat;
 			NextButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -233,7 +233,7 @@ namespace CodeTrainerApp.Views
 			// ResultPanel
 			// 
 			ResultPanel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			ResultPanel.BackColor = Color.White;
+			ResultPanel.BackColor = Theme.Surface;
 			ResultPanel.Controls.Add(ResultTextBox);
 			ResultPanel.Controls.Add(ResultHeaderLabel);
 			ResultPanel.Location = new Point(20, 400);
@@ -244,11 +244,11 @@ namespace CodeTrainerApp.Views
 			// 
 			// ResultTextBox
 			// 
-			ResultTextBox.BackColor = Color.White;
+			ResultTextBox.BackColor = Theme.Surface;
 			ResultTextBox.BorderStyle = BorderStyle.None;
 			ResultTextBox.Dock = DockStyle.Fill;
 			ResultTextBox.Font = new Font("Consolas", 10F);
-			ResultTextBox.ForeColor = Color.FromArgb(31, 41, 55);
+			ResultTextBox.ForeColor = Theme.TextPrimary;
 			ResultTextBox.Location = new Point(1, 31);
 			ResultTextBox.Name = "ResultTextBox";
 			ResultTextBox.ReadOnly = true;
@@ -259,10 +259,10 @@ namespace CodeTrainerApp.Views
 			// 
 			// ResultHeaderLabel
 			// 
-			ResultHeaderLabel.BackColor = Color.FromArgb(249, 250, 251);
+			ResultHeaderLabel.BackColor = Theme.MenuHover;
 			ResultHeaderLabel.Dock = DockStyle.Top;
 			ResultHeaderLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-			ResultHeaderLabel.ForeColor = Color.FromArgb(107, 114, 128);
+			ResultHeaderLabel.ForeColor = Theme.TextSecondary;
 			ResultHeaderLabel.Location = new Point(1, 1);
 			ResultHeaderLabel.Name = "ResultHeaderLabel";
 			ResultHeaderLabel.Padding = new Padding(10, 0, 0, 0);
@@ -274,7 +274,7 @@ namespace CodeTrainerApp.Views
 			// CodePanel
 			// 
 			CodePanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			CodePanel.BackColor = Color.FromArgb(31, 41, 55);
+			CodePanel.BackColor = Theme.CodeBackground;
 			CodePanel.Controls.Add(CodeTextBox);
 			CodePanel.Controls.Add(CodeHeaderLabel);
 			CodePanel.Location = new Point(20, 20);
@@ -285,11 +285,11 @@ namespace CodeTrainerApp.Views
 			// 
 			// CodeTextBox
 			// 
-			CodeTextBox.BackColor = Color.FromArgb(31, 41, 55);
+			CodeTextBox.BackColor = Theme.CodeBackground;
 			CodeTextBox.BorderStyle = BorderStyle.None;
 			CodeTextBox.Dock = DockStyle.Fill;
 			CodeTextBox.Font = new Font("Consolas", 12F);
-			CodeTextBox.ForeColor = Color.FromArgb(229, 231, 235);
+			CodeTextBox.ForeColor = Theme.CodeForeground;
 			CodeTextBox.Location = new Point(1, 31);
 			CodeTextBox.Name = "CodeTextBox";
 			CodeTextBox.Size = new Size(704, 328);
@@ -299,10 +299,10 @@ namespace CodeTrainerApp.Views
 			// 
 			// CodeHeaderLabel
 			// 
-			CodeHeaderLabel.BackColor = Color.FromArgb(17, 24, 39);
+			CodeHeaderLabel.BackColor = Theme.CodeHeader;
 			CodeHeaderLabel.Dock = DockStyle.Top;
 			CodeHeaderLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-			CodeHeaderLabel.ForeColor = Color.FromArgb(156, 163, 175);
+			CodeHeaderLabel.ForeColor = Theme.TextSecondary;
 			CodeHeaderLabel.Location = new Point(1, 1);
 			CodeHeaderLabel.Name = "CodeHeaderLabel";
 			CodeHeaderLabel.Padding = new Padding(10, 0, 0, 0);
@@ -315,7 +315,7 @@ namespace CodeTrainerApp.Views
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			BackColor = Color.FromArgb(243, 244, 246);
+			BackColor = Theme.Background;
 			ClientSize = new Size(1100, 700);
 			Controls.Add(MainSplit);
 			Controls.Add(TopPanel);
@@ -341,6 +341,8 @@ namespace CodeTrainerApp.Views
 
 		private void ApplyModernStyles()
 		{
+			StyleHelper.ApplyFormStyle(this);
+
 			// Кнопки
 			StyleHelper.ApplySuccessButton(CheckButton);
 			StyleHelper.ApplyPrimaryButton(NextButton);
@@ -352,21 +354,31 @@ namespace CodeTrainerApp.Views
 
 			// Налаштування LoginButton
 			StyleHelper.ApplyPrimaryButton(LoginButton);
-			LoginButton.BackColor = Theme.TextSecondary;
-			LoginButton.FlatAppearance.MouseOverBackColor = Theme.TextPrimary;
+			LoginButton.BackColor = Theme.IsDark ? Color.FromArgb(67, 56, 202) : Theme.PrimaryHover;
+			LoginButton.FlatAppearance.MouseOverBackColor = Theme.IsDark ? Color.FromArgb(79, 70, 229) : Color.FromArgb(55, 48, 163);
 
 			// Панелі
 			TopPanel.BackColor = Theme.Primary;
 			SidePanel.BackColor = Theme.Sidebar;
 			EditorPanel.BackColor = Theme.Background;
+			ButtonsPanel.BackColor = Theme.Background;
 
 			CodePanel.BackColor = Theme.CodeBackground;
 			CodeTextBox.BackColor = Theme.CodeBackground;
 			CodeTextBox.ForeColor = Theme.CodeForeground;
-			CodeHeaderLabel.BackColor = Color.FromArgb(17, 24, 39);
+			CodeHeaderLabel.BackColor = Theme.CodeHeader;
 
-			ResultPanel.BackColor = Color.White;
-			ResultHeaderLabel.BackColor = Color.FromArgb(249, 250, 251);
+			ResultPanel.BackColor = Theme.Surface;
+
+			ResultTextBox.BackColor = Theme.Surface;
+			ResultTextBox.ForeColor = Theme.TextPrimary;
+			ResultHeaderLabel.BackColor = Theme.MenuHover;
+			ResultHeaderLabel.ForeColor = Theme.TextSecondary;
+
+			QuizTitleLabel.ForeColor = Color.White;
+			CurrentTaskLabel.ForeColor = Theme.TextPrimary;
+			ProgressLabel.ForeColor = Theme.TextSecondary;
+			TaskDescriptionLabel.ForeColor = Theme.TextPrimary;
 		}
 
 		#endregion

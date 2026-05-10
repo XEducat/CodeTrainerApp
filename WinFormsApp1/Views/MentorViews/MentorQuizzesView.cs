@@ -13,10 +13,21 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			InitializeComponent();
 
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			this.Load += async (s, e) =>
 			{
 				await LoadQuizzes();
 			};
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
+			RefreshQuizList();
 		}
 
 		private async Task LoadQuizzes()
@@ -50,20 +61,24 @@ namespace CodeTrainerApp.Views.MentorViews
 			{
 				Width = _quizPanel.ClientSize.Width - 40,
 				Height = 110,
-				BackColor = Color.White,
+				BackColor = Theme.Surface,
 				BorderStyle = BorderStyle.None,
-				Padding = new Padding(15),
-				Margin = new Padding(10),
+				Padding = new Padding(20),
+				Margin = new Padding(0, 0, 0, 15),
 			};
 
 			panel.Paint += (s, e) =>
 			{
-				var rect = panel.ClientRectangle;
-				rect.Width -= 1;
-				rect.Height -= 1;
+				// Малюємо сучасну акцентну лінію зліва
+				using (var stripeBrush = new SolidBrush(Theme.Primary))
+				{
+					e.Graphics.FillRectangle(stripeBrush, 0, 0, 6, panel.Height);
+				}
+				
+				// Тонка роздільна лінія знизу для чистого Flat-дизайну
 				using (var pen = new Pen(Theme.Border, 1))
 				{
-					e.Graphics.DrawRectangle(pen, rect);
+					e.Graphics.DrawLine(pen, 0, panel.Height - 1, panel.Width, panel.Height - 1);
 				}
 			};
 
@@ -71,9 +86,9 @@ namespace CodeTrainerApp.Views.MentorViews
 			var lblTitle = new Label()
 			{
 				Text = quiz.Title,
-				Font = new Font("Segoe UI", 12, FontStyle.Bold),
+				Font = new Font("Segoe UI Semibold", 13, FontStyle.Bold),
 				ForeColor = Theme.TextPrimary,
-				Location = new Point(15, 15),
+				Location = new Point(25, 15),
 				AutoSize = true
 			};
 			panel.Controls.Add(lblTitle);
@@ -84,8 +99,8 @@ namespace CodeTrainerApp.Views.MentorViews
 				Text = quiz.Description,
 				Font = new Font("Segoe UI", 9, FontStyle.Regular),
 				ForeColor = Theme.TextSecondary,
-				Location = new Point(15, 45),
-				MaximumSize = new Size(panel.Width - 250, 40),
+				Location = new Point(25, 45),
+				MaximumSize = new Size(panel.Width - 260, 40),
 				AutoSize = true
 			};
 			panel.Controls.Add(lblDesc);
@@ -94,12 +109,12 @@ namespace CodeTrainerApp.Views.MentorViews
 			var lblTasksCount = new Label()
 			{
 				Text = $"📑 {quiz.Tasks?.Count ?? 0} задач",
-				Font = new Font("Segoe UI", 8, FontStyle.Bold),
-				BackColor = Color.FromArgb(230, 240, 255),
+				Font = new Font("Segoe UI", 9, FontStyle.Bold),
+				BackColor = Theme.BadgeBackground,
 				ForeColor = Theme.Primary,
 				AutoSize = true,
-				Padding = new Padding(5),
-				Location = new Point(15, 75)
+				Padding = new Padding(6),
+				Location = new Point(25, 75)
 			};
 			panel.Controls.Add(lblTasksCount);
 

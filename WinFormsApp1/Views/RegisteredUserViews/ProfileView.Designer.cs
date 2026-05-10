@@ -121,15 +121,14 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 
 		private void ApplyModernStyles()
 		{
-			this.BackColor = Theme.Background;
-			cardPanel.BackColor = Theme.Surface;
+			StyleHelper.ApplyFormStyle(this);
 
 			lblTitle.Font = new Font("Segoe UI Semibold", 20F);
 			lblTitle.ForeColor = Theme.TextPrimary;
 
 			StyleHelper.ApplyPrimaryButton(btnLogout);
 			btnLogout.BackColor = Theme.Danger; // Вихід — це небезпечна дія
-			btnLogout.FlatAppearance.MouseOverBackColor = Color.FromArgb(220, 38, 38);
+			btnLogout.FlatAppearance.MouseOverBackColor = Theme.DangerHover;
 
 			foreach (Control control in tableLayout.Controls)
 			{

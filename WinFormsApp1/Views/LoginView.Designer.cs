@@ -164,7 +164,7 @@ namespace CodeTrainerApp.Views
 			MainButton.Text = "Увійти";
 			MainButton.Font = buttonFont;
 			MainButton.ForeColor = Color.White;
-			MainButton.BackColor = Color.FromArgb(0, 120, 215);
+			MainButton.BackColor = Theme.Primary;
 			MainButton.FlatStyle = FlatStyle.Flat;
 			MainButton.FlatAppearance.BorderSize = 0;
 			MainButton.Cursor = Cursors.Hand;
@@ -177,12 +177,12 @@ namespace CodeTrainerApp.Views
 			SwitchModeButton.Font = new Font("Segoe UI", 10F);
 			SwitchModeButton.FlatStyle = FlatStyle.Flat;
 			SwitchModeButton.FlatAppearance.BorderSize = 0;
-			SwitchModeButton.ForeColor = Color.FromArgb(0, 120, 215);
+			SwitchModeButton.ForeColor = Theme.Primary;
 			SwitchModeButton.Cursor = Cursors.Hand;
 
 			// LoginView
 			ClientSize = new Size(340, 540);
-			BackColor = Color.White;
+			BackColor = Theme.Background;
 
 			Controls.Add(LoginLabel);
 			Controls.Add(LoginTextBox);
@@ -219,7 +219,7 @@ namespace CodeTrainerApp.Views
 
 		private void ApplyModernStyles()
 		{
-			BackColor = Theme.Background;
+			StyleHelper.ApplyFormStyle(this);
 
 			StyleHelper.ApplyPrimaryButton(MainButton);
 			

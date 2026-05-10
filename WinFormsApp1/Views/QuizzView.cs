@@ -15,6 +15,11 @@ namespace CodeTrainerApp.Views
 		public QuizView(Quiz selectedQuiz)
 		{
 			InitializeComponent();
+
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			_quiz = selectedQuiz;
 			_currentUser = UserService.Instance.CurrentUser;
 
@@ -27,6 +32,12 @@ namespace CodeTrainerApp.Views
 
 			InitializeAccess();
 			LoadCurrentTask();
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 
 		private void InitializeAccess()
@@ -64,18 +75,23 @@ namespace CodeTrainerApp.Views
 			QuizProgressBar.Value = currentTaskIndex;
 
 			TaskDescriptionLabel.Text = task.Description;
-			CodeTextBox.Text = task.CodeTemplate.Replace("\n", "\r\n");
+			
+			// Виправляємо відображення переносів рядків та табуляції
+			string formattedCode = task.CodeTemplate ?? "";
+			formattedCode = formattedCode.Replace("\r\n", "\n").Replace("\n", "\r\n");
+			CodeTextBox.Text = formattedCode;
 
 			ResultTextBox.Clear();
 			ResultTextBox.ForeColor = Theme.TextPrimary;
 			ResultHeaderLabel.Text = "КОНСОЛЬ ВИВОДУ";
 
-			CodeTextBox.Enabled = true;
+			CodeTextBox.ReadOnly = false;
+			CodeTextBox.BackColor = Theme.CodeBackground;
 			NextButton.Enabled = false;
 			SkipButton.Enabled = true;
 
 			NextButton.Text = currentTaskIndex == _quiz.Tasks.Count - 1 ? "Завершити 🏁" : "Наступне ➡";
-			NextButton.BackColor = Color.Gray;
+			NextButton.BackColor = Theme.Border;
 		}
 
 		private async void CheckButton_Click(object sender, EventArgs e)
@@ -108,7 +124,8 @@ namespace CodeTrainerApp.Views
 
 				CheckButton.Enabled = false;
 				SkipButton.Enabled = false;
-				CodeTextBox.Enabled = false;
+				CodeTextBox.ReadOnly = true;
+				CodeTextBox.BackColor = Color.FromArgb(45, 45, 45); // Трохи світліший фон для "заблокованого" стану
 			}
 			else
 			{
@@ -130,7 +147,8 @@ namespace CodeTrainerApp.Views
 			StyleHelper.ApplyPrimaryButton(NextButton);
 			CheckButton.Enabled = false;
 			SkipButton.Enabled = false;
-			CodeTextBox.Enabled = false;
+			CodeTextBox.ReadOnly = true;
+			CodeTextBox.BackColor = Color.FromArgb(45, 45, 45); // Трохи світліший фон
 		}
 
 		private async void NextButton_Click(object sender, EventArgs e)

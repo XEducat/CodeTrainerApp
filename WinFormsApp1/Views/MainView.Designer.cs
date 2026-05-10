@@ -11,6 +11,7 @@ namespace CodeTrainerApp.Views
 		private ListBox QuizListBox;
 		private Button ProfileButton;
 		private Button CabinetButton;
+		private Button ThemeButton;
 		private Panel MainPanel;
 		private Label TitleLabel;
 		private Panel HeaderPanel;
@@ -32,29 +33,30 @@ namespace CodeTrainerApp.Views
 			bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
 
 			// Фон елемента
-			Color bgColor = isSelected ? Color.FromArgb(200, 220, 240) : Color.White;
+			Color bgColor = isSelected ? Theme.GridSelection : Theme.Surface;
+
 			using (var bgBrush = new SolidBrush(bgColor))
 				e.Graphics.FillRectangle(bgBrush, e.Bounds);
 
 			// Ліва вертикальна смужка кольору
-			using (var stripeBrush = new SolidBrush(Color.FromArgb(0, 123, 255)))
+			using (var stripeBrush = new SolidBrush(Theme.Primary))
 				e.Graphics.FillRectangle(stripeBrush, e.Bounds.Left, e.Bounds.Top, 6, e.Bounds.Height);
 
 			// Заголовок квізу
 			using (var titleFont = new Font("Segoe UI", 12, FontStyle.Bold))
-			using (var titleBrush = new SolidBrush(Color.FromArgb(33, 37, 41)))
+			using (var titleBrush = new SolidBrush(Theme.TextPrimary))
 				e.Graphics.DrawString(quiz.Title, titleFont, titleBrush, e.Bounds.Left + 15, e.Bounds.Top + 10);
 
 			// Опис квізу
 			using (var descFont = new Font("Segoe UI", 10, FontStyle.Regular))
-			using (var descBrush = new SolidBrush(Color.FromArgb(55, 65, 75)))
+			using (var descBrush = new SolidBrush(Theme.TextSecondary))
 				e.Graphics.DrawString(quiz.Description, descFont, descBrush, e.Bounds.Left + 15, e.Bounds.Top + 35);
 
 			// Бейдж з кількістю задач — більший і заокруглений
 			string questionsText = $"{quiz.Tasks.Count} питань";
 			using (var countFont = new Font("Segoe UI", 10, FontStyle.Bold))
 			using (var countBrush = new SolidBrush(Color.White))
-			using (var badgeBrush = new SolidBrush(Color.FromArgb(40, 167, 69)))
+			using (var badgeBrush = new SolidBrush(Theme.Success))
 			{
 				SizeF textSize = e.Graphics.MeasureString(questionsText, countFont);
 				float paddingH = 16;
@@ -87,8 +89,6 @@ namespace CodeTrainerApp.Views
 					e.Graphics.DrawString(questionsText, countFont, countBrush, badgeRect, sf);
 				}
 			}
-
-			e.DrawFocusRectangle();
 		}
 
 		private void InitializeComponent()
@@ -96,6 +96,7 @@ namespace CodeTrainerApp.Views
 			QuizListBox = new ListBox();
 			ProfileButton = new Button();
 			CabinetButton = new Button();
+			ThemeButton = new Button();
 			MainPanel = new Panel();
 			HeaderPanel = new Panel();
 			TitleLabel = new Label();
@@ -135,6 +136,14 @@ namespace CodeTrainerApp.Views
 			CabinetButton.Text = "🏠 Кабінет";
 			CabinetButton.Click += CabinetButton_Click;
 
+			// ThemeButton
+			ThemeButton.Location = new Point(290, 0);
+			ThemeButton.Margin = new Padding(5, 0, 0, 0);
+			ThemeButton.Name = "ThemeButton";
+			ThemeButton.Size = new Size(40, 40);
+			ThemeButton.Text = "🌙";
+			ThemeButton.Click += ThemeButton_Click;
+
 			// MainPanel
 			MainPanel.BackColor = Theme.Surface;
 			MainPanel.Controls.Add(QuizListBox);
@@ -152,6 +161,13 @@ namespace CodeTrainerApp.Views
 			HeaderPanel.Location = new Point(20, 20);
 			HeaderPanel.Padding = new Padding(20, 10, 20, 10);
 			HeaderPanel.Size = new Size(1240, 68);
+			HeaderPanel.Paint += (s, e) =>
+			{
+				using (var pen = new Pen(Theme.Border, 1))
+				{
+					e.Graphics.DrawLine(pen, 0, HeaderPanel.Height - 1, HeaderPanel.Width, HeaderPanel.Height - 1);
+				}
+			};
 
 			// TitleLabel
 			TitleLabel.Dock = DockStyle.Fill;
@@ -164,8 +180,9 @@ namespace CodeTrainerApp.Views
 			ButtonPanel.AutoSize = true;
 			ButtonPanel.Controls.Add(CabinetButton);
 			ButtonPanel.Controls.Add(ProfileButton);
+			ButtonPanel.Controls.Add(ThemeButton);
 			ButtonPanel.Dock = DockStyle.Right;
-			ButtonPanel.Size = new Size(285, 48);
+			ButtonPanel.Size = new Size(330, 48);
 			ButtonPanel.WrapContents = false;
 
 			// MainView
@@ -188,8 +205,17 @@ namespace CodeTrainerApp.Views
 
 		private void ApplyModernStyles()
 		{
+			StyleHelper.ApplyFormStyle(this);
+
 			StyleHelper.ApplySuccessButton(CabinetButton);
 			StyleHelper.ApplyPrimaryButton(ProfileButton);
+			
+			ThemeButton.FlatStyle = FlatStyle.Flat;
+			ThemeButton.FlatAppearance.BorderSize = 0;
+			ThemeButton.BackColor = Color.Transparent;
+			ThemeButton.ForeColor = Theme.TextPrimary;
+			ThemeButton.Font = new Font("Segoe UI", 14F);
+			ThemeButton.Cursor = Cursors.Hand;
 		}
 	}
 }

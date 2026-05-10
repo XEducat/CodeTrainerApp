@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views
 {
@@ -15,6 +16,9 @@ namespace CodeTrainerApp.Views
 		public LoginView()
 		{
 			InitializeComponent();
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
 
 			TogglePasswordButton.Click += TogglePasswordButton_Click;
 			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
@@ -27,6 +31,12 @@ namespace CodeTrainerApp.Views
 			MentorCodeTextBox.Visible = false;
 
 			SetMode(false);
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 
 		// ================= PASSWORD TOGGLE =================

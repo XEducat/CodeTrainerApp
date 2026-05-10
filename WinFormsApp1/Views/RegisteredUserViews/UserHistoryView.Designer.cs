@@ -1,4 +1,4 @@
-﻿using CodeTrainerApp.UI;
+using CodeTrainerApp.UI;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -47,10 +47,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle style1 = new DataGridViewCellStyle();
-			DataGridViewCellStyle style2 = new DataGridViewCellStyle();
-			DataGridViewCellStyle style3 = new DataGridViewCellStyle();
-
 			mainPanel = new Panel();
 			dgvContainer = new Panel();
 			dgvHistory = new DataGridView();
@@ -83,7 +79,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			SuspendLayout();
 
 			// mainPanel
-			mainPanel.BackColor = Color.White;
+			mainPanel.Name = "mainPanel";
 			mainPanel.Dock = DockStyle.Fill;
 			mainPanel.Padding = new Padding(20);
 			mainPanel.Controls.Add(dgvContainer);
@@ -92,6 +88,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			mainPanel.Controls.Add(headerPanel);
 
 			// headerPanel
+			headerPanel.Name = "headerPanel";
 			headerPanel.Dock = DockStyle.Top;
 			headerPanel.Height = 70;
 			headerPanel.Controls.Add(lblTitle);
@@ -101,6 +98,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			lblTitle.AutoSize = true;
 
 			// statsPanel
+			statsPanel.Name = "statsPanel";
 			statsPanel.Dock = DockStyle.Top;
 			statsPanel.Height = 110;
 			statsPanel.Padding = new Padding(0, 10, 0, 10);
@@ -111,11 +109,11 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			statsPanel.Controls.Add(pnlStatBest);
 
 			// pnlStatTotal
+			pnlStatTotal.Name = "pnlStatTotalCard";
 			pnlStatTotal.Width = 250;
 			pnlStatTotal.Height = 90;
 			pnlStatTotal.Margin = new Padding(0, 0, 20, 0);
-			pnlStatTotal.BackColor = Color.White;
-			pnlStatTotal.BorderStyle = BorderStyle.FixedSingle;
+			pnlStatTotal.BorderStyle = BorderStyle.None;
 
 			lblTotalTitle.Text = "Всього тестів";
 			lblTotalTitle.Location = new Point(10, 10);
@@ -130,11 +128,11 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			pnlStatTotal.Controls.Add(lblTotalValue);
 
 			// pnlStatAverage
+			pnlStatAverage.Name = "pnlStatAverageCard";
 			pnlStatAverage.Width = 250;
 			pnlStatAverage.Height = 90;
 			pnlStatAverage.Margin = new Padding(0, 0, 20, 0);
-			pnlStatAverage.BackColor = Color.White;
-			pnlStatAverage.BorderStyle = BorderStyle.FixedSingle;
+			pnlStatAverage.BorderStyle = BorderStyle.None;
 
 			lblAverageTitle.Text = "Середній результат";
 			lblAverageTitle.Location = new Point(10, 10);
@@ -149,11 +147,11 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			pnlStatAverage.Controls.Add(lblAverageValue);
 
 			// pnlStatBest
+			pnlStatBest.Name = "pnlStatBestCard";
 			pnlStatBest.Width = 250;
 			pnlStatBest.Height = 90;
 			pnlStatBest.Margin = new Padding(0, 0, 20, 0);
-			pnlStatBest.BackColor = Color.White;
-			pnlStatBest.BorderStyle = BorderStyle.FixedSingle;
+			pnlStatBest.BorderStyle = BorderStyle.None;
 
 			lblBestTitle.Text = "Найкращий результат";
 			lblBestTitle.Location = new Point(10, 10);
@@ -168,67 +166,36 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			pnlStatBest.Controls.Add(lblBestValue);
 
 			// dgvContainer
+			dgvContainer.Name = "dgvContainer";
 			dgvContainer.Dock = DockStyle.Fill;
-			dgvContainer.Padding = new Padding(1);
-			dgvContainer.BackColor = Color.LightGray;
+			dgvContainer.Padding = new Padding(0); // Прибираємо рамку для Flat-дизайну
+			dgvContainer.BackColor = Theme.Surface;
 
-			// ===== СТИЛЬ ТАБЛИЦІ (перенесений) =====
-
+			dgvHistory.Name = "dgvHistory";
+			dgvHistory.AutoGenerateColumns = false;
+			dgvHistory.Dock = DockStyle.Fill;
 			dgvHistory.AllowUserToAddRows = false;
 			dgvHistory.AllowUserToDeleteRows = false;
 			dgvHistory.AllowUserToResizeColumns = false;
 			dgvHistory.AllowUserToResizeRows = false;
-
-			style1.BackColor = Color.FromArgb(248, 249, 250);
-			dgvHistory.AlternatingRowsDefaultCellStyle = style1;
-
-			dgvHistory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-			dgvHistory.AutoGenerateColumns = false;
-			dgvHistory.BackgroundColor = Color.White;
-			dgvHistory.BorderStyle = BorderStyle.None;
-			dgvHistory.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-			dgvHistory.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-
-			style2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-			style2.BackColor = Color.FromArgb(33, 37, 41);
-			style2.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-			style2.ForeColor = Color.White;
-			style2.SelectionBackColor = Color.FromArgb(33, 37, 41);
-			style2.WrapMode = DataGridViewTriState.True;
-
-			dgvHistory.ColumnHeadersDefaultCellStyle = style2;
-			dgvHistory.ColumnHeadersHeight = 45;
-
-			style3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-			style3.Font = new Font("Segoe UI", 11F);
-			style3.Padding = new Padding(8);
-			style3.SelectionBackColor = Color.FromArgb(13, 110, 253);
-			style3.SelectionForeColor = Color.White;
-
-			dgvHistory.DefaultCellStyle = style3;
-
-			dgvHistory.EnableHeadersVisualStyles = false;
-			dgvHistory.GridColor = Color.FromArgb(230, 230, 230);
-			dgvHistory.MultiSelect = false;
+			dgvHistory.AllowUserToOrderColumns = false;
 			dgvHistory.ReadOnly = true;
-			dgvHistory.RowHeadersVisible = false;
-			dgvHistory.RowTemplate.Height = 40;
-			dgvHistory.ScrollBars = ScrollBars.Vertical;
 			dgvHistory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-			dgvHistory.Dock = DockStyle.Fill;
+			dgvHistory.MultiSelect = false;
 
 			dgvContainer.Controls.Add(dgvHistory);
 
 			// filterPanel
+			filterPanel.Name = "filterPanelSurface";
 			filterPanel.Dock = DockStyle.Right;
 			filterPanel.Width = 250;
 			filterPanel.Padding = new Padding(15);
-			filterPanel.BackColor = Color.FromArgb(248, 249, 250);
 
 			lblNameFilter.Text = "Назва квізу";
 			lblNameFilter.Location = new Point(10, 10);
 			lblNameFilter.AutoSize = true;
 
+			tbNameFilter.Name = "tbNameFilter";
 			tbNameFilter.Location = new Point(10, 40);
 			tbNameFilter.Width = 220;
 			tbNameFilter.TextChanged += TbNameFilter_TextChanged;
@@ -237,6 +204,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			lblFilter.Location = new Point(10, 80);
 			lblFilter.AutoSize = true;
 
+			cbPeriod.Name = "cbPeriod";
 			cbPeriod.Location = new Point(10, 110);
 			cbPeriod.Width = 220;
 			cbPeriod.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -252,18 +220,17 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 				"Обрана дата"
 			});
 
+			dtpCustomDate.Name = "dtpCustomDate";
 			dtpCustomDate.Location = new Point(10, 145);
 			dtpCustomDate.Width = 220;
 			dtpCustomDate.Format = DateTimePickerFormat.Short;
 			dtpCustomDate.Visible = false;
 
+			btnClearHistory.Name = "btnClearHistory";
 			btnClearHistory.Text = "Очистити історію";
 			btnClearHistory.Width = 220;
 			btnClearHistory.Height = 40;
 			btnClearHistory.Location = new Point(10, 200);
-			btnClearHistory.BackColor = Color.FromArgb(220, 53, 69);
-			btnClearHistory.ForeColor = Color.White;
-			btnClearHistory.FlatStyle = FlatStyle.Flat;
 
 			filterPanel.Controls.Add(lblNameFilter);
 			filterPanel.Controls.Add(tbNameFilter);
@@ -287,41 +254,45 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			statsPanel.ResumeLayout(false);
 			headerPanel.ResumeLayout(false);
 			headerPanel.PerformLayout();
+			
 			ApplyStyles();
+			
 			ResumeLayout(false);
 		}
 
 		private void ApplyStyles()
 		{
-			this.BackColor = Theme.Background;
-			mainPanel.BackColor = Theme.Background;
+			StyleHelper.ApplyFormStyle(this);
+
+			// ПРИМУСОВО фарбуємо поля фільтрів та таблицю (фінальний шар захисту)
+			tbNameFilter.BackColor = Theme.Surface;
+			tbNameFilter.ForeColor = Theme.TextPrimary;
+			cbPeriod.BackColor = Theme.Surface;
+			cbPeriod.ForeColor = Theme.TextPrimary;
+
+			dgvHistory.BackgroundColor = Theme.Surface;
+			dgvHistory.GridColor = Theme.Border;
+
 			mainPanel.Padding = new Padding(30);
-
-			headerPanel.BackColor = Theme.Background;
 			headerPanel.Height = 80;
-
-			statsPanel.BackColor = Theme.Background;
 			statsPanel.Height = 120;
-
-			dgvContainer.BackColor = Theme.Border;
-			dgvContainer.Padding = new Padding(1);
+			dgvContainer.Padding = new Padding(0); // Повний Flat - без відступів
 
 			lblTitle.ForeColor = Theme.TextPrimary;
-			lblTitle.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
+			lblTitle.Font = new Font("Segoe UI Semibold", 24F); // Сучасніший шрифт
 
 			StyleCard(pnlStatTotal, lblTotalTitle, lblTotalValue);
 			StyleCard(pnlStatAverage, lblAverageTitle, lblAverageValue);
 			StyleCard(pnlStatBest, lblBestTitle, lblBestValue);
 
-			filterPanel.BackColor = Theme.Surface;
 			filterPanel.Width = 300;
 			filterPanel.Padding = new Padding(20);
 
 			lblNameFilter.ForeColor = Theme.TextSecondary;
-			lblNameFilter.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+			lblNameFilter.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
 
 			lblFilter.ForeColor = Theme.TextSecondary;
-			lblFilter.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+			lblFilter.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
 			lblFilter.Margin = new Padding(0, 20, 0, 0);
 
 			tbNameFilter.Font = new Font("Segoe UI", 11F);
@@ -332,13 +303,13 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 
 			dtpCustomDate.Font = new Font("Segoe UI", 11F);
 			dtpCustomDate.Width = 260;
+			dtpCustomDate.BackColor = Theme.Surface;
+			dtpCustomDate.ForeColor = Theme.TextPrimary;
 
 			btnClearHistory.Height = 45;
 			btnClearHistory.Width = 260;
 			btnClearHistory.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
 			StyleHelper.ApplyDangerButton(btnClearHistory);
-
-			StyleGrid(dgvHistory);
 		}
 
 		private void StyleCard(Panel pnl, Label title, Label value)
@@ -348,57 +319,21 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			pnl.Margin = new Padding(0, 0, 20, 0);
 
 			title.ForeColor = Theme.TextSecondary;
-			title.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-			title.Location = new Point(15, 15);
+			title.Font = new Font("Segoe UI Semibold", 10F); // Трішки тонший шрифт
+			title.Location = new Point(25, 15);
 
 			value.ForeColor = Theme.Primary;
-			value.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
-			value.Location = new Point(15, 40);
+			value.Font = new Font("Segoe UI", 24F, FontStyle.Bold); // Трішки більший розмір
+			value.Location = new Point(25, 35);
 
 			pnl.Paint += (s, e) =>
 			{
-				using (var pen = new Pen(Theme.Border, 1))
+				// Малюємо тільки сучасну акцентну лінію зліва
+				using (var stripeBrush = new SolidBrush(Theme.Primary))
 				{
-					e.Graphics.DrawRectangle(pen, 0, 0, pnl.Width - 1, pnl.Height - 1);
+					e.Graphics.FillRectangle(stripeBrush, 0, 0, 6, pnl.Height);
 				}
 			};
-		}
-
-		private void StyleGrid(DataGridView dgv)
-		{
-			dgv.BackgroundColor = Theme.Surface;
-			dgv.GridColor = Color.FromArgb(242, 243, 245);
-			dgv.BorderStyle = BorderStyle.None;
-			dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-			dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-
-			// Заголовки
-			dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 251);
-			dgv.ColumnHeadersDefaultCellStyle.ForeColor = Theme.TextSecondary;
-			dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(248, 249, 251);
-			dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-			dgv.ColumnHeadersHeight = 52;
-
-			// Рядки (Default)
-			dgv.DefaultCellStyle.BackColor = Theme.Surface;
-			dgv.DefaultCellStyle.ForeColor = Theme.TextPrimary;
-			dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(238, 242, 255); 
-			dgv.DefaultCellStyle.SelectionForeColor = Theme.Primary; 
-			dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
-			dgv.DefaultCellStyle.Padding = new Padding(10, 0, 10, 0);
-
-			// Рядки (Alternating)
-			dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(252, 253, 255);
-			dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(238, 242, 255); 
-			dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = Theme.Primary;
-
-			// Загальний стиль для виділених рядків
-			dgv.RowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(238, 242, 255);
-			dgv.RowsDefaultCellStyle.SelectionForeColor = Theme.Primary;
-
-			dgv.RowTemplate.Height = 50;
-			dgv.AdvancedCellBorderStyle.Left = DataGridViewAdvancedCellBorderStyle.None;
-			dgv.AdvancedCellBorderStyle.Right = DataGridViewAdvancedCellBorderStyle.None;
 		}
 	}
 }

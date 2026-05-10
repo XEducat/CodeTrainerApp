@@ -1,5 +1,6 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
+using CodeTrainerApp.UI;
 using CodeTrainerApp.Views.MentorViews;
 using CodeTrainerApp.Views.RegisteredUserViews;
 
@@ -13,6 +14,21 @@ namespace CodeTrainerApp.Views
 		public MainView()
 		{
 			InitializeComponent();
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ThemeButton.Text = Theme.IsDark ? "☀️" : "🌙";
+			ApplyModernStyles();
+		}
+
+		private void ThemeButton_Click(object sender, EventArgs e)
+		{
+			Theme.CurrentMode = Theme.IsDark ? ThemeMode.Light : ThemeMode.Dark;
 		}
 
 		private async void QuizzesView_Load(object? sender, EventArgs e)

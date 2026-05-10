@@ -13,6 +13,10 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			InitializeComponent();
 
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			if (quiz != null)
 			{
 				btnCreateQuiz.Text = "Оновити";
@@ -34,6 +38,12 @@ namespace CodeTrainerApp.Views.MentorViews
 				}
 			}
 			ValidateForm(this, EventArgs.Empty);
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 
 		private void ValidateForm(object? sender, EventArgs e)

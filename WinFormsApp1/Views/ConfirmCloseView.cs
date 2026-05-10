@@ -8,8 +8,18 @@ namespace CodeTrainerApp.Views
 		{
 			InitializeComponent();
 
+			Theme.ThemeChanged += OnThemeChanged;
+			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			OnThemeChanged();
+
 			this.AcceptButton = btnNo; // За замовчуванням краще залишитися
 			this.CancelButton = btnNo;
+		}
+
+		private void OnThemeChanged()
+		{
+			StyleHelper.ApplyFormStyle(this);
+			ApplyModernStyles();
 		}
 	}
 }

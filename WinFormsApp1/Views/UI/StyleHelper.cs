@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
@@ -80,6 +80,185 @@ namespace CodeTrainerApp.UI
 			btn.Cursor = Cursors.Hand;
 
 			MakeRounded(btn, 5);
+		}
+
+		public static void ApplyFormStyle(Form form)
+		{
+			form.BackColor = Theme.Background;
+			form.ForeColor = Theme.TextPrimary;
+
+			foreach (Control ctrl in form.Controls)
+			{
+				ApplyControlStyle(ctrl);
+			}
+			form.Invalidate(true);
+		}
+
+		private static void ApplyControlStyle(Control ctrl)
+		{
+			if (ctrl is Panel p)
+			{
+				p.BorderStyle = BorderStyle.None;
+				string name = p.Name.ToLower();
+				// Основні контейнери (фон вікна)
+				if (name.Contains("main") || name.Contains("content") || name.Contains("split") || name.Contains("background"))
+					p.BackColor = Theme.Background;
+				// Шапки, бічні панелі, картки та вкладені контейнери
+				else if (name.Contains("header") || name.Contains("surface") || name.Contains("card") || 
+						 name.Contains("container") || name.Contains("side") || name.Contains("pnl") || 
+						 name.Contains("panel") || name.Contains("box"))
+					p.BackColor = Theme.Surface;
+				else
+					p.BackColor = Theme.Background;
+			}
+			else if (ctrl is TableLayoutPanel or FlowLayoutPanel or SplitContainer)
+			{
+				ctrl.BackColor = Color.Transparent; 
+			}
+			else if (ctrl is GroupBox gb)
+			{
+				gb.ForeColor = Theme.TextPrimary;
+				gb.BackColor = Color.Transparent;
+				gb.FlatStyle = FlatStyle.Flat;
+				// Прибираємо застарілу рамку, залишаючи тільки сучасну логіку
+				gb.Paint += (s, e) =>
+				{
+					e.Graphics.Clear(gb.Parent?.BackColor ?? Theme.Background);
+					using (var brush = new SolidBrush(Theme.TextPrimary))
+					using (var font = new Font("Segoe UI Semibold", 9F))
+					{
+						e.Graphics.DrawString(gb.Text, font, brush, 0, 0);
+					}
+					using (var pen = new Pen(Theme.Border, 1))
+					{
+						// Тонка лінія під заголовком для розділення
+						e.Graphics.DrawLine(pen, 0, 20, gb.Width, 20);
+					}
+				};
+			}
+			else if (ctrl is Label l)
+			{
+				if (!l.Parent?.Name.ToLower().Contains("toppanel") ?? true)
+					l.ForeColor = Theme.TextPrimary;
+			}
+			else if (ctrl is ListBox lb)
+			{
+				lb.BackColor = Theme.Surface;
+				lb.ForeColor = Theme.TextPrimary;
+				lb.BorderStyle = BorderStyle.None;
+			}
+			else if (ctrl is TextBox tb)
+			{
+				tb.BackColor = Theme.Surface;
+				tb.ForeColor = Theme.TextPrimary;
+				tb.BorderStyle = BorderStyle.FixedSingle;
+			}
+			else if (ctrl is RichTextBox rtb)
+			{
+				// Спеціальна обробка для редактора коду, якщо він має таку назву
+				if (rtb.Name.ToLower().Contains("code"))
+				{
+					rtb.BackColor = Theme.CodeBackground;
+					rtb.ForeColor = Theme.CodeForeground;
+				}
+				else
+				{
+					rtb.BackColor = Theme.Surface;
+					rtb.ForeColor = Theme.TextPrimary;
+				}
+				rtb.BorderStyle = BorderStyle.None;
+			}
+			else if (ctrl is ComboBox cb)
+			{
+				cb.BackColor = Theme.Surface;
+				cb.ForeColor = Theme.TextPrimary;
+				cb.FlatStyle = FlatStyle.Flat;
+			}
+			else if (ctrl is DateTimePicker dtp)
+			{
+				dtp.CalendarMonthBackground = Theme.Surface;
+				dtp.CalendarTitleBackColor = Theme.Primary;
+				dtp.CalendarForeColor = Theme.TextPrimary;
+				dtp.CalendarTitleForeColor = Color.White;
+				dtp.CalendarTrailingForeColor = Theme.TextMuted;
+				
+				// Намагаємось покращити відображення самого контролу
+				dtp.BackColor = Theme.Surface; 
+				dtp.ForeColor = Theme.TextPrimary;
+			}
+			else if (ctrl is DataGridView dgv)
+			{
+				dgv.BackgroundColor = Theme.Surface;
+				dgv.GridColor = Theme.Border;
+				dgv.BorderStyle = BorderStyle.None;
+				dgv.EnableHeadersVisualStyles = false;
+				dgv.RowHeadersVisible = false;
+				dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+				dgv.MultiSelect = false;
+
+				// Сучасний плоский стиль: тільки горизонтальні лінії
+				dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+				dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+				// 1. Base Styles
+				var baseStyle = new DataGridViewCellStyle
+				{
+					BackColor = Theme.Surface,
+					ForeColor = Theme.TextPrimary,
+					SelectionBackColor = Theme.GridSelection,
+					SelectionForeColor = Theme.GridSelectionText,
+					Alignment = DataGridViewContentAlignment.MiddleLeft,
+					Font = new Font("Segoe UI", 10F),
+					Padding = new Padding(15, 0, 0, 0)
+				};
+
+				// 2. Alternating Row Style
+				var altStyle = baseStyle.Clone();
+				altStyle.BackColor = Theme.GridAlternate;
+
+				// 3. Header Style
+				var headerStyle = new DataGridViewCellStyle
+				{
+					BackColor = Theme.GridHeader,
+					ForeColor = Theme.TextSecondary,
+					SelectionBackColor = Theme.GridHeader,
+					Font = new Font("Segoe UI Semibold", 10F),
+					Alignment = DataGridViewContentAlignment.MiddleLeft,
+					Padding = new Padding(15, 0, 0, 0),
+					WrapMode = DataGridViewTriState.True
+				};
+
+				// Apply to grid layers
+				dgv.DefaultCellStyle = baseStyle;
+				dgv.RowsDefaultCellStyle = baseStyle;
+				dgv.AlternatingRowsDefaultCellStyle = altStyle;
+				dgv.ColumnHeadersDefaultCellStyle = headerStyle;
+				dgv.RowHeadersDefaultCellStyle = headerStyle;
+				
+				dgv.RowTemplate.Height = 52;
+				dgv.ColumnHeadersHeight = 48;
+
+				// 4. Force columns to inherit correctly (preserve format)
+				foreach (DataGridViewColumn col in dgv.Columns)
+				{
+					var fmt = col.DefaultCellStyle.Format;
+					col.DefaultCellStyle = new DataGridViewCellStyle 
+					{ 
+						BackColor = Color.Empty, 
+						ForeColor = Color.Empty,
+						SelectionBackColor = Theme.GridSelection,
+						SelectionForeColor = Theme.GridSelectionText,
+						Format = fmt
+					};
+				}
+				
+				dgv.Invalidate();
+			}
+
+			foreach (Control child in ctrl.Controls)
+			{
+				ApplyControlStyle(child);
+			}
 		}
 
 		private static void MakeRounded(Button button, int radius)

@@ -96,15 +96,11 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void ApplyModernStyles()
 		{
-			this.BackColor = Theme.Background;
-			this.Font = new Font("Segoe UI", 9F);
+			StyleHelper.ApplyFormStyle(this);
 
 			StyleHelper.ApplyPrimaryButton(btnAddTask);
 			StyleHelper.ApplyDangerButton(btnDeleteTask);
 			StyleHelper.ApplySuccessButton(btnCreateQuiz);
-
-			lbTasks.BackColor = Color.White;
-			lbTasks.BorderStyle = BorderStyle.FixedSingle;
 		}
 	}
 }
