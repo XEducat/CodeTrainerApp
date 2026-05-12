@@ -273,6 +273,8 @@ namespace CodeTrainerApp.Views
 			
 			ThemeButton.FlatStyle = FlatStyle.Flat;
 			ThemeButton.FlatAppearance.BorderSize = 0;
+			ThemeButton.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
+			ThemeButton.FlatAppearance.MouseDownBackColor = Theme.MenuSelected;
 			ThemeButton.BackColor = Color.Transparent;
 			ThemeButton.ForeColor = Theme.TextPrimary;
 			ThemeButton.Font = new Font("Segoe UI", 14F);
@@ -280,6 +282,8 @@ namespace CodeTrainerApp.Views
 
 			RefreshButton.FlatStyle = FlatStyle.Flat;
 			RefreshButton.FlatAppearance.BorderSize = 0;
+			RefreshButton.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
+			RefreshButton.FlatAppearance.MouseDownBackColor = Theme.MenuSelected;
 			RefreshButton.BackColor = Color.Transparent;
 			RefreshButton.ForeColor = Theme.TextPrimary;
 			RefreshButton.Font = new Font("Segoe UI", 14F);
