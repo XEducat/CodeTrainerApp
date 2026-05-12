@@ -160,11 +160,14 @@ namespace CodeTrainerApp.Views
 				QuizProgressBar.Value = _quiz.Tasks.Count;
 				ProgressLabel.Text = $"ПРОГРЕС: {_quiz.Tasks.Count} / {_quiz.Tasks.Count}";
 
+				// Показуємо стильне вікно результату для всіх
+				using (var resultView = new QuizResultView(_passedCount, _quiz.Tasks.Count))
+				{
+					resultView.ShowDialog();
+				}
+
 				if (_currentUser != null)
 				{
-					MessageBox.Show($"Вітаємо! Ваш результат: {_passedCount} / {_quiz.Tasks.Count}",
-						"Квіз завершено", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 					try
 					{
 						var attempt = new Model.UserHistory
