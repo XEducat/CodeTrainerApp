@@ -9,7 +9,7 @@ namespace CodeTrainerApp.Views
 	public partial class MainView : Form
 	{
 		private readonly QuizService _quizService = new QuizService();
-		private List<Quiz> _quizzes = new List<Quiz>();
+		private List<Quiz> _allQuizzes = new List<Quiz>();
 
 		public MainView()
 		{
@@ -23,6 +23,14 @@ namespace CodeTrainerApp.Views
 		{
 			StyleHelper.ApplyFormStyle(this);
 			ThemeButton.Text = Theme.IsDark ? "☀️" : "🌙";
+			
+			RefreshButton.ForeColor = Theme.TextPrimary;
+			ThemeButton.ForeColor = Theme.TextPrimary;
+			SearchIconLabel.ForeColor = Theme.TextSecondary;
+			SearchTextBox.BackColor = Theme.Surface;
+			SearchTextBox.ForeColor = Theme.TextPrimary;
+			SearchTextBox.BorderStyle = BorderStyle.FixedSingle;
+
 			ApplyModernStyles();
 		}
 
@@ -36,6 +44,39 @@ namespace CodeTrainerApp.Views
 			UpdateAuthUI();
 
 			await LoadQuizzesAsync();
+		}
+
+		private void SearchTextBox_TextChanged(object sender, EventArgs e)
+		{
+			FilterQuizzes();
+		}
+
+		private void FilterQuizzes()
+		{
+			string searchText = SearchTextBox.Text.Trim().ToLower();
+			
+			QuizListBox.BeginUpdate();
+			QuizListBox.Items.Clear();
+
+			var filtered = string.IsNullOrWhiteSpace(searchText) 
+				? _allQuizzes 
+				: _allQuizzes.Where(q => q.Title.ToLower().Contains(searchText) || q.Description.ToLower().Contains(searchText)).ToList();
+
+			foreach (var quiz in filtered)
+			{
+				QuizListBox.Items.Add(quiz);
+			}
+
+			if (filtered.Count == 0 && !string.IsNullOrWhiteSpace(searchText))
+			{
+				TitleLabel.Text = "Нічого не знайдено";
+			}
+			else
+			{
+				TitleLabel.Text = "Доступні квізи";
+			}
+
+			QuizListBox.EndUpdate();
 		}
 
 		// ================= PROFILE BUTTON =================
@@ -103,16 +144,9 @@ namespace CodeTrainerApp.Views
 				QuizListBox.Enabled = false;
 				TitleLabel.Text = "Завантаження квізів...";
 
-				_quizzes = await _quizService.GetAllQuizzesAsync(5);
+				_allQuizzes = await _quizService.GetAllQuizzesAsync(5);
 
-				QuizListBox.Items.Clear();
-
-				foreach (var quiz in _quizzes)
-				{
-					QuizListBox.Items.Add(quiz);
-				}
-
-				TitleLabel.Text = "Доступні квізи";
+				FilterQuizzes();
 			}
 			catch (Exception ex)
 			{
