@@ -1,11 +1,40 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace CodeTrainerApp.UI
 {
 	public static class StyleHelper
 	{
+		[DllImport("dwmapi.dll")]
+		private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+		private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+		private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+		public static bool UseImmersiveDarkMode(IntPtr handle, bool enabled)
+		{
+			if (IsWindows10OrGreater(17763))
+			{
+				var attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
+				if (!IsWindows10OrGreater(18985))
+				{
+					attribute = DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1;
+				}
+
+				int useDarkMode = enabled ? 1 : 0;
+				return DwmSetWindowAttribute(handle, attribute, ref useDarkMode, sizeof(int)) == 0;
+			}
+
+			return false;
+		}
+
+		private static bool IsWindows10OrGreater(int build = -1)
+		{
+			return Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= build;
+		}
+
 		public static void ApplyPrimaryButton(Button btn)
 		{
 			btn.FlatStyle = FlatStyle.Flat;
@@ -84,8 +113,26 @@ namespace CodeTrainerApp.UI
 
 		public static void ApplyFormStyle(Form form)
 		{
+			if (form == null || form.IsDisposed) return;
+
 			form.BackColor = Theme.Background;
 			form.ForeColor = Theme.TextPrimary;
+
+			// Якщо Handle вже є — застосовуємо відразу
+			if (form.IsHandleCreated)
+			{
+				UseImmersiveDarkMode(form.Handle, Theme.IsDark);
+			}
+			else
+			{
+				// Якщо Handle ще не створено (наприклад, у конструкторі), 
+				// підписуємося на подію його створення
+				form.HandleCreated += (s, e) => 
+				{
+					if (!form.IsDisposed)
+						UseImmersiveDarkMode(form.Handle, Theme.IsDark);
+				};
+			}
 
 			foreach (Control ctrl in form.Controls)
 			{
@@ -96,6 +143,8 @@ namespace CodeTrainerApp.UI
 
 		private static void ApplyControlStyle(Control ctrl)
 		{
+			if (ctrl == null || ctrl.IsDisposed) return;
+
 			if (ctrl is Panel p)
 			{
 				p.BorderStyle = BorderStyle.None;

@@ -17,7 +17,7 @@ namespace CodeTrainerApp.Views
 		{
 			InitializeComponent();
 			Theme.ThemeChanged += OnThemeChanged;
-			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
 			OnThemeChanged();
 
 			TogglePasswordButton.Click += TogglePasswordButton_Click;

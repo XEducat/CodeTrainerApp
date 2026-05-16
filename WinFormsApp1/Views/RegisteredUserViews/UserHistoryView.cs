@@ -19,7 +19,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			InitializeComponent();
 
 			Theme.ThemeChanged += OnThemeChanged;
-			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
 			
 			// Прив'язуємо форматування комірок один раз на початку
 			dgvHistory.CellFormatting += DgvHistory_CellFormatting;

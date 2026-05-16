@@ -358,7 +358,7 @@ namespace CodeTrainerApp.Views
 			LoginButton.FlatAppearance.MouseOverBackColor = Theme.IsDark ? Color.FromArgb(79, 70, 229) : Color.FromArgb(55, 48, 163);
 
 			// Панелі
-			TopPanel.BackColor = Theme.Primary;
+			TopPanel.BackColor = Theme.IsDark ? Theme.Surface : Theme.Primary;
 			SidePanel.BackColor = Theme.Sidebar;
 			EditorPanel.BackColor = Theme.Background;
 			ButtonsPanel.BackColor = Theme.Background;

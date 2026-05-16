@@ -14,7 +14,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			InitializeComponent();
 
 			Theme.ThemeChanged += OnThemeChanged;
-			this.FormClosed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
 			OnThemeChanged();
 
 			if (quiz != null)
