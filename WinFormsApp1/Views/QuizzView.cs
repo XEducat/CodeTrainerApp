@@ -125,7 +125,7 @@ namespace CodeTrainerApp.Views
 				CheckButton.Enabled = false;
 				SkipButton.Enabled = false;
 				CodeTextBox.ReadOnly = true;
-				CodeTextBox.BackColor = Color.FromArgb(45, 45, 45); // Трохи світліший фон для "заблокованого" стану
+				CodeTextBox.BackColor = Theme.CodeBackgroundLocked; // Трохи світліший фон для "заблокованого" стану
 			}
 			else
 			{
@@ -148,7 +148,7 @@ namespace CodeTrainerApp.Views
 			CheckButton.Enabled = false;
 			SkipButton.Enabled = false;
 			CodeTextBox.ReadOnly = true;
-			CodeTextBox.BackColor = Color.FromArgb(45, 45, 45); // Трохи світліший фон
+			CodeTextBox.BackColor = Theme.CodeBackgroundLocked; // Трохи світліший фон
 		}
 
 		private async void NextButton_Click(object sender, EventArgs e)

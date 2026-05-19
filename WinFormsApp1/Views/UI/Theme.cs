@@ -84,8 +84,9 @@ namespace CodeTrainerApp.UI
 		public static Color Border => IsDark ? Color.FromArgb(45, 55, 72) : Color.FromArgb(226, 232, 240); // Slate 200
 		public static Color MenuHover => IsDark ? Color.FromArgb(45, 55, 72) : Color.FromArgb(226, 232, 240); // Slate 200
 		public static Color MenuSelected => IsDark ? Color.FromArgb(63, 72, 87) : Color.FromArgb(203, 213, 225); // Slate 300
-		public static Color CodeBackground => Color.FromArgb(30, 30, 30);
-		public static Color CodeForeground => Color.FromArgb(220, 220, 220);
+		public static Color CodeBackground => IsDark ? Color.FromArgb(30, 30, 30) : Color.White;
+		public static Color CodeForeground => IsDark ? Color.FromArgb(220, 220, 220) : Color.FromArgb(15, 23, 42);
+		public static Color CodeBackgroundLocked => IsDark ? Color.FromArgb(45, 45, 45) : Color.FromArgb(243, 244, 246);
 		public static Color CodeHeader => IsDark ? Color.FromArgb(17, 24, 39) : Color.FromArgb(241, 245, 249); // Slate 100
 
 		// Таблиці та списки
