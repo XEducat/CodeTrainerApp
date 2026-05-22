@@ -12,6 +12,8 @@ namespace CodeTrainerApp.Views
 		private User _currentUser;
 		private int _passedCount = 0;
 
+		public int CurrentQuizId => _quiz?.Id ?? 0;
+
 		public QuizView(Quiz selectedQuiz)
 		{
 			InitializeComponent();
@@ -30,8 +32,34 @@ namespace CodeTrainerApp.Views
 				QuizProgressBar.Maximum = _quiz.Tasks.Count;
 			}
 
+			// Забороняємо перемикання Tab між елементами
+			foreach (Control ctrl in this.Controls)
+			{
+				SetTabStopRecursive(ctrl, false);
+			}
+			CodeTextBox.TabStop = true; // Дозволяємо фокус на редакторі
+			CodeTextBox.KeyDown += CodeTextBox_KeyDown;
+
 			InitializeAccess();
 			LoadCurrentTask();
+		}
+
+		private void SetTabStopRecursive(Control parent, bool value)
+		{
+			parent.TabStop = value;
+			foreach (Control child in parent.Controls)
+				SetTabStopRecursive(child, value);
+		}
+
+		private void CodeTextBox_KeyDown(object? sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Tab)
+			{
+				e.SuppressKeyPress = true; // Забороняємо системний перехід фокусу
+				int pos = CodeTextBox.SelectionStart;
+				CodeTextBox.Text = CodeTextBox.Text.Insert(pos, "    "); // Вставляємо 4 пробіли
+				CodeTextBox.SelectionStart = pos + 4;
+			}
 		}
 
 		private void OnThemeChanged()

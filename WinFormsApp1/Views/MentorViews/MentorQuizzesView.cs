@@ -168,6 +168,12 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private async void EditQuiz(Quiz quiz)
 		{
+			if (IsQuizActive(quiz.Id))
+			{
+				MessageBox.Show("Неможливо редагувати квіз, який зараз проходить користувач!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
 			var form = new CreateQuizForm(quiz);
 
 			if (form.ShowDialog() == DialogResult.OK)
@@ -189,6 +195,12 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private async void DeleteQuiz(Quiz quiz)
 		{
+			if (IsQuizActive(quiz.Id))
+			{
+				MessageBox.Show("Неможливо видалити квіз, який зараз проходить користувач!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
 			if (MessageBox.Show(
 				$"Видалити квіз '{quiz.Title}'?",
 				"Підтвердження",
@@ -208,6 +220,19 @@ namespace CodeTrainerApp.Views.MentorViews
 					MessageBox.Show(ex.Message, "Помилка");
 				}
 			}
+		}
+
+		private bool IsQuizActive(int quizId)
+		{
+			// Перевіряємо всі відкриті форми у застосунку
+			foreach (Form form in Application.OpenForms)
+			{
+				if (form is QuizView qv && qv.CurrentQuizId == quizId)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
