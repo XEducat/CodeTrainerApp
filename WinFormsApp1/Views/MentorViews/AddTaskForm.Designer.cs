@@ -132,7 +132,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			
 			txtCall.Location = new Point(330, 40);
 			txtCall.Size = new Size(200, 23);
-			txtCall.PlaceholderText = "new Solution().Sum(2, 2)";
+			txtCall.PlaceholderText = "Sum(2, 2)";
 			txtCall.TextChanged += ValidateTestInputs;
 
 			lblExpected.Location = new Point(540, 20);

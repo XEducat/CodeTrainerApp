@@ -96,30 +96,25 @@ namespace CodeTrainerApp.Services
 				.AddReferences(typeof(object).Assembly, typeof(ProgrammingTask).Assembly, typeof(Enumerable).Assembly, typeof(CodeCompiler).Assembly)
 				.AddImports("System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading");
 
-			// 3. ПЕРЕВІРКА КОМПІЛЯЦІЇ
+			// 3. ПЕРЕВІРКА КОМПІЛЯЦІЇ ШАБЛОНУ (без тестів)
 			try
 			{
 				var userScript = CSharpScript.Create(instrumentedUserCode, options: options);
-				userScript.Compile();
-			}
-			catch (CompilationErrorException e)
-			{
-				var diagnostics = e.Diagnostics
-					.Select(d => {
-						var lineSpan = d.Location.GetLineSpan();
-						int line = lineSpan.StartLinePosition.Line + 1;
-						int col = lineSpan.StartLinePosition.Character + 1;
-						return $"[Рядок {line}, Символ {col}] {d.GetMessage()}";
-					});
-
-				result.errorMessage = "❌ ПОМИЛКА В ОСНОВНОМУ КОДІ:\r\n" + string.Join("\r\n", diagnostics);
-				result.success = false;
-				return result;
+				var diagnostics = userScript.Compile();
+				if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+				{
+					result.errorMessage = "❌ ПОМИЛКА КОМПІЛЯЦІЇ ШАБЛОНУ:\r\n" + string.Join("\r\n", diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.GetMessage()));
+					result.success = false;
+					result.compilationSuccess = false;
+					return result;
+				}
+				result.compilationSuccess = true;
 			}
 			catch (Exception e)
 			{
-				result.errorMessage = "❌ Критична помилка аналізу коду:\r\n" + e.Message;
+				result.errorMessage = "❌ Критична помилка аналізу шаблону:\r\n" + e.Message;
 				result.success = false;
+				result.compilationSuccess = false;
 				return result;
 			}
 
@@ -127,8 +122,17 @@ namespace CodeTrainerApp.Services
 			foreach (var testCase in task.Tests)
 			{
 				string testMethodCall = testCase.Call.Trim();
+				// Додаємо префікс, якщо його немає
+				if (!testMethodCall.StartsWith("new Solution()."))
+					testMethodCall = "new Solution()." + testMethodCall;
+
+				// Додаємо ; якщо забули, але тільки якщо це не вираз
+				if (!testMethodCall.EndsWith(";") && testMethodCall.Contains("\n"))
+					testMethodCall += ";";
+				
 				string callExpression = testMethodCall.EndsWith(";") ? testMethodCall.Substring(0, testMethodCall.Length - 1) : testMethodCall;
 				string expectedValue = testCase.Expected;
+				string shortMethodCallUI = testMethodCall.Replace("new Solution().", "");
 
 				string scriptSource = $@"
 {instrumentedUserCode}
@@ -138,6 +142,31 @@ namespace CodeTrainerApp.Services
 				{
 					var script = CSharpScript.Create<object>(scriptSource, options: options);
 					
+					// Перевірка чи тест взагалі компілюється з цим кодом (перевірка сигнатур та ТИПІВ)
+					var testDiagnostics = script.Compile();
+					if (testDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+					{
+						var errors = testDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+						var translatedErrors = new List<string>();
+
+						foreach (var err in errors)
+						{
+							string msg = err.GetMessage();
+							// Переклад основних помилок сигнатури
+							if (err.Id == "CS0117") // Solution does not contain a definition for 'Method'
+								translatedErrors.Add($"❌ Метод не знайдено у класі Solution (перевірте назву).");
+							else if (err.Id == "CS1501" || err.Id == "CS1503") // No overload / Argument conversion
+								translatedErrors.Add($"❌ Невірні типи аргументів або їх кількість у виклику '{shortMethodCallUI}'.");
+							else
+								translatedErrors.Add($"❌ {msg}");
+						}
+
+						result.compilationSuccess = false;
+						result.errorMessage = $"Помилка у тесті: '{shortMethodCallUI}'\r\n" + string.Join("\r\n", translatedErrors.Distinct());
+						result.success = false;
+						return result;
+					}
+
 					using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
 					{
 						CodeCompiler.CurrentToken = cts.Token;
@@ -182,7 +211,7 @@ namespace CodeTrainerApp.Services
 				}
 				catch (Exception e)
 				{
-					result.errorMessage = "❌ Помилка виконання:\r\n" + e.Message;
+					result.errorMessage = $"❌ Помилка виконання тесту '{testMethodCall}':\r\n" + e.Message;
 					result.success = false;
 					return result;
 				}

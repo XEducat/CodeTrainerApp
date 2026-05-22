@@ -93,7 +93,70 @@ namespace CodeTrainerAPI.Controllers
 		{
 			if (id != updatedQuiz.Id) return BadRequest();
 
-			_context.Entry(updatedQuiz).State = EntityState.Modified;
+			var existingQuiz = await _context.Quizzes
+				.Include(q => q.Tasks)
+					.ThenInclude(t => t.Tests)
+				.FirstOrDefaultAsync(q => q.Id == id);
+
+			if (existingQuiz == null) return NotFound();
+
+			// Оновлюємо основні властивості
+			existingQuiz.Title = updatedQuiz.Title;
+			existingQuiz.Description = updatedQuiz.Description;
+
+			// СИНХРОНІЗАЦІЯ ЗАДАЧ (Tasks)
+			// 1. Видаляємо задачі, яких немає в новому списку
+			foreach (var existingTask in existingQuiz.Tasks.ToList())
+			{
+				if (!updatedQuiz.Tasks.Any(t => t.Id == existingTask.Id))
+					_context.ProgrammingTasks.Remove(existingTask);
+			}
+
+			// 2. Оновлюємо існуючі або додаємо нові задачі
+			foreach (var taskDto in updatedQuiz.Tasks)
+			{
+				var existingTask = existingQuiz.Tasks.FirstOrDefault(t => t.Id == taskDto.Id && t.Id != 0);
+
+				if (existingTask != null)
+				{
+					// Оновлюємо поля задачі
+					existingTask.Title = taskDto.Title;
+					existingTask.Description = taskDto.Description;
+					existingTask.CodeTemplate = taskDto.CodeTemplate;
+
+					// СИНХРОНІЗАЦІЯ ТЕСТІВ для задачі
+					// 1. Видаляємо старі тести
+					foreach (var existingTest in existingTask.Tests.ToList())
+					{
+						if (!taskDto.Tests.Any(t => t.Id == existingTest.Id))
+							_context.TestCases.Remove(existingTest);
+					}
+
+					// 2. Оновлюємо/додаємо тести
+					foreach (var testDto in taskDto.Tests)
+					{
+						var existingTest = existingTask.Tests.FirstOrDefault(t => t.Id == testDto.Id && t.Id != 0);
+						if (existingTest != null)
+						{
+							existingTest.Call = testDto.Call;
+							existingTest.Expected = testDto.Expected;
+						}
+						else
+						{
+							existingTask.Tests.Add(new TestCase
+							{
+								Call = testDto.Call,
+								Expected = testDto.Expected
+							});
+						}
+					}
+				}
+				else
+				{
+					// Додаємо абсолютно нову задачу
+					existingQuiz.Tasks.Add(taskDto);
+				}
+			}
 
 			try
 			{

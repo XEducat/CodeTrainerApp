@@ -70,7 +70,7 @@ namespace CodeTrainerApp.Views
 
 			var task = _quiz.Tasks[currentTaskIndex];
 
-			CurrentTaskLabel.Text = $"Завдання {currentTaskIndex + 1}";
+			CurrentTaskLabel.Text = $"Завдання {currentTaskIndex + 1}: {task.Title}";
 			ProgressLabel.Text = $"ПРОГРЕС: {currentTaskIndex} / {_quiz.Tasks.Count}";
 			QuizProgressBar.Value = currentTaskIndex;
 

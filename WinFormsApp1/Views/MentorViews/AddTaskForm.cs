@@ -106,13 +106,8 @@ namespace CodeTrainerApp.Views.MentorViews
 
 		private void ValidateTestInputs(object? sender, EventArgs e)
 		{
-			bool isCallValid = !string.IsNullOrWhiteSpace(txtCall.Text) && txtCall.Text.Contains("new Solution().");
+			bool isCallValid = !string.IsNullOrWhiteSpace(txtCall.Text);
 			bool isExpectedValid = !string.IsNullOrWhiteSpace(txtExpected.Text);
-
-			if (!string.IsNullOrWhiteSpace(txtCall.Text) && !isCallValid)
-				errorProvider1.SetError(txtCall, "Виклик повинен починатися з 'new Solution().'");
-			else
-				errorProvider1.SetError(txtCall, "");
 
 			btnAddTest.Enabled = isCallValid && isExpectedValid;
 			btnUpdateTest.Enabled = isCallValid && isExpectedValid && selectedTestIndex != -1;
@@ -134,10 +129,21 @@ namespace CodeTrainerApp.Views.MentorViews
 		// Додавання тесту
 		private void btnAddTest_Click(object sender, EventArgs e)
 		{
+			string call = txtCall.Text.Trim();
+			if (!call.StartsWith("new Solution()."))
+				call = "new Solution()." + call;
+
+			// Перевірка на дублікати
+			if (_tests.Any(t => t.Call == call && t.Expected == txtExpected.Text.Trim()))
+			{
+				MessageBox.Show("Такий тест уже існує!", "Попередження", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
 			var test = new TestCase
 			{
-				Call = txtCall.Text,
-				Expected = txtExpected.Text
+				Call = call,
+				Expected = txtExpected.Text.Trim()
 			};
 
 			_tests.Add(test);
@@ -161,7 +167,8 @@ namespace CodeTrainerApp.Views.MentorViews
 			selectedTestIndex = lbTests.SelectedIndex;
 			var test = _tests[selectedTestIndex];
 
-			txtCall.Text = test.Call;
+			// Видаляємо префікс для зручності редагування
+			txtCall.Text = test.Call.Replace("new Solution().", "");
 			txtExpected.Text = test.Expected;
 			ValidateTestInputs(this, EventArgs.Empty);
 		}
@@ -171,10 +178,21 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			if (selectedTestIndex == -1) return;
 
+			string call = txtCall.Text.Trim();
+			if (!call.StartsWith("new Solution()."))
+				call = "new Solution()." + call;
+
+			// Перевірка на дублікати (крім поточного елемента)
+			if (_tests.Where((t, i) => i != selectedTestIndex).Any(t => t.Call == call && t.Expected == txtExpected.Text.Trim()))
+			{
+				MessageBox.Show("Такий тест уже існує!", "Попередження", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+
 			_tests[selectedTestIndex] = new TestCase
 			{
-				Call = txtCall.Text,
-				Expected = txtExpected.Text
+				Call = call,
+				Expected = txtExpected.Text.Trim()
 			};
 
 			_isVerified = false;
@@ -223,11 +241,16 @@ namespace CodeTrainerApp.Views.MentorViews
 				_isVerified = true;
 				MessageBox.Show("Всі тести успішно пройдено!", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
+			else if (result.compilationSuccess)
+			{
+				_isVerified = true; // Сигнатура збігається, логіка може бути порожньою в шаблоні
+				MessageBox.Show("Сигнатуру методу та типи перевірено! Тести підходять до коду (хоча результати не збігаються, що нормально для шаблону).", "Перевірено", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
 			else
 			{
 				_isVerified = false;
 				string errorMsg = string.IsNullOrEmpty(result.errorMessage) ? result.output : result.errorMessage;
-				MessageBox.Show($"Помилка перевірки:\n\n{errorMsg}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show($"Помилка перевірки (невідповідність типів або помилка в коді):\n\n{errorMsg}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			btnVerify.Enabled = true;
