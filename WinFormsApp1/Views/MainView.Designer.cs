@@ -62,7 +62,7 @@ namespace CodeTrainerApp.Views
 			using (var descBrush = new SolidBrush(Theme.TextSecondary))
 			{
 				string desc = quiz.Description;
-				if (desc.Length > 100) desc = desc.Substring(0, 97) + "...";
+				if (desc.Length > 180) desc = desc.Substring(0, 177) + "...";
 				e.Graphics.DrawString(desc, descFont, descBrush, cardRect.Left + 20, cardRect.Top + 40);
 			}
 
