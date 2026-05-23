@@ -1,6 +1,6 @@
-﻿using System.Net;
-using System.IO;
+using System.Net;
 using System.Text.Json;
+using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.Services
 {
@@ -32,14 +32,14 @@ namespace CodeTrainerApp.Services
 				BaseAddress = new Uri("https://localhost:7205/")
 			};
 
-			// Попытка загрузить сохранённые cookie при инициализации
+			// Спроба завантажити збережені cookie при ініціалізації
 			try
 			{
 				LoadCookiesFromDisk();
 			}
 			catch
 			{
-				// Игнорируем ошибки чтения/десериализации
+				// Ігноруємо помилки читання/десеріалізації
 			}
 		}
 
@@ -47,9 +47,17 @@ namespace CodeTrainerApp.Services
 
 		public static void ClearCookies()
 		{
-			_cookieContainer?.GetAllCookies()?.Clear();
+			// Очищаємо cookies для нашого домену
+			if (_httpClient.BaseAddress != null)
+			{
+				var cookies = _cookieContainer.GetCookies(_httpClient.BaseAddress);
+				foreach (Cookie cookie in cookies)
+				{
+					cookie.Expired = true;
+				}
+			}
 
-			// удалить файл с cookie при очистке
+			// Видаляємо файл з cookie при очищенні
 			try
 			{
 				if (File.Exists(_cookiesFile))
@@ -58,14 +66,16 @@ namespace CodeTrainerApp.Services
 			catch { }
 		}
 
-		// Сериализуем cookie в файл для восстановления между запусками
+		// Серіалізуємо cookie у файл для відновлення між запусками
 		public static void SaveCookiesToDisk()
 		{
 			try
 			{
 				Directory.CreateDirectory(_storageDir);
 
-				var cookies = _cookieContainer.GetAllCookies();
+				if (_httpClient.BaseAddress == null) return;
+
+				var cookies = _cookieContainer.GetCookies(_httpClient.BaseAddress);
 				var list = new List<SerializableCookie>();
 
 				foreach (Cookie c in cookies)
@@ -87,7 +97,7 @@ namespace CodeTrainerApp.Services
 			}
 			catch
 			{
-				// При неуспіху нічого не кидаємо — можна логувати при потребі
+				// При неуспіху нічого не кидаємо
 			}
 		}
 
@@ -116,65 +126,19 @@ namespace CodeTrainerApp.Services
 						if (sc.Expires.HasValue)
 							cookie.Expires = sc.Expires.Value;
 
-						// Добавляем cookie для базового адреса
+						// Додаємо cookie для базової адреси
 						_cookieContainer.Add(_httpClient.BaseAddress!, cookie);
 					}
 					catch
 					{
-						// Пропускаем проблемные cookie
+						// Пропускаємо проблемні cookie
 					}
 				}
 			}
 			catch
 			{
-				// Игнорируем ошибки чтения/десериализации
+				// Ігноруємо помилки читання/десеріалізації
 			}
-		}
-
-		private class SerializableCookie
-		{
-			public string Name { get; set; } = string.Empty;
-			public string Value { get; set; } = string.Empty;
-			public string Domain { get; set; } = string.Empty;
-			public string? Path { get; set; }
-			public DateTime? Expires { get; set; }
-			public bool Secure { get; set; }
-			public bool HttpOnly { get; set; }
-		}
-	}
-
-	// Додаємо helper для очищення cookie
-	public static class CookieExtensions
-	{
-		public static CookieCollection GetAllCookies(this CookieContainer container)
-		{
-			var cookies = new CookieCollection();
-			var table = (System.Collections.Hashtable)container.GetType()
-				.InvokeMember("m_domainTable",
-					System.Reflection.BindingFlags.NonPublic |
-					System.Reflection.BindingFlags.GetField |
-					System.Reflection.BindingFlags.Instance,
-					null,
-					container,
-					new object[] { });
-
-			foreach (var key in table.Keys)
-			{
-				var item = table[key];
-				var items = (System.Collections.Hashtable)item.GetType()
-					.InvokeMember("m_list",
-						System.Reflection.BindingFlags.NonPublic |
-						System.Reflection.BindingFlags.GetField |
-						System.Reflection.BindingFlags.Instance,
-						null,
-						item,
-						new object[] { });
-
-				foreach (var col in items.Values)
-					cookies.Add((CookieCollection)col);
-			}
-
-			return cookies;
 		}
 	}
 }

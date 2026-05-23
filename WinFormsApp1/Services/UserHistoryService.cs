@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.Services
@@ -12,9 +8,9 @@ namespace CodeTrainerApp.Services
 	{
 		private readonly HttpClient _httpClient;
 
-		public UserHistoryService()
+		public UserHistoryService(HttpClient? client = null)
 		{
-			_httpClient = ApiClient.Instance;
+			_httpClient = client ?? ApiClient.Instance;
 		}
 
 		public async Task<List<UserHistory>> GetUserHistoryAsync()

@@ -6,9 +6,9 @@ namespace CodeTrainerApp.Services
 	public class QuizService
 	{
 		private readonly HttpClient _httpClient;
-		public QuizService()
+		public QuizService(HttpClient? client = null)
 		{
-			_httpClient = ApiClient.Instance;
+			_httpClient = client ?? ApiClient.Instance;
 		}
 
 		// ================= GET: квізи поточного ментора =================

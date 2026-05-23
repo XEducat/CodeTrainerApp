@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.IO;
 using CodeTrainerApp.Model;
 
 namespace CodeTrainerApp.Services
@@ -13,17 +8,22 @@ namespace CodeTrainerApp.Services
 	public sealed class UserService
 	{
 		public static UserService Instance => _instance.Value;
-		public User CurrentUser { get; private set; }
+		public User? CurrentUser { get; private set; }
 		public bool IsLoggedIn => CurrentUser != null;
  
-		private readonly TimeSpan _localSessionLifetime = TimeSpan.FromDays(30); // Время жизни локально сохранённой сессии
+		private readonly TimeSpan _localSessionLifetime = TimeSpan.FromDays(30); 
 		private readonly string _userFile;
 		private readonly HttpClient _httpClient;
 		private static readonly Lazy<UserService> _instance =
-	new Lazy<UserService>(() => new UserService());
+			new Lazy<UserService>(() => new UserService());
 		private readonly string _storageDir = 
 			Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeTrainerApp");
 
+		// For testing purposes
+		internal UserService(HttpClient client) : this()
+		{
+			_httpClient = client;
+		}
 
 		private UserService()
 		{
@@ -132,7 +132,7 @@ namespace CodeTrainerApp.Services
 		}
 
 		// ================= HELPERS =================
-		private bool IsValidEmail(string email)
+		internal bool IsValidEmail(string email)
 		{
 			return Regex.IsMatch(email,
 				@"^[^@\s]+@[^@\s]+\.[^@\s]+$",
