@@ -1,7 +1,6 @@
 using CodeTrainerApp.Services;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
-using System.Linq;
 
 namespace CodeTrainer.Tests.App
 {

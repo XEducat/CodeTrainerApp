@@ -5,10 +5,19 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // ================= DB =================
-builder.Services.AddDbContext<AppDbContext>(options =>
-	options.UseSqlServer(
-		builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+if (builder.Environment.IsEnvironment("Testing"))
+{
+	builder.Services.AddDbContext<AppDbContext>(options =>
+		options.UseInMemoryDatabase("TestDb")
+	);
+}
+else
+{
+	builder.Services.AddDbContext<AppDbContext>(options =>
+		options.UseSqlServer(
+			builder.Configuration.GetConnectionString("DefaultConnection"))
+	);
+}
 
 // ================= Identity =================
 builder.Services
@@ -35,7 +44,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.LoginPath = "/api/user/login";
 	options.AccessDeniedPath = "/api/user/login";
 
-	// ÂÀÆËÈÂÎ äëÿ API
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ API
 	options.Events.OnRedirectToLogin = context =>
 	{
 		context.Response.StatusCode = 401;
@@ -56,20 +65,23 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ================= MIGRATIONS + ROLES =================
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-	await db.Database.MigrateAsync();
-
-	var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-	string[] roles = { "Student", "Mentor" };
-
-	foreach (var role in roles)
+	using (var scope = app.Services.CreateScope())
 	{
-		if (!await roleManager.RoleExistsAsync(role))
+		var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+		await db.Database.MigrateAsync();
+
+		var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+		string[] roles = { "Student", "Mentor" };
+
+		foreach (var role in roles)
 		{
-			await roleManager.CreateAsync(new IdentityRole(role));
+			if (!await roleManager.RoleExistsAsync(role))
+			{
+				await roleManager.CreateAsync(new IdentityRole(role));
+			}
 		}
 	}
 }
@@ -91,3 +103,5 @@ app.MapGet("/", () => Results.Redirect("/swagger"));
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

@@ -1,5 +1,4 @@
 using CodeTrainerApp.UI;
-using System.Drawing;
 using Xunit;
 
 namespace CodeTrainer.Tests.App
