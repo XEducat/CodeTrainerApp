@@ -7,7 +7,7 @@
 
 ## 🛠 Технологічний стек
 
-- **Core:** .NET 6.0+ / C#
+- **Core:** .NET 10.0+ / C#
 - **Execution Engine:** Microsoft.CodeAnalysis.CSharp.Scripting (Roslyn)
 - **Architecture:** Web API (REST) + Desktop Client (WinForms)
 - **Database & ORM:** MS SQL Server + Entity Framework Core
