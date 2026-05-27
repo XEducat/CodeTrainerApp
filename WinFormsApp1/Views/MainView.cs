@@ -39,6 +39,19 @@ namespace CodeTrainerApp.Views
 			Theme.CurrentMode = Theme.IsDark ? ThemeMode.Light : ThemeMode.Dark;
 		}
 
+		private async void RefreshButton_Click(object sender, EventArgs e)
+		{
+			await LoadQuizzesAsync();
+		}
+
+		private void HeaderPanel_Paint(object sender, PaintEventArgs e)
+		{
+			using (var pen = new Pen(Theme.Border, 1))
+			{
+				e.Graphics.DrawLine(pen, 0, HeaderPanel.Height - 1, HeaderPanel.Width, HeaderPanel.Height - 1);
+			}
+		}
+
 		private async void QuizzesView_Load(object? sender, EventArgs e)
 		{
 			UpdateAuthUI();

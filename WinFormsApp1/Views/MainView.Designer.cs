@@ -163,7 +163,7 @@ namespace CodeTrainerApp.Views
 			RefreshButton.Name = "RefreshButton";
 			RefreshButton.Size = new Size(40, 40);
 			RefreshButton.Text = "🔄";
-			RefreshButton.Click += (s, e) => LoadQuizzesAsync();
+			RefreshButton.Click += RefreshButton_Click;
 
 			// ThemeButton
 			ThemeButton.Location = new Point(335, 0);
@@ -191,13 +191,7 @@ namespace CodeTrainerApp.Views
 			HeaderPanel.Location = new Point(20, 20);
 			HeaderPanel.Padding = new Padding(20, 10, 20, 10);
 			HeaderPanel.Size = new Size(1240, 68);
-			HeaderPanel.Paint += (s, e) =>
-			{
-				using (var pen = new Pen(Theme.Border, 1))
-				{
-					e.Graphics.DrawLine(pen, 0, HeaderPanel.Height - 1, HeaderPanel.Width, HeaderPanel.Height - 1);
-				}
-			};
+			HeaderPanel.Paint += HeaderPanel_Paint;
 
 			// TitleLabel
 			TitleLabel.Dock = DockStyle.Fill;
