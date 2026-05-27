@@ -1,5 +1,5 @@
 using CodeTrainerAPI.Controllers;
-using CodeTrainerAPI.Data;
+using CodeTrainerAPI.Data.Models;
 using CodeTrainerAPI.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

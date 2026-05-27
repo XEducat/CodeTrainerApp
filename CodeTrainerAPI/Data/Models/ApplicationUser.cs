@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
 
-namespace CodeTrainerAPI.Data
+namespace CodeTrainerAPI.Data.Models
 {
 	public class ApplicationUser : IdentityUser
 	{

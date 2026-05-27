@@ -1,4 +1,5 @@
 using CodeTrainerAPI.Data;
+using CodeTrainerAPI.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

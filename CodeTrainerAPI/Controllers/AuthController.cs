@@ -1,4 +1,4 @@
-﻿using CodeTrainerAPI.Data;
+﻿using CodeTrainerAPI.Data.Models;
 using CodeTrainerAPI.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
