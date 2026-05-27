@@ -45,7 +45,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.LoginPath = "/api/user/login";
 	options.AccessDeniedPath = "/api/user/login";
 
-	// ������� ��� API
 	options.Events.OnRedirectToLogin = context =>
 	{
 		context.Response.StatusCode = 401;

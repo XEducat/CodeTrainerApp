@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace CodeTrainerApp.Model
+﻿namespace CodeTrainerApp.Model
 {
 	public class UserHistory
 	{
