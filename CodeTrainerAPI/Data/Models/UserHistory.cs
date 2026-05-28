@@ -23,6 +23,8 @@ namespace CodeTrainerAPI.Data.Models
 		public int MaxScore { get; set; }
 		public int Score { get; set; }
 
+		public string? UserAnswersJson { get; set; }
+
 		public DateTime CompletedAt { get; set; } = DateTime.UtcNow;
 	}
 }

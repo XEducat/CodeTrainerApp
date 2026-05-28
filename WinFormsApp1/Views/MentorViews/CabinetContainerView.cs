@@ -1,5 +1,4 @@
-﻿using CodeTrainerApp.Views.MentorViews;
-using CodeTrainerApp.Views.RegisteredUserViews;
+﻿using CodeTrainerApp.Views.RegisteredUserViews;
 using CodeTrainerApp.UI;
 
 namespace CodeTrainerApp.Views.MentorViews
@@ -18,7 +17,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			OnThemeChanged();
 
 			// Збираємо кнопки меню в список для зручності
-			menuButtons = new List<Button> { btnCabinet, btnSecondView /*, додай інші кнопки */ };
+			menuButtons = new List<Button> { btnCabinet, btnSecondView };
 
 			// Підписуємося на події
 			btnCabinet.Click += (s, e) => { ActivateButton(btnCabinet); ShowForm(new UserHistoryView()); };
@@ -38,6 +37,13 @@ namespace CodeTrainerApp.Views.MentorViews
 		}
 
 		// ================= ЛОГІКА ПЕРЕМИКАННЯ ФОРМ =================
+		public void OpenStatsForQuiz(int quizId)
+		{
+			// Підсвічуємо кнопку "Мої квізи", бо ми технічно залишаємось у цьому розділі
+			ActivateButton(btnSecondView); 
+			ShowForm(new MentorStatsView(quizId));
+		}
+
 		private void ShowForm(Form form)
 		{
 			if (currentForm != null)

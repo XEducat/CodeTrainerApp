@@ -42,6 +42,32 @@ namespace CodeTrainerAPI.Controllers
 					QuizTitle = x.Quiz != null ? x.Quiz.Title : "Unknown",
 					MaxScore = x.MaxScore,
 					Score = x.Score,
+					UserAnswersJson = x.UserAnswersJson,
+					CompletedAt = x.CompletedAt
+				})
+				.ToList();
+
+			return Ok(history);
+		}
+
+		// ================= GET ALL (FOR MENTORS) =================
+		[HttpGet("all")]
+		[Authorize(Roles = "Mentor")]
+		public IActionResult GetAllHistory()
+		{
+			var history = _context.UserHistories
+				.Include(x => x.Quiz)
+				.Include(x => x.User)
+				.OrderByDescending(x => x.CompletedAt)
+				.Select(x => new UserHistoryDto
+				{
+					Id = x.Id,
+					QuizId = x.QuizId,
+					QuizTitle = x.Quiz != null ? x.Quiz.Title : "Unknown",
+					UserEmail = x.User != null ? x.User.Email : "Unknown",
+					MaxScore = x.MaxScore,
+					Score = x.Score,
+					UserAnswersJson = x.UserAnswersJson,
 					CompletedAt = x.CompletedAt
 				})
 				.ToList();

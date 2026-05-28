@@ -168,7 +168,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			// dgvContainer
 			dgvContainer.Name = "dgvContainer";
 			dgvContainer.Dock = DockStyle.Fill;
-			dgvContainer.Padding = new Padding(0); // Прибираємо рамку для Flat-дизайну
+			dgvContainer.Padding = new Padding(0);
 			dgvContainer.BackColor = Theme.Surface;
 
 			dgvHistory.Name = "dgvHistory";
@@ -264,7 +264,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 		{
 			StyleHelper.ApplyFormStyle(this);
 
-			// ПРИМУСОВО фарбуємо поля фільтрів та таблицю (фінальний шар захисту)
 			tbNameFilter.BackColor = Theme.Surface;
 			tbNameFilter.ForeColor = Theme.TextPrimary;
 			cbPeriod.BackColor = Theme.Surface;
@@ -276,10 +275,10 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			mainPanel.Padding = new Padding(30);
 			headerPanel.Height = 80;
 			statsPanel.Height = 120;
-			dgvContainer.Padding = new Padding(0); // Повний Flat - без відступів
+			dgvContainer.Padding = new Padding(0);
 
 			lblTitle.ForeColor = Theme.TextPrimary;
-			lblTitle.Font = new Font("Segoe UI Semibold", 24F); // Сучасніший шрифт
+			lblTitle.Font = new Font("Segoe UI Semibold", 24F);
 
 			StyleCard(pnlStatTotal, lblTotalTitle, lblTotalValue);
 			StyleCard(pnlStatAverage, lblAverageTitle, lblAverageValue);
@@ -319,11 +318,11 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			pnl.Margin = new Padding(0, 0, 20, 0);
 
 			title.ForeColor = Theme.TextSecondary;
-			title.Font = new Font("Segoe UI Semibold", 10F); // Трішки тонший шрифт
+			title.Font = new Font("Segoe UI Semibold", 10F);
 			title.Location = new Point(25, 15);
 
 			value.ForeColor = Theme.Primary;
-			value.Font = new Font("Segoe UI", 24F, FontStyle.Bold); // Трішки більший розмір
+			value.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
 			value.Location = new Point(25, 35);
 
 			pnl.Paint += (s, e) =>

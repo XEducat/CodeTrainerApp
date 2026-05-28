@@ -23,7 +23,7 @@ namespace CodeTrainerApp.Views
 			TogglePasswordButton.Click += TogglePasswordButton_Click;
 			ToggleConfirmPasswordButton.Click += ToggleConfirmPasswordButton_Click;
 
-			MentorCheckBox.CheckedChanged += MentorCheckBox_CheckedChanged; // ← ОЦЕ ДОДАТИ
+			MentorCheckBox.CheckedChanged += MentorCheckBox_CheckedChanged;
 			SwitchModeButton.Click += SwitchModeButton_Click;
 
 			// Спочатку поле коду приховане

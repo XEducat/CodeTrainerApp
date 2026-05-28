@@ -11,6 +11,7 @@ namespace CodeTrainerApp.Views
 		private readonly Quiz _quiz;
 		private User _currentUser;
 		private int _passedCount = 0;
+		private Dictionary<int, string> _userAnswers = new Dictionary<int, string>(); // Ключ - TaskId, Значення - Код
 
 		public int CurrentQuizId => _quiz?.Id ?? 0;
 
@@ -115,6 +116,7 @@ namespace CodeTrainerApp.Views
 
 			CodeTextBox.ReadOnly = false;
 			CodeTextBox.BackColor = Theme.CodeBackground;
+			CheckButton.Enabled = true;
 			NextButton.Enabled = false;
 			SkipButton.Enabled = true;
 
@@ -181,6 +183,13 @@ namespace CodeTrainerApp.Views
 
 		private async void NextButton_Click(object sender, EventArgs e)
 		{
+			// Зберігаємо відповідь користувача для поточної задачі
+			if (currentTaskIndex < _quiz.Tasks.Count)
+			{
+				var currentTask = _quiz.Tasks[currentTaskIndex];
+				_userAnswers[currentTask.Id] = CodeTextBox.Text;
+			}
+
 			currentTaskIndex++;
 
 			if (currentTaskIndex >= _quiz.Tasks.Count)
@@ -198,12 +207,16 @@ namespace CodeTrainerApp.Views
 				{
 					try
 					{
+						// Серіалізуємо відповіді в JSON
+						string answersJson = System.Text.Json.JsonSerializer.Serialize(_userAnswers);
+
 						var attempt = new Model.UserHistory
 						{
 							QuizId = _quiz.Id,
 							QuizTitle = _quiz.Title,
 							Score = _passedCount,
 							MaxScore = _quiz.Tasks.Count,
+							UserAnswersJson = answersJson,
 							CompletedAt = DateTime.UtcNow
 						};
 						await new UserHistoryService().CreateHistoryAsync(attempt, _currentUser.Id);

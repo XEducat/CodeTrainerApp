@@ -7,8 +7,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 	public partial class ProfileView : Form
 	{
 		private readonly User _user;
-
-		// Событие выхода, подписчики (например QuizzesView) будут реагировать на него
 		public event EventHandler? LoggedOut;
 
 		public ProfileView(User user)
@@ -45,16 +43,16 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			btnLogout.Enabled = false;
 			try
 			{
-				// Выполняем logout (очищает cookie и локальные данные)
+				// Виконуємо logout (очищає cookie та локальні дані)
 				await UserService.Instance.LogoutAsync();
 			}
 			catch
 			{
-				// Игнорируем ошибки logout, но всё равно продолжаем локально выходить
+				// Ігноруємо помилки logout, але все одно продовжуємо локально виходити
 			}
 			finally
 			{
-				// Уведомляем подписчиков и закрываем форму
+				// Повідомляємо підписників і закриваємо форму
 				LoggedOut?.Invoke(this, EventArgs.Empty);
 				this.Close();
 			}

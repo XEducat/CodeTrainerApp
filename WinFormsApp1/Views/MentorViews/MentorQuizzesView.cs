@@ -118,6 +118,17 @@ namespace CodeTrainerApp.Views.MentorViews
 			};
 			panel.Controls.Add(lblTasksCount);
 
+			// Кнопка статистика
+			var btnStats = new Button()
+			{
+				Text = "📊 Статистика",
+				Size = new Size(110, 32),
+				Location = new Point(panel.Width - 360, 35)
+			};
+			StyleHelper.ApplyPrimaryButton(btnStats);
+			btnStats.Click += (s, e) => ShowStats(quiz);
+			panel.Controls.Add(btnStats);
+
 			// Кнопка редагувати
 			var btnEdit = new Button()
 			{
@@ -219,6 +230,16 @@ namespace CodeTrainerApp.Views.MentorViews
 				{
 					MessageBox.Show(ex.Message, "Помилка");
 				}
+			}
+		}
+
+		private void ShowStats(Quiz quiz)
+		{
+			// Знаходимо батьківський контейнер (CabinetContainerView), щоб відкрити форму в ньому
+			var parent = this.ParentForm as CabinetContainerView;
+			if (parent != null)
+			{
+				parent.OpenStatsForQuiz(quiz.Id);
 			}
 		}
 

@@ -27,6 +27,20 @@ namespace CodeTrainerApp.Services
 				   ?? new List<UserHistory>();
 		}
 
+		public async Task<List<UserHistory>> GetAllStatsAsync()
+		{
+			var response = await _httpClient.GetAsync("api/UserHistory/all");
+
+			if (!response.IsSuccessStatusCode)
+			{
+				var body = await response.Content.ReadAsStringAsync();
+				throw new Exception($"Помилка: {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
+			}
+
+			return await response.Content.ReadFromJsonAsync<List<UserHistory>>()
+				   ?? new List<UserHistory>();
+		}
+
 		// Accept userId and include it in DTO sent to API.
 		public async Task<UserHistory?> CreateHistoryAsync(UserHistory attempt, string userId)
 		{
@@ -38,6 +52,7 @@ namespace CodeTrainerApp.Services
 				QuizTitle = attempt.QuizTitle,
 				Score = attempt.Score,
 				MaxScore = attempt.MaxScore,
+				UserAnswersJson = attempt.UserAnswersJson,
 				Date = attempt.CompletedAt
 			};
 
