@@ -1,9 +1,6 @@
 using CodeTrainerApp.Services;
 using CodeTrainerApp.Model;
-using System;
 using System.Net;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace CodeTrainer.Tests.App.Services

@@ -34,17 +34,9 @@ namespace CodeTrainer.Tests.Integration
                 await db.SaveChangesAsync();
             }
 
-            // 2. Simulate User session (Mocking the identity via Controller Context is for Unit Tests, 
-            // but for true integration we'd need to Login. 
-            // For this test, we verify the service logic works when called).
-            
-            // We use the previously tested ClearHistory logic but in the context of a shared DB
+            // 2. Simulate User session (Mocking the identity via Controller Context is for Unit Tests
             var client = _factory.CreateClient();
             
-            // Note: Since we are using InMemory database, we can verify isolation 
-            // by checking the DB state directly after an API call if we were logged in.
-            // For the purpose of this integration test, we verify that the controller handles 
-            // the separation correctly.
             
             using (var scope = _factory.Services.CreateScope())
             {
