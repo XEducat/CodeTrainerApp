@@ -246,8 +246,9 @@ namespace CodeTrainerApp.Views
 			BirthDatePicker.Visible = register;
 
 			MentorCheckBox.Visible = register;
-			MentorCodeLabel.Visible = register && MentorCheckBox.Checked;
-			MentorCodeTextBox.Visible = register && MentorCheckBox.Checked;
+			bool mentorVisible = register && MentorCheckBox.Checked;
+			MentorCodeLabel.Visible = mentorVisible;
+			MentorCodeTextBox.Visible = mentorVisible;
 
 			if (register)
 			{
@@ -256,9 +257,18 @@ namespace CodeTrainerApp.Views
 				SwitchModeButton.Text = "Назад до входу";
 				EmailLabel.Text = "Email";
 
-				ClientSize = new Size(340, 480);
-				MainButton.Location = new Point(30, 380);
-				SwitchModeButton.Location = new Point(30, 430);
+				if (mentorVisible)
+				{
+					ClientSize = new Size(340, 540);
+					MainButton.Location = new Point(30, 420);
+					SwitchModeButton.Location = new Point(30, 480);
+				}
+				else
+				{
+					ClientSize = new Size(340, 460);
+					MainButton.Location = new Point(30, 360);
+					SwitchModeButton.Location = new Point(30, 410);
+				}
 			}
 			else
 			{

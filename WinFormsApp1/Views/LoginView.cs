@@ -74,9 +74,7 @@ namespace CodeTrainerApp.Views
 
 		private void MentorCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			bool visible = MentorCheckBox.Checked;
-			MentorCodeLabel.Visible = visible;
-			MentorCodeTextBox.Visible = visible;
+			UpdateModeLayout(_isRegisterMode);
 		}
 
 		// ================= MAIN ACTION =================

@@ -231,6 +231,7 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			btnClearHistory.Width = 220;
 			btnClearHistory.Height = 40;
 			btnClearHistory.Location = new Point(10, 200);
+			btnClearHistory.Click += btnClearHistory_Click;
 
 			filterPanel.Controls.Add(lblNameFilter);
 			filterPanel.Controls.Add(tbNameFilter);
