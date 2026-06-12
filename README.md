@@ -37,7 +37,7 @@
         *   `ASP.NET and web development` (для API сервера).
 *   **SDK .NET 10.0+** (встановлюється разом з Visual Studio).
 *   **SQL Server Express** (або будь-яка інша версія MS SQL Server).
-*   **[Опціонально]* SQL Server Management Studio (SSMS)** — для перегляду бази даних.
+*   ** *[Опціонально]* SQL Server Management Studio (SSMS)** — для перегляду бази даних.
 
 ### 2. Початкове налаштування (CLI)
 Для керування міграціями бази даних потрібно встановити інструмент EF Core. Відкрийте термінал (PowerShell) та виконайте:
