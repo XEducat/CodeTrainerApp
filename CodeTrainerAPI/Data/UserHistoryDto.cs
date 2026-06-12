@@ -8,6 +8,7 @@
 		public int MaxScore { get; set; }
 		public int Score { get; set; }
 		public string? UserEmail { get; set; }
+		public string? UserName { get; set; }
 		public string? UserAnswersJson { get; set; }
 		public DateTime CompletedAt { get; set; }
 	}

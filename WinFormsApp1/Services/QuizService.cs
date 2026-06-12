@@ -147,5 +147,47 @@ namespace CodeTrainerApp.Services
 				throw new Exception("Помилка при видаленні квізу: " + ex.Message);
 			}
 		}
+
+		// ================= ATTEMPTS =================
+		public async Task<int> GetRemainingAttemptsAsync(int quizId)
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync($"api/quiz/{quizId}/attempts-left");
+				if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) return 2; // Default if not logged in
+				response.EnsureSuccessStatusCode();
+				return await response.Content.ReadFromJsonAsync<int>();
+			}
+			catch
+			{
+				return 2; // Default on error
+			}
+		}
+
+		public async Task GrantExtraAttemptsAsync(string userEmail, int quizId, int count)
+		{
+			try
+			{
+				var dto = new GrantExtraAttemptsDto { UserEmail = userEmail, QuizId = quizId, Count = count };
+				var response = await _httpClient.PostAsJsonAsync("api/quiz/grant-attempts", dto);
+				response.EnsureSuccessStatusCode();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Помилка при наданні спроб: " + ex.Message);
+			}
+		}
+
+		public async Task<int> GetAllowedAttemptsAsync(int quizId, string userEmail)
+		{
+			try
+			{
+				return await _httpClient.GetFromJsonAsync<int>($"api/quiz/{quizId}/allowed-attempts/{userEmail}");
+			}
+			catch
+			{
+				return 2;
+			}
+		}
 	}
 }

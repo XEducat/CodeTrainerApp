@@ -2,6 +2,8 @@
 using CodeTrainerAPI.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace CodeTrainerAPI.Controllers
 {
@@ -34,6 +36,20 @@ namespace CodeTrainerAPI.Controllers
 				string.IsNullOrWhiteSpace(password) ||
 				string.IsNullOrWhiteSpace(name))
 				return BadRequest("Некоректні реєстраційні дані");
+
+			// Перевірка логіна на латиницю
+			if (!Regex.IsMatch(name, "^[a-zA-Z0-9_]+$"))
+				return BadRequest("Логін може містити тільки латинські літери, цифри та нижнє підкреслення");
+
+			// Перевірка унікальності Email
+			var existingEmail = await _userManager.FindByEmailAsync(email);
+			if (existingEmail != null)
+				return BadRequest("Користувач з такою поштою вже зареєстрований");
+
+			// Перевірка унікальності Login
+			var existingLogin = await _userManager.Users.FirstOrDefaultAsync(u => u.Login == name);
+			if (existingLogin != null)
+				return BadRequest("Цей логін вже зайнятий");
 
 			var user = new ApplicationUser
 			{

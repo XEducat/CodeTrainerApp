@@ -8,7 +8,7 @@ namespace CodeTrainerAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class QuizController : ControllerBase
+	public partial class QuizController : ControllerBase
 	{
 		private readonly AppDbContext _context;
 
@@ -183,6 +183,85 @@ namespace CodeTrainerAPI.Controllers
 			await _context.SaveChangesAsync();
 
 			return NoContent();
+		}
+
+		// ================= ATTEMPTS LOGIC =================
+		[HttpGet("{id}/attempts-left")]
+		[Authorize]
+		public async Task<ActionResult<int>> GetRemainingAttempts(int id)
+		{
+			var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+			if (userId == null) return Unauthorized();
+
+			// Використані спроби: всі записи, де є реальні відповіді
+			int usedAttempts = await _context.UserHistories
+				.CountAsync(h => h.UserId == userId && h.QuizId == id && h.UserAnswersJson != null);
+			
+			// Надані бонуси: IsGrant=true та відповіді порожні
+			int extraAttempts = await _context.UserHistories
+				.CountAsync(h => h.UserId == userId && h.QuizId == id && h.IsGrant && h.UserAnswersJson == null);
+
+			int remaining = 2 + extraAttempts - usedAttempts;
+			return Ok(remaining < 0 ? 0 : remaining);
+		}
+
+		[HttpGet("{id}/allowed-attempts/{userEmail}")]
+		[Authorize(Roles = "Mentor")]
+		public async Task<ActionResult<int>> GetAllowedAttempts(int id, string userEmail)
+		{
+			var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+			if (user == null) return NotFound("User not found");
+
+			// Тільки чисті бонуси (без відповідей)
+			int extraAttempts = await _context.UserHistories
+				.CountAsync(h => h.UserId == user.Id && h.QuizId == id && h.IsGrant && h.UserAnswersJson == null);
+			
+			return Ok(2 + extraAttempts);
+		}
+
+		[HttpPost("grant-attempts")]
+		[Authorize(Roles = "Mentor")]
+		public async Task<IActionResult> GrantExtraAttempts([FromBody] GrantAttemptsRequest dto)
+		{
+			var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.UserEmail);
+			if (user == null) return NotFound("User not found");
+
+			int targetTotal = dto.Count;
+			if (targetTotal < 2) targetTotal = 2;
+
+			// Рахуємо чисті бонуси
+			int currentExtra = await _context.UserHistories
+				.CountAsync(h => h.UserId == user.Id && h.QuizId == dto.QuizId && h.IsGrant && h.UserAnswersJson == null);
+			
+			int targetExtra = targetTotal - 2;
+
+			if (targetExtra > currentExtra)
+			{
+				for (int i = 0; i < (targetExtra - currentExtra); i++)
+				{
+					_context.UserHistories.Add(new UserHistory
+					{
+						UserId = user.Id,
+						QuizId = dto.QuizId,
+						IsGrant = true,
+						UserAnswersJson = null, // Це маркер бонусу
+						CompletedAt = DateTime.UtcNow
+					});
+				}
+			}
+			else if (targetExtra < currentExtra)
+			{
+				var bonusesToRemove = await _context.UserHistories
+					.Where(h => h.UserId == user.Id && h.QuizId == dto.QuizId && h.IsGrant && h.UserAnswersJson == null)
+					.OrderByDescending(h => h.CompletedAt)
+					.Take(currentExtra - targetExtra)
+					.ToListAsync();
+
+				_context.UserHistories.RemoveRange(bonusesToRemove);
+			}
+
+			await _context.SaveChangesAsync();
+			return Ok(new { message = $"Total allowed attempts set to {targetTotal} for {dto.UserEmail}" });
 		}
 
 		// ================= HELPERS =================

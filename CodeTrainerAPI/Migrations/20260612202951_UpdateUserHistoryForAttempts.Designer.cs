@@ -4,6 +4,7 @@ using CodeTrainerAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeTrainerAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260612202951_UpdateUserHistoryForAttempts")]
+    partial class UpdateUserHistoryForAttempts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +124,7 @@ namespace CodeTrainerAPI.Migrations
 
                     b.HasIndex("QuizId");
 
-                    b.ToTable("ProgrammingTasks", (string)null);
+                    b.ToTable("ProgrammingTasks");
                 });
 
             modelBuilder.Entity("CodeTrainerAPI.Data.Models.Quiz", b =>
@@ -146,7 +149,7 @@ namespace CodeTrainerAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Quizzes", (string)null);
+                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("CodeTrainerAPI.Data.Models.TestCase", b =>
@@ -172,7 +175,7 @@ namespace CodeTrainerAPI.Migrations
 
                     b.HasIndex("ProgrammingTaskId");
 
-                    b.ToTable("TestCases", (string)null);
+                    b.ToTable("TestCases");
                 });
 
             modelBuilder.Entity("CodeTrainerAPI.Data.Models.UserHistory", b =>
@@ -211,7 +214,7 @@ namespace CodeTrainerAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserHistories", (string)null);
+                    b.ToTable("UserHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -32,8 +32,8 @@ namespace CodeTrainerAPI.Controllers
 				return Unauthorized();
 
 			var history = _context.UserHistories
-				.Where(x => x.UserId == userId)
-				.Include(x => x.Quiz)   // Підтягуємо тест
+				.Where(x => x.UserId == userId && !x.IsGrant) // Студент бачить тільки не-гранти
+				.Include(x => x.Quiz)
 				.OrderByDescending(x => x.CompletedAt)
 				.Select(x => new UserHistoryDto
 				{
@@ -56,6 +56,7 @@ namespace CodeTrainerAPI.Controllers
 		public IActionResult GetAllHistory()
 		{
 			var history = _context.UserHistories
+				.Where(x => x.UserAnswersJson != null) // Ментор бачить ВСІ проходження, навіть "видалені" студентом
 				.Include(x => x.Quiz)
 				.Include(x => x.User)
 				.OrderByDescending(x => x.CompletedAt)
@@ -65,6 +66,7 @@ namespace CodeTrainerAPI.Controllers
 					QuizId = x.QuizId,
 					QuizTitle = x.Quiz != null ? x.Quiz.Title : "Unknown",
 					UserEmail = x.User != null ? x.User.Email : "Unknown",
+					UserName = x.User != null ? x.User.Login : "Unknown",
 					MaxScore = x.MaxScore,
 					Score = x.Score,
 					UserAnswersJson = x.UserAnswersJson,
@@ -86,6 +88,7 @@ namespace CodeTrainerAPI.Controllers
 
 			model.UserId = userId;
 			model.CompletedAt = DateTime.UtcNow;
+			model.IsGrant = false; // Нове проходження завжди видиме студенту
 
 			_context.UserHistories.Add(model);
 			_context.SaveChanges();
@@ -108,10 +111,12 @@ namespace CodeTrainerAPI.Controllers
 			if (record == null)
 				return NotFound("Record not found or access denied.");
 
-			_context.UserHistories.Remove(record);
+			// Логічне видалення для студента: просто позначаємо як Grant
+			// Це приховає запис у GetMyHistory, але збереже для ментора та ліміту спроб
+			record.IsGrant = true; 
 			_context.SaveChanges();
 
-			return Ok(new { message = "Record deleted successfully." });
+			return Ok(new { message = "Record removed from history." });
 		}
 
 		[HttpDelete("clear")]
@@ -123,9 +128,13 @@ namespace CodeTrainerAPI.Controllers
 				return Unauthorized();
 
 			var history = _context.UserHistories
-				.Where(x => x.UserId == userId);
+				.Where(x => x.UserId == userId && !x.IsGrant);
 
-			_context.UserHistories.RemoveRange(history);
+			foreach (var record in history)
+			{
+				record.IsGrant = true; // Приховуємо всі записи від студента
+			}
+
 			await _context.SaveChangesAsync();
 
 			return Ok();

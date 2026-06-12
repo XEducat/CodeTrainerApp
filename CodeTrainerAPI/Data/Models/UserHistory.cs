@@ -25,6 +25,8 @@ namespace CodeTrainerAPI.Data.Models
 
 		public string? UserAnswersJson { get; set; }
 
+		public bool IsGrant { get; set; } = false;
+
 		public DateTime CompletedAt { get; set; } = DateTime.UtcNow;
 	}
 }

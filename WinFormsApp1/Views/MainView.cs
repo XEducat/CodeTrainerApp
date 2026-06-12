@@ -185,7 +185,7 @@ namespace CodeTrainerApp.Views
 			StartQuiz();
 		}
 
-		private void StartQuiz()
+		private async void StartQuiz()
 		{
 			if (QuizListBox.SelectedIndex == -1)
 			{
@@ -198,6 +198,21 @@ namespace CodeTrainerApp.Views
 			}
 
 			var selectedQuiz = (Quiz)QuizListBox.SelectedItem;
+
+			if (UserService.Instance.IsLoggedIn)
+			{
+				int remaining = await _quizService.GetRemainingAttemptsAsync(selectedQuiz.Id);
+				if (remaining <= 0)
+				{
+					MessageBox.Show(
+						"У вас закінчилися спроби для цього тесту. Зверніться до ментора для отримання додаткових спроб.",
+						"Спроби вичерпано",
+						MessageBoxButtons.OK,
+						MessageBoxIcon.Warning);
+					return;
+				}
+			}
+
 			var quizView = new QuizView(selectedQuiz);
 
 			quizView.FormClosed += (s, args) => 

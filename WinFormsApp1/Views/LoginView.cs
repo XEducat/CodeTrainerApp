@@ -1,6 +1,7 @@
 ﻿using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
 using CodeTrainerApp.UI;
+using System.Text.RegularExpressions;
 
 namespace CodeTrainerApp.Views
 {
@@ -91,6 +92,13 @@ namespace CodeTrainerApp.Views
 			{
 				if (_isRegisterMode)
 				{
+					// Перевірка логіна на латиницю
+					if (!Regex.IsMatch(login, "^[a-zA-Z0-9_]+$"))
+					{
+						MessageBox.Show("Логін може містити тільки латинські літери, цифри та нижнє підкреслення", "Помилка валідації", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+						return;
+					}
+
 					var (success, message) = await UserService.Instance.RegisterAsync(
 						login,
 						email,

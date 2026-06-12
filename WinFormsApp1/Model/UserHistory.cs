@@ -9,7 +9,9 @@
 		public int MaxScore { get; set; }         // Максимальний можливий результат для цього тесту
 		public int Score { get; set; }            // Результат  
 		public string? UserEmail { get; set; }    // Email користувача (для ментора)
+		public string? UserName { get; set; }     // Логін користувача (для ментора)
 		public string? UserAnswersJson { get; set; } // Відповіді користувача
+		public bool IsGrant { get; set; }         // Чи є це нарахуванням спроби
 		public DateTime CompletedAt { get; set; } // Дата проходження
 	}
 }
