@@ -71,6 +71,6 @@ dotnet tool install --global dotnet-ef
         *   `WinFormsApp1` — **Start**
         <img width="796" height="448" alt="image" src="https://github.com/user-attachments/assets/e3e38fc4-e65e-4b50-93cd-b490e39f94ca" />
 
-    *   Натисніть **F5** для запуску.
+    *   Натисніть застосувати, закрийте вікно "PropetyPages" і натисніть **F5** для запуску.
 ---
 *Розроблено в рамках дипломного проєкту бакалавра, 2026.*
