@@ -64,12 +64,12 @@ dotnet tool install --global dotnet-ef
 4.  **Запуск системи:**
     *   Відкрийте файл рішення `WinFormsApp1.slnx` (або `.sln`) у Visual Studio.
     *   Натисніть правою кнопкою миші на рішення (Solution) -> **Configure Startup Projects**.
-   <img width="1411" height="205" alt="image" src="https://github.com/user-attachments/assets/29df8ffa-d77e-47b1-b0e8-d97af03ac826" />
+        <img width="1411" height="205" alt="image" src="https://github.com/user-attachments/assets/29df8ffa-d77e-47b1-b0e8-d97af03ac826" />
 
     *   Оберіть **Multiple startup projects**:
         *   `CodeTrainerAPI` — **Start**
         *   `WinFormsApp1` — **Start**
-   <img width="796" height="448" alt="image" src="https://github.com/user-attachments/assets/e3e38fc4-e65e-4b50-93cd-b490e39f94ca" />
+        <img width="796" height="448" alt="image" src="https://github.com/user-attachments/assets/e3e38fc4-e65e-4b50-93cd-b490e39f94ca" />
 
     *   Натисніть **F5** для запуску.
 ---
