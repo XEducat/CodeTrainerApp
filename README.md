@@ -1,7 +1,7 @@
 # CodeTrainer 💻
 ### Інтерактивна система діагностування вмінь при складанні алгоритмів
 
-**CodeTrainer** — це сучасна навчально-діагностична платформа, призначена для автоматизованої перевірки алгоритмічних навичок студентів. Проєкт поєднує в собі потужність **Roslyn Scripting API** для динамічного виконання коду та гнучкість архітектури на базі **.NET**.
+**CodeTrainer** – це сучасна навчально-діагностична платформа, призначена для автоматизованої перевірки алгоритмічних навичок студентів. Проєкт поєднує в собі потужність **Roslyn Scripting API** для динамічного виконання коду та гнучкість архітектури на базі **.NET**.
 
 ---
 
@@ -37,7 +37,7 @@
         *   `ASP.NET and web development` (для API сервера).
 *   **SDK .NET 10.0+** (встановлюється разом з Visual Studio).
 *   **SQL Server Express** (або будь-яка інша версія MS SQL Server).
-*   *[Опціонально]* **SQL Server Management Studio (SSMS)** — для перегляду бази даних.
+*   *[Опціонально]* **SQL Server Management Studio (SSMS)** – для перегляду бази даних.
 
 ### 2. Початкове налаштування (CLI)
 Для керування міграціями бази даних потрібно встановити інструмент EF Core. Відкрийте термінал (PowerShell) та виконайте:
@@ -67,8 +67,8 @@ dotnet tool install --global dotnet-ef
         <img width="1411" height="205" alt="image" src="https://github.com/user-attachments/assets/29df8ffa-d77e-47b1-b0e8-d97af03ac826" />
 
     *   Оберіть **Multiple startup projects**:
-        *   `CodeTrainerAPI` — **Start**
-        *   `WinFormsApp1` — **Start**
+        *   `CodeTrainerAPI` – **Start**
+        *   `WinFormsApp1` – **Start**
         <img width="796" height="448" alt="image" src="https://github.com/user-attachments/assets/e3e38fc4-e65e-4b50-93cd-b490e39f94ca" />
 
     *   Натисніть застосувати, закрийте вікно "PropetyPages" і натисніть **F5** для запуску.
