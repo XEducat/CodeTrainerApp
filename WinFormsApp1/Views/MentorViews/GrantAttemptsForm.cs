@@ -19,10 +19,9 @@ namespace CodeTrainerApp.Views.MentorViews
             // Стилізація
             StyleHelper.ApplyFormStyle(this);
             StyleHelper.ApplyPrimaryButton(_btnOk);
+            StyleHelper.ApplySecondaryButton(_btnCancel);
             
             _lblInfo.ForeColor = Theme.TextPrimary;
-            _numCount.BackColor = Theme.Surface;
-            _numCount.ForeColor = Theme.TextPrimary;
         }
     }
 }

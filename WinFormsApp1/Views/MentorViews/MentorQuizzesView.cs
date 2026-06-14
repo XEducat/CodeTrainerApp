@@ -1,4 +1,4 @@
-﻿using CodeTrainerApp.Model;
+using CodeTrainerApp.Model;
 using CodeTrainerApp.Services;
 using CodeTrainerApp.UI;
 
@@ -16,6 +16,14 @@ namespace CodeTrainerApp.Views.MentorViews
 			Theme.ThemeChanged += OnThemeChanged;
 			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
 			OnThemeChanged();
+
+			_quizPanel.Resize += (s, e) => 
+			{
+				foreach (Control ctrl in _quizPanel.Controls)
+				{
+					ctrl.Width = _quizPanel.ClientSize.Width - 25;
+				}
+			};
 
 			this.Load += async (s, e) =>
 			{
@@ -59,11 +67,10 @@ namespace CodeTrainerApp.Views.MentorViews
 		{
 			var panel = new Panel()
 			{
-				Width = _quizPanel.ClientSize.Width - 40,
-				Height = 110,
+				Width = _quizPanel.ClientSize.Width - 25,
+				Height = 100,
 				BackColor = Theme.Surface,
 				BorderStyle = BorderStyle.None,
-				Padding = new Padding(20),
 				Margin = new Padding(0, 0, 0, 15),
 			};
 
@@ -82,16 +89,35 @@ namespace CodeTrainerApp.Views.MentorViews
 				}
 			};
 
+			// Контейнер для кнопок (праворуч)
+			var actionsPanel = new Panel()
+			{
+				Dock = DockStyle.Right,
+				Width = 375,
+				BackColor = Color.Transparent
+			};
+
+			// Контейнер для тексту (ліворуч)
+			var infoPanel = new FlowLayoutPanel()
+			{
+				Dock = DockStyle.Fill,
+				FlowDirection = FlowDirection.TopDown,
+				WrapContents = false,
+				Padding = new Padding(25, 12, 10, 12),
+				BackColor = Color.Transparent,
+				AutoScroll = false
+			};
+
 			// Заголовок
 			var lblTitle = new Label()
 			{
 				Text = quiz.Title,
 				Font = new Font("Segoe UI Semibold", 13, FontStyle.Bold),
 				ForeColor = Theme.TextPrimary,
-				Location = new Point(25, 15),
-				AutoSize = true
+				AutoSize = true,
+				Margin = new Padding(0, 0, 0, 4)
 			};
-			panel.Controls.Add(lblTitle);
+			infoPanel.Controls.Add(lblTitle);
 
 			// Опис
 			var lblDesc = new Label()
@@ -99,11 +125,10 @@ namespace CodeTrainerApp.Views.MentorViews
 				Text = quiz.Description,
 				Font = new Font("Segoe UI", 9, FontStyle.Regular),
 				ForeColor = Theme.TextSecondary,
-				Location = new Point(25, 45),
-				MaximumSize = new Size(panel.Width - 260, 40),
-				AutoSize = true
+				AutoSize = true,
+				Margin = new Padding(0, 0, 0, 8)
 			};
-			panel.Controls.Add(lblDesc);
+			infoPanel.Controls.Add(lblDesc);
 
 			// Бейдж
 			var lblTasksCount = new Label()
@@ -114,43 +139,52 @@ namespace CodeTrainerApp.Views.MentorViews
 				ForeColor = Theme.Primary,
 				AutoSize = true,
 				Padding = new Padding(6),
-				Location = new Point(25, 75)
+				Margin = new Padding(0)
 			};
-			panel.Controls.Add(lblTasksCount);
+			infoPanel.Controls.Add(lblTasksCount);
 
-			// Кнопка статистика
-			var btnStats = new Button()
-			{
-				Text = "📊 Статистика",
-				Size = new Size(110, 32),
-				Location = new Point(panel.Width - 360, 35)
-			};
+			// Кнопки
+			var btnStats = new Button() { Text = "📊 Статистика", Size = new Size(110, 40) };
+			var btnEdit = new Button() { Text = "✏ Редагувати", Size = new Size(110, 40) };
+			var btnDelete = new Button() { Text = "🗑 Видалити", Size = new Size(110, 40) };
+
 			StyleHelper.ApplyPrimaryButton(btnStats);
-			btnStats.Click += (s, e) => ShowStats(quiz);
-			panel.Controls.Add(btnStats);
-
-			// Кнопка редагувати
-			var btnEdit = new Button()
-			{
-				Text = "✏ Редагувати",
-				Size = new Size(110, 32),
-				Location = new Point(panel.Width - 240, 35)
-			};
-			StyleHelper.ApplyPrimaryButton(btnEdit);
-			btnEdit.BackColor = Theme.Warning;
-			btnEdit.Click += (s, e) => EditQuiz(quiz);
-			panel.Controls.Add(btnEdit);
-
-			// Кнопка видалити
-			var btnDelete = new Button()
-			{
-				Text = "🗑 Видалити",
-				Size = new Size(110, 32),
-				Location = new Point(panel.Width - 120, 35)
-			};
+			StyleHelper.ApplyWarningButton(btnEdit);
 			StyleHelper.ApplyDangerButton(btnDelete);
+
+			btnStats.Click += (s, e) => ShowStats(quiz);
+			btnEdit.Click += (s, e) => EditQuiz(quiz);
 			btnDelete.Click += (s, e) => DeleteQuiz(quiz);
-			panel.Controls.Add(btnDelete);
+
+			actionsPanel.Controls.Add(btnStats);
+			actionsPanel.Controls.Add(btnEdit);
+			actionsPanel.Controls.Add(btnDelete);
+
+			// Додаємо в правильному порядку для Docking
+			panel.Controls.Add(infoPanel);
+			panel.Controls.Add(actionsPanel);
+
+			// Логіка адаптивності
+			void PerformLayout()
+			{
+				if (panel.IsDisposed) return;
+				int maxWidth = panel.Width - actionsPanel.Width - 25;
+				lblTitle.MaximumSize = new Size(maxWidth, 0);
+				lblDesc.MaximumSize = new Size(maxWidth, 0);
+
+				// Розрахунок висоти панелі на основі контенту
+				int preferredHeight = infoPanel.GetPreferredSize(new Size(maxWidth, 0)).Height + 20;
+				panel.Height = Math.Max(100, preferredHeight);
+
+				// Центрування кнопок (висота кнопок тепер 40)
+				int btnY = (panel.Height - 40) / 2;
+				btnStats.Location = new Point(0, btnY);
+				btnEdit.Location = new Point(120, btnY);
+				btnDelete.Location = new Point(240, btnY);
+			}
+
+			panel.Resize += (s, e) => PerformLayout();
+			panel.HandleCreated += (s, e) => PerformLayout();
 
 			return panel;
 		}

@@ -109,6 +109,26 @@ namespace CodeTrainerApp.UI
 			MakeRounded(btn, 5);
 		}
 
+		public static void ApplySecondaryButton(Button btn)
+		{
+			btn.FlatStyle = FlatStyle.Flat;
+			btn.FlatAppearance.BorderSize = 1;
+			btn.FlatAppearance.BorderColor = Theme.Border;
+			btn.FlatAppearance.MouseOverBackColor = Theme.MenuHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.MenuSelected;
+
+			btn.UseVisualStyleBackColor = false;
+			btn.BackColor = Color.Transparent;
+			btn.ForeColor = Theme.TextPrimary;
+
+			btn.Font = new Font("Segoe UI", 10F);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
+			btn.Cursor = Cursors.Hand;
+
+			MakeRounded(btn, 5);
+		}
+
 		public static void ApplyMenuButton(Button btn)
 		{
 			btn.FlatStyle = FlatStyle.Flat;
@@ -218,6 +238,12 @@ namespace CodeTrainerApp.UI
 				tb.BackColor = Theme.Surface;
 				tb.ForeColor = Theme.TextPrimary;
 				tb.BorderStyle = BorderStyle.FixedSingle;
+			}
+			else if (ctrl is NumericUpDown nud)
+			{
+				nud.BackColor = Theme.Surface;
+				nud.ForeColor = Theme.TextPrimary;
+				nud.BorderStyle = BorderStyle.FixedSingle;
 			}
 			else if (ctrl is RichTextBox rtb)
 			{
