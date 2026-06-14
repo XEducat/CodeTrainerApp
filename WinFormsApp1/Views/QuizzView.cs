@@ -172,6 +172,13 @@ namespace CodeTrainerApp.Views
 
 		private void SkipButton_Click(object sender, EventArgs e)
 		{
+			if (_currentUser == null)
+			{
+				MessageBox.Show("Для переходу до наступного завдання необхідно увійти в акаунт.",
+					"Обмежений доступ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
 			SetConsoleOutput("Завдання пропущено.", Theme.TextSecondary);
 			NextButton.Enabled = true;
 			StyleHelper.ApplyPrimaryButton(NextButton);
@@ -183,6 +190,13 @@ namespace CodeTrainerApp.Views
 
 		private async void NextButton_Click(object sender, EventArgs e)
 		{
+			if (_currentUser == null)
+			{
+				MessageBox.Show("Для переходу до наступного завдання та збереження прогресу необхідно увійти в акаунт.",
+					"Обмежений доступ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
 			// Зберігаємо відповідь користувача для поточної задачі
 			if (currentTaskIndex < _quiz.Tasks.Count)
 			{
