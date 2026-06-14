@@ -4,9 +4,12 @@ namespace CodeTrainerApp.Views
 {
 	public partial class ConfirmCloseView : Form
 	{
-		public ConfirmCloseView()
+		public ConfirmCloseView(string title = "Завершити тест?", string message = "Ваш прогрес у цьому тесті не буде збережено. Ви дійсно бажаєте вийти?")
 		{
 			InitializeComponent();
+
+			labelTitle.Text = title;
+			labelMessage.Text = message;
 
 			Theme.ThemeChanged += OnThemeChanged;
 			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;

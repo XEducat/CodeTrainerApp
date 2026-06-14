@@ -9,6 +9,7 @@ namespace CodeTrainerApp.Views.MentorViews
 	public partial class CabinetContainerView : Form
 	{
 		private Panel headerPanel;
+		private FlowLayoutPanel menuFlowPanel;
 		private Button btnCabinet;
 		private Button btnSecondView;
 		private Panel contentPanel;
@@ -16,22 +17,34 @@ namespace CodeTrainerApp.Views.MentorViews
 		private void InitializeComponent()
 		{
 			headerPanel = new Panel();
+			menuFlowPanel = new FlowLayoutPanel();
 			btnCabinet = new Button();
 			btnSecondView = new Button();
 			contentPanel = new Panel();
 			headerPanel.SuspendLayout();
+			menuFlowPanel.SuspendLayout();
 			SuspendLayout();
 			// 
 			// headerPanel
 			// 
 			headerPanel.BackColor = Theme.Surface;
-			headerPanel.Controls.Add(btnCabinet);
-			headerPanel.Controls.Add(btnSecondView);
+			headerPanel.Controls.Add(menuFlowPanel);
 			headerPanel.Dock = DockStyle.Top;
 			headerPanel.Location = new Point(0, 0);
 			headerPanel.Name = "headerPanel";
 			headerPanel.Size = new Size(1400, 60);
 			headerPanel.TabIndex = 1;
+			// 
+			// menuFlowPanel
+			// 
+			menuFlowPanel.Controls.Add(btnCabinet);
+			menuFlowPanel.Controls.Add(btnSecondView);
+			menuFlowPanel.Dock = DockStyle.Fill;
+			menuFlowPanel.Location = new Point(0, 0);
+			menuFlowPanel.Name = "menuFlowPanel";
+			menuFlowPanel.Padding = new Padding(20, 10, 20, 10);
+			menuFlowPanel.Size = new Size(1400, 60);
+			menuFlowPanel.TabIndex = 2;
 			// 
 			// btnCabinet
 			// 
@@ -39,7 +52,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			btnCabinet.FlatAppearance.BorderSize = 0;
 			btnCabinet.FlatStyle = FlatStyle.Flat;
 			btnCabinet.ForeColor = Color.White;
-			btnCabinet.Location = new Point(20, 10);
+			btnCabinet.Location = new Point(23, 13);
 			btnCabinet.Name = "btnCabinet";
 			btnCabinet.Size = new Size(160, 40);
 			btnCabinet.TabIndex = 0;
@@ -52,7 +65,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			btnSecondView.FlatAppearance.BorderSize = 0;
 			btnSecondView.FlatStyle = FlatStyle.Flat;
 			btnSecondView.ForeColor = Color.White;
-			btnSecondView.Location = new Point(190, 10);
+			btnSecondView.Location = new Point(189, 13);
 			btnSecondView.Name = "btnSecondView";
 			btnSecondView.Size = new Size(160, 40);
 			btnSecondView.TabIndex = 1;
@@ -71,6 +84,8 @@ namespace CodeTrainerApp.Views.MentorViews
 			// CabinetContainerView
 			// 
 			ClientSize = new Size(1400, 800);
+			MinimumSize = new Size(1200, 750);
+			DoubleBuffered = true;
 			Controls.Add(contentPanel);
 			Controls.Add(headerPanel);
 			FormBorderStyle = FormBorderStyle.Sizable;
@@ -80,6 +95,7 @@ namespace CodeTrainerApp.Views.MentorViews
 			WindowState = FormWindowState.Maximized;
 			Load += CabinetContainerView_Load;
 			headerPanel.ResumeLayout(false);
+			menuFlowPanel.ResumeLayout(false);
 			ApplyModernStyles();
 			ResumeLayout(false);
 		}

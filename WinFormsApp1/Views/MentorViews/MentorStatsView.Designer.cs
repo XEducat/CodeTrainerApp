@@ -52,7 +52,8 @@ namespace CodeTrainerApp.Views.MentorViews
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new Size(800, 450);
+            this.DoubleBuffered = true;
             this.Controls.Add(this.StatsDataGridView);
             this.Controls.Add(this.HeaderLabel);
             this.Name = "MentorStatsView";

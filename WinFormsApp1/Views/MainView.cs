@@ -16,6 +16,12 @@ namespace CodeTrainerApp.Views
 			InitializeComponent();
 			Theme.ThemeChanged += OnThemeChanged;
 			this.Disposed += (s, e) => Theme.ThemeChanged -= OnThemeChanged;
+			
+			// Налаштування для усунення артефактів при ресайзі
+			this.ResizeRedraw = true;
+			StyleHelper.EnableDoubleBuffering(MainPanel);
+			StyleHelper.EnableDoubleBuffering(QuizListBox);
+
 			OnThemeChanged();
 		}
 
@@ -223,6 +229,15 @@ namespace CodeTrainerApp.Views
 
 			this.Hide();
 			quizView.Show();
+		}
+
+		private void MainView_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			using (var confirmForm = new ConfirmCloseView("Вихід з програми", "Ви дійсно бажаєте вийти з CodeTrainer?"))
+			{
+				if (confirmForm.ShowDialog() != DialogResult.Yes)
+					e.Cancel = true;
+			}
 		}
 	}
 }

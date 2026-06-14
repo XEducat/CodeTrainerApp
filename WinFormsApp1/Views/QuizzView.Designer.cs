@@ -151,12 +151,14 @@ namespace CodeTrainerApp.Views
 			// 
 			// CurrentTaskLabel
 			// 
-			CurrentTaskLabel.AutoSize = true;
+			CurrentTaskLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			CurrentTaskLabel.AutoEllipsis = true;
+			CurrentTaskLabel.AutoSize = false;
 			CurrentTaskLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
 			CurrentTaskLabel.ForeColor = Theme.TextPrimary;
 			CurrentTaskLabel.Location = new Point(25, 25);
 			CurrentTaskLabel.Name = "CurrentTaskLabel";
-			CurrentTaskLabel.Size = new Size(134, 30);
+			CurrentTaskLabel.Size = new Size(300, 70);
 			CurrentTaskLabel.TabIndex = 0;
 			CurrentTaskLabel.Text = "Завдання 1";
 			// 
@@ -312,11 +314,13 @@ namespace CodeTrainerApp.Views
 			CodeHeaderLabel.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// QuizView
-			// 
+			// QuizView
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = Theme.Background;
 			ClientSize = new Size(1100, 700);
+			MinimumSize = new Size(900, 600);
+			DoubleBuffered = true;
 			Controls.Add(MainSplit);
 			Controls.Add(TopPanel);
 			Name = "QuizView";

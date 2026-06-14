@@ -239,12 +239,12 @@ namespace CodeTrainerApp.Views.MentorViews
 			if (result.success)
 			{
 				_isVerified = true;
-				MessageBox.Show("Всі тести успішно пройдено!", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("Чудово! Всі тест кейси написані вірно до шаблону.", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else if (result.compilationSuccess)
 			{
 				_isVerified = true; // Сигнатура збігається, логіка може бути порожньою в шаблоні
-				MessageBox.Show("Сигнатуру методу та типи перевірено! Тести підходять до коду (хоча результати не збігаються, що нормально для шаблону).", "Перевірено", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("Чудово! Всі тест кейси написані вірно до шаблону.", "Перевірено", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else
 			{

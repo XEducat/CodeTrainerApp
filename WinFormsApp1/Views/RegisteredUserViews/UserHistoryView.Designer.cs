@@ -100,9 +100,10 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			// statsPanel
 			statsPanel.Name = "statsPanel";
 			statsPanel.Dock = DockStyle.Top;
-			statsPanel.Height = 110;
+			statsPanel.AutoSize = true;
+			statsPanel.MinimumSize = new Size(0, 110);
 			statsPanel.Padding = new Padding(0, 10, 0, 10);
-			statsPanel.WrapContents = false;
+			statsPanel.WrapContents = true;
 
 			statsPanel.Controls.Add(pnlStatTotal);
 			statsPanel.Controls.Add(pnlStatAverage);
@@ -242,6 +243,8 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 
 			// UserHistoryView
 			ClientSize = new Size(1200, 700);
+			MinimumSize = new Size(1000, 600);
+			DoubleBuffered = true;
 			Controls.Add(mainPanel);
 			Text = "Історія проходжень";
 			StartPosition = FormStartPosition.CenterScreen;
@@ -325,15 +328,6 @@ namespace CodeTrainerApp.Views.RegisteredUserViews
 			value.ForeColor = Theme.Primary;
 			value.Font = new Font("Segoe UI", 24F, FontStyle.Bold);
 			value.Location = new Point(25, 35);
-
-			pnl.Paint += (s, e) =>
-			{
-				// Малюємо тільки сучасну акцентну лінію зліва
-				using (var stripeBrush = new SolidBrush(Theme.Primary))
-				{
-					e.Graphics.FillRectangle(stripeBrush, 0, 0, 6, pnl.Height);
-				}
-			};
 		}
 	}
 }

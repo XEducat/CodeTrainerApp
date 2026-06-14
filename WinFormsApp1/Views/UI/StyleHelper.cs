@@ -90,6 +90,25 @@ namespace CodeTrainerApp.UI
 			MakeRounded(btn, 5);
 		}
 
+		public static void ApplyWarningButton(Button btn)
+		{
+			btn.FlatStyle = FlatStyle.Flat;
+			btn.FlatAppearance.BorderSize = 0;
+			btn.FlatAppearance.MouseOverBackColor = Theme.WarningHover;
+			btn.FlatAppearance.MouseDownBackColor = Theme.Warning;
+
+			btn.UseVisualStyleBackColor = false;
+			btn.BackColor = Theme.Warning;
+			btn.ForeColor = Color.White;
+
+			btn.Font = new Font("Segoe UI", 10F);
+			btn.TextAlign = ContentAlignment.MiddleCenter;
+			btn.Padding = new Padding(0);
+			btn.Cursor = Cursors.Hand;
+
+			MakeRounded(btn, 5);
+		}
+
 		public static void ApplyMenuButton(Button btn)
 		{
 			btn.FlatStyle = FlatStyle.Flat;
@@ -328,6 +347,13 @@ namespace CodeTrainerApp.UI
 
 			button.Resize += (s, e) => UpdateRegion();
 			UpdateRegion();
+		}
+
+		public static void EnableDoubleBuffering(Control control)
+		{
+			var property = typeof(Control).GetProperty("DoubleBuffered", 
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			property?.SetValue(control, true, null);
 		}
 	}
 }

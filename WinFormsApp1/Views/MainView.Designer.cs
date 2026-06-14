@@ -241,11 +241,14 @@ namespace CodeTrainerApp.Views
 			// MainView
 			BackColor = Theme.Background;
 			ClientSize = new Size(1280, 720);
+			MinimumSize = new Size(1000, 600);
+			DoubleBuffered = true;
 			Controls.Add(MainPanel);
 			Name = "MainView";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "CodeTrainer";
 			WindowState = FormWindowState.Maximized;
+			FormClosing += MainView_FormClosing;
 			Load += QuizzesView_Load;
 
 			MainPanel.ResumeLayout(false);

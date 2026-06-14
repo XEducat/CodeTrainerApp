@@ -37,26 +37,33 @@ namespace CodeTrainerApp.Views.MentorViews
 
         private void InitializeFilterPanel()
         {
-            _filterPanel = new Panel
+            var flowPanel = new FlowLayoutPanel
             {
                 Dock = DockStyle.Top,
-                Height = 60,
-                Padding = new Padding(0, 10, 0, 10)
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Padding = new Padding(0, 10, 0, 10),
+                WrapContents = true
             };
+            _filterPanel = flowPanel;
 
-            Label lblSearch = new Label { Text = "Пошук (логін):", AutoSize = true, Location = new Point(0, 15) };
+            // Пошук
+            var searchGroup = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 20, 0) };
+            Label lblSearch = new Label { Text = "Пошук (логін):", AutoSize = true, Margin = new Padding(0, 7, 5, 0) };
             _searchTextBox = new TextBox 
             { 
-                Location = new Point(100, 12), 
                 Width = 180, 
                 Font = new Font("Segoe UI", 11)
             };
             _searchTextBox.TextChanged += (s, e) => ApplyFilters();
+            searchGroup.Controls.Add(lblSearch);
+            searchGroup.Controls.Add(_searchTextBox);
 
-            Label lblDate = new Label { Text = "Період:", AutoSize = true, Location = new Point(300, 15) };
+            // Період
+            var periodGroup = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 20, 0) };
+            Label lblDate = new Label { Text = "Період:", AutoSize = true, Margin = new Padding(0, 7, 5, 0) };
             _dateFilterComboBox = new ComboBox
             {
-                Location = new Point(355, 12),
                 Width = 130,
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 10)
@@ -70,23 +77,28 @@ namespace CodeTrainerApp.Views.MentorViews
                 "За датою" 
             });
             _dateFilterComboBox.SelectedIndex = 4; // За весь час
+            periodGroup.Controls.Add(lblDate);
+            periodGroup.Controls.Add(_dateFilterComboBox);
 
-            _lblCustomDate = new Label { Text = "Дата:", AutoSize = true, Location = new Point(500, 15), Visible = false };
+            // Спеціальна дата
+            var customDateGroup = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 20, 0) };
+            _lblCustomDate = new Label { Text = "Дата:", AutoSize = true, Margin = new Padding(0, 7, 5, 0), Visible = false };
             _customDatePicker = new DateTimePicker
             {
-                Location = new Point(540, 12),
                 Width = 120,
                 Format = DateTimePickerFormat.Short,
                 Visible = false
             };
             _customDatePicker.ValueChanged += (s, e) => ApplyFilters();
+            customDateGroup.Controls.Add(_lblCustomDate);
+            customDateGroup.Controls.Add(_customDatePicker);
 
             _btnReset = new Button
             {
                 Text = "Скинути",
-                Size = new Size(80, 32),
+                Size = new Size(100, 32),
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(500, 10)
+                Margin = new Padding(0, 2, 0, 0)
             };
             StyleHelper.ApplyPrimaryButton(_btnReset);
             _btnReset.Click += (s, e) => {
@@ -99,24 +111,20 @@ namespace CodeTrainerApp.Views.MentorViews
                 bool isCustom = _dateFilterComboBox.SelectedIndex == 5;
                 _lblCustomDate.Visible = isCustom;
                 _customDatePicker.Visible = isCustom;
-                
-                // Зміщуємо кнопку скидання
-                _btnReset.Location = isCustom ? new Point(680, 10) : new Point(500, 10);
-                
                 ApplyFilters();
             };
 
-            _filterPanel.Controls.Add(lblSearch);
-            _filterPanel.Controls.Add(_searchTextBox);
-            _filterPanel.Controls.Add(lblDate);
-            _filterPanel.Controls.Add(_dateFilterComboBox);
-            _filterPanel.Controls.Add(_lblCustomDate);
-            _filterPanel.Controls.Add(_customDatePicker);
-            _filterPanel.Controls.Add(_btnReset);
+            flowPanel.Controls.Add(searchGroup);
+            flowPanel.Controls.Add(periodGroup);
+            flowPanel.Controls.Add(customDateGroup);
+            flowPanel.Controls.Add(_btnReset);
 
             this.Controls.Add(_filterPanel);
-            _filterPanel.BringToFront();
-            StatsDataGridView.BringToFront();
+            
+            // Налаштовуємо Z-рядок для правильного Docking: 
+            // Header (Top) -> Filter (Top) -> Grid (Fill)
+            _filterPanel.SendToBack();
+            if (this.HeaderLabel != null) this.HeaderLabel.SendToBack();
 
             this.Text = "Статистика користувачів";
             if (this.HeaderLabel != null) this.HeaderLabel.Text = "Статистика користувачів";

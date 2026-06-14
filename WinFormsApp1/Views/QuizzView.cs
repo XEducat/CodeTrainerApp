@@ -99,7 +99,36 @@ namespace CodeTrainerApp.Views
 
 			var task = _quiz.Tasks[currentTaskIndex];
 
+			// Налаштування обрізання та перенесення заголовка завдання
+			CurrentTaskLabel.AutoSize = false;
+			CurrentTaskLabel.AutoEllipsis = true;
+			CurrentTaskLabel.Width = SidePanel.Width - 50; // Враховуємо Padding(25)
 			CurrentTaskLabel.Text = $"Завдання {currentTaskIndex + 1}: {task.Title}";
+
+			// Розрахунок висоти: 1 або 2 рядки (макс 2, далі - обрізання)
+			using (Graphics g = CurrentTaskLabel.CreateGraphics())
+			{
+				SizeF size = g.MeasureString(CurrentTaskLabel.Text, CurrentTaskLabel.Font, CurrentTaskLabel.Width);
+				int lineHeight = CurrentTaskLabel.Font.Height;
+				
+				// Якщо текст влізає в один рядок (з невеликим запасом на міжрядковий інтервал)
+				if (size.Height < lineHeight * 1.5)
+				{
+					CurrentTaskLabel.Height = lineHeight + 5;
+				}
+				else
+				{
+					// Дозволяємо максимум 2 повних рядки
+					CurrentTaskLabel.Height = (lineHeight * 2) + 8;
+				}
+			}
+
+			// Динамічне зміщення інших елементів (робимо компактніше)
+			ProgressLabel.Top = CurrentTaskLabel.Bottom + 10;
+			QuizProgressBar.Top = ProgressLabel.Bottom + 5;
+			TaskDescriptionLabel.Top = QuizProgressBar.Bottom + 20;
+			TaskDescriptionLabel.Height = SidePanel.Height - TaskDescriptionLabel.Top - 25;
+
 			ProgressLabel.Text = $"ПРОГРЕС: {currentTaskIndex} / {_quiz.Tasks.Count}";
 			QuizProgressBar.Value = currentTaskIndex;
 
@@ -274,7 +303,7 @@ namespace CodeTrainerApp.Views
 
 		private void QuizView_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			using (var confirmForm = new ConfirmCloseView())
+			using (var confirmForm = new ConfirmCloseView("Завершити тест?", "Ваш прогрес у цьому тесті не буде збережено. Ви дійсно бажаєте вийти?"))
 			{
 				if (confirmForm.ShowDialog() != DialogResult.Yes)
 					e.Cancel = true;
